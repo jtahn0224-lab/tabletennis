@@ -1694,6 +1694,9 @@
       let html = '';
       Object.keys(groups).sort().forEach(groupKey => {
         const list = groups[groupKey];
+        // 각 학급 내 부원 이름을 가나다(오름차순) 순으로 정렬
+        list.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+
         html += `
           <div class="bg-white/70 rounded-2xl border border-emerald-100 overflow-hidden shadow-xs">
             <div class="px-3 py-1.5 bg-emerald-50 text-xs font-bold text-emerald-900 flex justify-between items-center">
@@ -1746,6 +1749,9 @@
         container.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">소속 학급에 다른 부원이 없습니다.</p>`;
         return;
       }
+
+      // 학급 내 부원 달성률 목록에서도 학생 이름을 오름차순 정렬
+      classStudents.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
 
       let html = `<div class="text-[11px] font-bold text-emerald-800 mb-1 px-1 flex items-center justify-between">
                     <span>📍 ${escapeHtml(activeGradeClass)} 소속 부원 현황</span>

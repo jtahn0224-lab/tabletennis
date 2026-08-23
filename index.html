@@ -926,7 +926,7 @@
         <i class="fa-solid fa-user-plus"></i>
       </div>
       <h3 id="addStudentModalTitle" class="text-lg font-extrabold text-slate-800">새 탁구 부원 등록</h3>
-      <p class="text-xs text-slate-500 mt-1 mb-4">등록할 부원 정보와 캐릭터를 입력해 주세요.</p>
+      <p class="text-xs text-slate-500 mt-1 mb-4">등록할 부원의 정보와 학번을 입력해 주세요.</p>
 
       <div class="space-y-3 text-left">
         <div>
@@ -951,6 +951,19 @@
           </div>
         </div>
       </div>
+
+      <!-- Action Buttons for Registering Student -->
+      <div class="grid grid-cols-2 gap-2 pt-4">
+        <button onclick="closeModal('addStudentModal')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-2xl text-xs transition-all">
+          취소
+        </button>
+        <button onclick="saveNewStudent()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl shadow-md text-xs transition-all flex items-center justify-center space-x-1">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>등록하기 ✨</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: Teacher Passcode Verification for Mission Stamp -->
   <div id="verifyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">

@@ -1302,6 +1302,40 @@
       return '🌟 탁구의 신';
     }
 
+    function getInitialMissionsForNewStudent() {
+      const missionMap = new Map();
+      
+      // Collect all current unique missions from existing students
+      state.students.forEach(student => {
+        if (student.missions && Array.isArray(student.missions)) {
+          student.missions.forEach(m => {
+            const key = m.id || m.title;
+            if (!missionMap.has(key)) {
+              missionMap.set(key, {
+                id: m.id || ('m_' + Date.now() + Math.random().toString(36).substr(2, 4)),
+                week: m.week || 1,
+                title: m.title,
+                category: m.category || 'personal',
+                difficulty: m.difficulty || '보통',
+                points: m.points || 20,
+                completed: false,
+                pending: false
+              });
+            }
+          });
+        }
+      });
+
+      // Fallback to DEFAULT_MISSIONS if no student data exists
+      if (missionMap.size === 0) {
+        DEFAULT_MISSIONS.forEach(m => {
+          missionMap.set(m.id, { ...m, completed: false, pending: false });
+        });
+      }
+
+      return Array.from(missionMap.values());
+    }
+
     function openModal(id) {
       const modal = document.getElementById(id);
       if (modal) modal.classList.remove('hidden');
@@ -1455,7 +1489,7 @@
             number: number,
             className: formatClassBadge({ grade, classNum, number }),
             avatar: '🏓',
-            missions: JSON.parse(JSON.stringify(DEFAULT_MISSIONS)),
+            missions: getInitialMissionsForNewStudent(),
             skills: { forehand: 3, backhand: 3, serve: 3, manner: 5 },
             totalPoints: 0,
             wins: 0,
@@ -2792,7 +2826,7 @@
         number: number,
         className: formatClassBadge({ grade, classNum, number }),
         avatar: selectedNewStudentAvatar,
-        missions: JSON.parse(JSON.stringify(DEFAULT_MISSIONS)),
+        missions: getInitialMissionsForNewStudent(),
         skills: { forehand: 3, backhand: 3, serve: 3, manner: 5 },
         totalPoints: 0,
         wins: 0,

@@ -1142,16 +1142,18 @@
     const appId = String(rawAppId).replace(/[.#$\[\]]/g, '_');
     const RTDB_URL = "https://tabletennis-1e702-default-rtdb.firebaseio.com";
 
+    // Firebase 실제 발급받은 설정 적용
     const firebaseConfig = typeof __firebase_config !== 'undefined' 
       ? { ...JSON.parse(__firebase_config), databaseURL: RTDB_URL } 
       : {
-          apiKey: "demo-api-key",
+          apiKey: "AIzaSyDL8FfQqIsBbjRoERiKncCWYvu70q_gSLc",
           authDomain: "tabletennis-1e702.firebaseapp.com",
-          projectId: "tabletennis-1e702",
           databaseURL: RTDB_URL,
-          storageBucket: "tabletennis-1e702.appspot.com",
-          messagingSenderId: "123456789",
-          appId: "1:123456789:web:123456789"
+          projectId: "tabletennis-1e702",
+          storageBucket: "tabletennis-1e702.firebasestorage.app",
+          messagingSenderId: "970232813868",
+          appId: "1:970232813868:web:5c0be16f8b396a5d70f489",
+          measurementId: "G-D7RD6QR52T"
         };
 
     const app = initializeApp(firebaseConfig);
@@ -2605,6 +2607,13 @@
 
     async function initFirebase() {
       try {
+        if (firebaseConfig.apiKey === "YOUR_ACTUAL_FIREBASE_API_KEY") {
+          console.warn("⚠️ Firebase API Key가 설정되지 않았습니다. index.html의 firebaseConfig에 실제 API Key를 작성해 주세요.");
+          updateCloudStatusBadge('error');
+          showToast('Firebase API Key 설정이 필요합니다.', '⚠️');
+          return;
+        }
+
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
           await signInWithCustomToken(auth, __initial_auth_token);
         } else {
@@ -2616,6 +2625,7 @@
       } catch (err) {
         console.error("Firebase auth error:", err);
         updateCloudStatusBadge('error');
+        showToast('파이어베이스 연동 오류: 콘솔 및 익명 인증 설정을 확인하세요.', '⚠️');
       }
     }
 

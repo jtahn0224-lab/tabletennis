@@ -1694,8 +1694,8 @@
       let html = '';
       Object.keys(groups).sort().forEach(groupKey => {
         const list = groups[groupKey];
-        // 각 학급 내 부원 이름을 가나다(오름차순) 순으로 정렬
-        list.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+        // 각 학급 내 부원들을 번호순(오름차순)으로 정렬 (번호가 같거나 없을 경우 이름순)
+        list.sort((a, b) => (parseInt(a.number) || 0) - (parseInt(b.number) || 0) || a.name.localeCompare(b.name, 'ko'));
 
         html += `
           <div class="bg-white/70 rounded-2xl border border-emerald-100 overflow-hidden shadow-xs">
@@ -1708,7 +1708,7 @@
                 <div onclick="switchActiveStudent('${s.id}')" class="flex justify-between items-center p-2 rounded-xl cursor-pointer text-xs transition-all ${
                   s.id === state.activeStudentId ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'hover:bg-slate-50 text-slate-800 bg-white border border-slate-100'
                 }">
-                  <span class="truncate">${s.avatar || '🏓'} ${escapeHtml(s.name)} ${s.id === loggedInStudentId ? ' (나)' : ''}</span>
+                  <span class="truncate">${s.avatar || '🏓'} ${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}${s.id === loggedInStudentId ? ' (나)' : ''}</span>
                   <div class="flex items-center space-x-1.5 shrink-0">
                     <span class="font-extrabold ${s.id === state.activeStudentId ? 'text-amber-300' : 'text-emerald-700'}">${s.totalPoints || 0} P</span>
                     ${isAdmin ? `
@@ -1750,8 +1750,8 @@
         return;
       }
 
-      // 학급 내 부원 달성률 목록에서도 학생 이름을 오름차순 정렬
-      classStudents.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+      // 학급 내 개별 부원 달성률 현황 목록도 번호순(오름차순)으로 정렬
+      classStudents.sort((a, b) => (parseInt(a.number) || 0) - (parseInt(b.number) || 0) || a.name.localeCompare(b.name, 'ko'));
 
       let html = `<div class="text-[11px] font-bold text-emerald-800 mb-1 px-1 flex items-center justify-between">
                     <span>📍 ${escapeHtml(activeGradeClass)} 소속 부원 현황</span>
@@ -1769,7 +1769,7 @@
             isActive ? 'bg-emerald-50 border-emerald-300 shadow-xs' : 'bg-white border-slate-100 hover:border-emerald-200'
           }">
             <div class="flex justify-between items-center text-[11px] mb-1">
-              <span class="font-bold text-slate-800 truncate">${s.avatar || '🏓'} ${escapeHtml(s.name)}</span>
+              <span class="font-bold text-slate-800 truncate">${s.avatar || '🏓'} ${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}</span>
               <span class="font-black text-emerald-700">${pct}% <span class="text-[9px] text-slate-400">(${completed}/${total})</span></span>
             </div>
             <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">

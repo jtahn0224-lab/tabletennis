@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>스핀 & 스매시! 중학교 탁구 미션 챌린지</title>
+  <title>양주중학교 체육수업 - 스핀 & 스매시! 탁구 미션 챌린지</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -79,9 +79,10 @@
 
   <div id="loginGateScreen" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl animate-pop text-center max-h-[90vh] overflow-y-auto">
-      <div class="w-16 h-16 bg-gradient-to-tr from-emerald-500 to-teal-600 text-white rounded-3xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-emerald-500/30">
+      <div class="w-16 h-16 bg-gradient-to-tr from-emerald-500 to-teal-600 text-white rounded-3xl flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg shadow-emerald-500/30">
         🏓
       </div>
+      <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full mb-2 border border-emerald-200">🏫 양주중학교 체육수업</span>
       <h2 class="text-2xl font-black text-slate-800">스핀 & 스매시!</h2>
       <p class="text-xs text-slate-500 font-bold mt-1 mb-6">중학교 탁구 미션 챌린지 로그인</p>
 
@@ -146,10 +147,13 @@
     <!-- LEFT PANEL: Student Directory -->
     <aside id="studentDirectoryPanel" class="fixed inset-y-0 left-0 z-40 w-80 bg-white/95 lg:bg-white/90 backdrop-blur-xl p-5 flex flex-col shrink-0 transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out lg:rounded-3xl glass-card order-2 lg:order-1 shadow-2xl lg:shadow-none">
       <div class="flex justify-between items-center mb-2 pb-2 border-b border-emerald-100">
-        <h3 class="font-extrabold text-slate-800 text-sm flex items-center space-x-2">
-          <span class="text-base">🏓</span>
-          <span>탁구 부원 명단</span>
-        </h3>
+        <div>
+          <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md inline-block mb-1">🏫 양주중학교 체육수업</span>
+          <h3 class="font-extrabold text-slate-800 text-sm flex items-center space-x-2">
+            <span class="text-base">🏓</span>
+            <span>탁구 부원 명단</span>
+          </h3>
+        </div>
         <div class="flex items-center space-x-1">
           <span id="directoryTotalBadge" class="bg-emerald-100 text-emerald-800 font-extrabold text-xs px-2.5 py-0.5 rounded-full">0명</span>
           <button onclick="toggleMobileRosterDrawer()" class="lg:hidden text-slate-400 p-1 hover:text-slate-600">
@@ -189,6 +193,15 @@
 
     <div id="appContainer" class="w-full lg:flex-1 max-w-xl min-h-[85vh] glass-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between relative overflow-hidden order-1 lg:order-2">
       
+      <!-- School Branding Header Tag -->
+      <div class="flex justify-between items-center mb-2 px-0.5">
+        <span class="text-[11px] font-extrabold text-emerald-800 bg-emerald-100/90 px-2.5 py-1 rounded-xl border border-emerald-200/80 flex items-center space-x-1 shadow-2xs">
+          <span>🏫</span>
+          <span>양주중학교 체육수업</span>
+        </span>
+        <span class="text-[10px] font-bold text-slate-400">스핀 & 스매시! 탁구 챌린지</span>
+      </div>
+
       <!-- Mode Indicator Banner -->
       <div id="modeBanner" class="mb-3 px-3 py-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm bg-emerald-100 text-emerald-900 border border-emerald-200">
         <div class="flex items-center space-x-1.5 truncate pr-2">

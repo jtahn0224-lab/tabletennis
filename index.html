@@ -181,7 +181,7 @@
         </div>
       </div>
 
-      <button id="sidebarAddStudentBtn" onclick="openAddStudentModal()" class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-2.5 rounded-2xl text-xs border border-emerald-200 transition-all flex items-center justify-center space-x-1.5 shadow-xs">
+      <button id="sidebarAddStudentBtn" onclick="openAddStudentModal()" class="hidden mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-2.5 rounded-2xl text-xs border border-emerald-200 transition-all flex items-center justify-center space-x-1.5 shadow-xs">
         <i class="fa-solid fa-user-plus"></i>
         <span>+ 신규 부원 추가 등록</span>
       </button>
@@ -1538,6 +1538,12 @@
         else addRewardBtn.classList.add('hidden');
       }
 
+      const sidebarAddStudentBtn = document.getElementById('sidebarAddStudentBtn');
+      if (sidebarAddStudentBtn) {
+        if (isAdmin) sidebarAddStudentBtn.classList.remove('hidden');
+        else sidebarAddStudentBtn.classList.add('hidden');
+      }
+
       const adminPointAdjustBox = document.getElementById('adminPointAdjustBox');
       if (adminPointAdjustBox) {
         if (isAdmin) adminPointAdjustBox.classList.remove('hidden');
@@ -2030,6 +2036,7 @@
       const student = getCurrentStudent();
       if (!student) return;
 
+      const isAdmin = state.role === 'admin';
       const missions = student.missions || [];
       const completedCount = missions.filter(m => m.completed).length;
       const statCompletedCountEl = document.getElementById('statCompletedCount');
@@ -2049,19 +2056,44 @@
         if (!student.history || student.history.length === 0) {
           historyList.innerHTML = `<p class="text-slate-400 text-center py-4 text-xs">아직 달성한 활동 기록이 없습니다.</p>`;
         } else {
-          historyList.innerHTML = student.history.slice(0, 15).map(h => `
+          historyList.innerHTML = student.history.slice(0, 20).map((h, idx) => `
             <div class="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
               <div class="min-w-0 pr-2">
                 <p class="font-bold text-slate-800 truncate">${escapeHtml(h.title)}</p>
                 <p class="text-[10px] text-slate-400">${h.date}</p>
               </div>
-              <span class="font-extrabold text-xs shrink-0 ${h.points >= 0 ? 'text-emerald-600' : 'text-rose-500'}">
-                ${h.points >= 0 ? '+' : ''}${h.points} P
-              </span>
+              <div class="flex items-center space-x-1.5 shrink-0">
+                <span class="font-extrabold text-xs ${h.points >= 0 ? 'text-emerald-600' : 'text-rose-500'}">
+                  ${h.points >= 0 ? '+' : ''}${h.points} P
+                </span>
+                ${isAdmin ? `
+                  <button onclick="deleteHistoryLog(${idx})" class="text-slate-300 hover:text-rose-500 p-1 text-xs transition-colors" title="활동 기록 삭제">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                ` : ''}
+              </div>
             </div>
           `).join('');
         }
       }
+    }
+
+    function deleteHistoryLog(index) {
+      if (state.role !== 'admin') {
+        showToast('선생님 모드에서만 활동 기록을 삭제할 수 있습니다.', '🔒');
+        return;
+      }
+
+      const student = getCurrentStudent();
+      if (!student || !student.history || !student.history[index]) return;
+
+      const item = student.history[index];
+      showCustomConfirm('활동 기록 삭제', `'${item.title}' 기록을 삭제하시겠습니까?`, () => {
+        student.history.splice(index, 1);
+        saveStudentToRTDB(student);
+        renderUI();
+        showToast('활동 기록이 삭제되었습니다.', '🗑️');
+      });
     }
 
     function openScoreboardModal() {
@@ -2797,6 +2829,7 @@
       deleteReward,
       redeemReward,
       useCoupon,
+      deleteHistoryLog,
       openAddMissionModal,
       applyMissionPreset,
       handleAddMission,

@@ -1152,6 +1152,16 @@
       }
     }
 
+    async function saveSettingsToRTDB(settings) {
+      if (!firebaseUser || !settings) return;
+      try {
+        const settingsRef = ref(db, `artifacts/${appId}/public/data/settings`);
+        await set(settingsRef, JSON.parse(JSON.stringify(settings)));
+      } catch (err) {
+        console.error("Failed to save settings to RTDB:", err);
+      }
+    }
+
     function setupRealtimeListeners() {
       const studentsRef = ref(db, `artifacts/${appId}/public/data/students`);
       onValue(studentsRef, (snapshot) => {
@@ -1189,6 +1199,19 @@
         if (val) {
           state.rewards = Object.values(val);
           renderRewardsList();
+        }
+      });
+
+      const settingsRef = ref(db, `artifacts/${appId}/public/data/settings`);
+      onValue(settingsRef, (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          if (val.passcode) state.passcode = val.passcode;
+          if (typeof val.teacherMode === 'boolean') {
+            state.teacherMode = val.teacherMode;
+            const toggle = document.getElementById('teacherModeToggle');
+            if (toggle) toggle.checked = state.teacherMode;
+          }
         }
       });
     }
@@ -2546,12 +2569,21 @@
         }
       },
       openSettingsModal: () => openModal('settingsModal'),
-      toggleTeacherMode: (val) => { state.teacherMode = val; renderUI(); },
+      toggleTeacherMode: (val) => { 
+        state.teacherMode = val; 
+        saveSettingsToRTDB({ passcode: state.passcode, teacherMode: state.teacherMode });
+        renderUI(); 
+      },
       updatePasscode: () => {
-        const val = document.getElementById('newPasscodeInput').value.trim();
+        const input = document.getElementById('newPasscodeInput');
+        const val = input ? input.value.trim() : '';
         if (val.length >= 4) {
           state.passcode = val;
-          showToast('비밀번호가 변경되었습니다.', '🔒');
+          saveSettingsToRTDB({ passcode: state.passcode, teacherMode: state.teacherMode });
+          if (input) input.value = '';
+          showToast('선생님 비밀번호가 변경되어 실시간 저장되었습니다.', '🔒');
+        } else {
+          showToast('비밀번호는 4자리 이상 입력해 주세요.', '⚠️');
         }
       },
       applyPointAdjustment: () => {

@@ -75,7 +75,7 @@
     }
   </style>
 </head>
-<body class="p-2 sm:p-4 md:p-6 flex justify-center items-center">
+<body class="p-2 sm:p-4 md:p-6 flex justify-center items-center min-h-screen">
 
   <div id="loginGateScreen" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl animate-pop text-center max-h-[90vh] overflow-y-auto">
@@ -237,9 +237,9 @@
         </select>
 
         <div class="flex items-center space-x-1.5">
-          <div id="streakBadge" class="hidden items-center space-x-1 bg-amber-500/10 border border-amber-300 px-2 py-1 rounded-2xl">
+          <div id="streakBadge" class="hidden sm:flex items-center space-x-1 bg-amber-500/10 border border-amber-300 px-2 py-1 rounded-2xl">
             <span class="text-sm animate-flame">🔥</span>
-            <span id="streakCount" class="font-black text-amber-600 text-[11px]">3일</span>
+            <span id="streakCount" class="font-black text-amber-600 text-[11px]">1일</span>
           </div>
 
           <button onclick="handleLogout()" class="hidden sm:flex h-9 px-2.5 bg-slate-100 text-slate-600 rounded-2xl items-center justify-center font-bold text-xs hover:bg-slate-200 border border-slate-200 transition-all">
@@ -340,9 +340,9 @@
         <div class="flex items-center space-x-2 mb-3">
           <div class="relative flex-1">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
-            <input type="text" id="missionSearchInput" oninput="renderUI()" placeholder="미션 검색..." class="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            <input type="text" id="missionSearchInput" oninput="renderMissionsView()" placeholder="미션 검색..." class="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-400">
           </div>
-          <select id="missionFilterStatus" onchange="renderUI()" class="bg-white border border-slate-200 text-slate-700 font-bold text-xs rounded-xl px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+          <select id="missionFilterStatus" onchange="renderMissionsView()" class="bg-white border border-slate-200 text-slate-700 font-bold text-xs rounded-xl px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-400">
             <option value="all">전체 상태</option>
             <option value="active">진행 중</option>
             <option value="completed">완료됨</option>
@@ -360,6 +360,7 @@
         </div>
       </main>
 
+      <!-- VIEW 2: Matches & Rankings View -->
       <main id="viewMatches" class="hidden flex-1 flex-col min-h-0 mb-4 overflow-y-auto pr-1">
         <div class="flex flex-wrap gap-2 justify-between items-center mb-3">
           <h3 class="font-extrabold text-slate-800 text-sm sm:text-base flex items-center space-x-1.5">
@@ -408,6 +409,7 @@
         </div>
       </main>
 
+      <!-- VIEW 3: Rewards View -->
       <main id="viewRewards" class="hidden flex-1 flex-col min-h-0 mb-4 overflow-y-auto pr-1">
         <div class="flex justify-between items-center mb-3">
           <h3 class="font-extrabold text-slate-800 text-sm sm:text-base flex items-center space-x-1.5">
@@ -436,6 +438,7 @@
         </div>
       </main>
 
+      <!-- VIEW 4: Activity Stats & Skill Evaluation View -->
       <main id="viewStats" class="hidden flex-1 flex-col min-h-0 mb-4 overflow-y-auto pr-1">
         <h3 class="font-extrabold text-slate-800 text-sm sm:text-base mb-3 flex items-center space-x-1.5">
           <span>📊 나의 탁구 활동 기록 & 자평</span>
@@ -954,7 +957,7 @@
 
       <!-- Existing Students Management & Delete List -->
       <div class="mt-4 pt-3 border-t border-slate-100 text-left">
-        <label class="block text-xs font-bold text-slate-700 mb-2">등록된 부원 목록 및 삭제 관리</label>
+        <label id="addStudentModalListLabel" class="block text-xs font-bold text-slate-700 mb-2">등록된 부원 목록</label>
         <div id="modalStudentDeleteList" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
           <!-- Dynamic student delete badges -->
         </div>
@@ -1057,7 +1060,6 @@
       if (statusEl) statusEl.innerText = "DB 연결 오류 발생 ⚠️";
     });
 
-    const STORAGE_KEY = 'pingpong_mission_app_v5';
     const DEFAULT_PASSCODE = "1234";
 
     const DEFAULT_MISSIONS = [
@@ -1074,7 +1076,7 @@
     ];
 
     let state = {
-      role: 'student',
+      role: 'student', // 'student' or 'admin'
       activeStudentId: 'std_1',
       students: [
         {
@@ -1253,6 +1255,18 @@
       return student.className || '';
     }
 
+    function calculateLevelTitle(points) {
+      const pts = points || 0;
+      if (pts < 50) return '🌱 탁구 입문자';
+      if (pts < 100) return '🏓 핑퐁 아마추어';
+      if (pts < 200) return '⭐ 스핀 루키';
+      if (pts < 350) return '⚡ 드라이브 스페셜리스트';
+      if (pts < 500) return '🔥 스매시 마스터';
+      if (pts < 750) return '🛡️ 철벽 커트 에이스';
+      if (pts < 1000) return '👑 핑퐁 챔피언';
+      return '🌟 탁구의 신';
+    }
+
     function openModal(id) {
       const modal = document.getElementById(id);
       if (modal) modal.classList.remove('hidden');
@@ -1265,9 +1279,7 @@
 
     function toggleMobileRosterDrawer() {
       const drawer = document.getElementById('studentDirectoryPanel');
-      if (drawer) {
-        drawer.classList.toggle('-translate-x-full');
-      }
+      if (drawer) drawer.classList.toggle('-translate-x-full');
     }
 
     function getCurrentStudent() {
@@ -1483,6 +1495,31 @@
       const student = getCurrentStudent();
       const isAdmin = state.role === 'admin';
 
+      // Mode Banner Elements
+      const modeTitle = document.getElementById('modeTitle');
+      const modeIcon = document.getElementById('modeIcon');
+      const modeSwitchBtnText = document.getElementById('modeSwitchBtnText');
+      const modeBanner = document.getElementById('modeBanner');
+
+      if (isAdmin) {
+        if (modeTitle) modeTitle.innerText = "🎓 선생님 모드 (관리자)";
+        if (modeIcon) modeIcon.innerText = "🎓";
+        if (modeSwitchBtnText) modeSwitchBtnText.innerText = "부원 모드로 전환";
+        if (modeBanner) modeBanner.className = "mb-3 px-3 py-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm bg-amber-100 text-amber-900 border border-amber-300";
+      } else {
+        if (modeTitle) modeTitle.innerText = "🎒 탁구 부원 모드";
+        if (modeIcon) modeIcon.innerText = "🎒";
+        if (modeSwitchBtnText) modeSwitchBtnText.innerText = "선생님 모드";
+        if (modeBanner) modeBanner.className = "mb-3 px-3 py-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm bg-emerald-100 text-emerald-900 border border-emerald-200";
+      }
+
+      // Teacher Mode Tag
+      const teacherModeTag = document.getElementById('teacherModeTag');
+      if (teacherModeTag) {
+        if (state.teacherMode) teacherModeTag.classList.remove('hidden');
+        else teacherModeTag.classList.add('hidden');
+      }
+
       const addMissionBtn = document.getElementById('addMissionBtn');
       if (addMissionBtn) {
         if (isAdmin) addMissionBtn.classList.remove('hidden');
@@ -1517,12 +1554,34 @@
         adminSelect.classList.add('hidden');
       }
 
+      // Profile Header Elements
       const headerName = document.getElementById('headerName');
       const headerClassEl = document.getElementById('headerClass');
       const headerAvatar = document.getElementById('headerAvatar');
+      const userLevelTitle = document.getElementById('userLevelTitle');
+      const totalPoints = document.getElementById('totalPoints');
+      const streakCount = document.getElementById('streakCount');
 
       if (headerName) headerName.innerText = student ? student.name : '';
       if (headerClassEl) headerClassEl.innerText = student ? formatClassBadge(student) : '';
+      if (headerAvatar) headerAvatar.innerText = student ? (student.avatar || '🏓') : '🏓';
+      if (userLevelTitle) userLevelTitle.innerText = student ? calculateLevelTitle(student.totalPoints) : '🌱 탁구 입문자';
+      if (totalPoints) totalPoints.innerText = student ? `${student.totalPoints || 0} P` : '0 P';
+      if (streakCount) streakCount.innerText = student ? `${student.streak || 1}일` : '1일';
+
+      // Progress Widget Metrics
+      const missions = student ? (student.missions || []) : [];
+      const totalMissionsCount = missions.length;
+      const completedMissionsCount = missions.filter(m => m.completed).length;
+      const progressPct = totalMissionsCount > 0 ? Math.round((completedMissionsCount / totalMissionsCount) * 100) : 0;
+
+      const progressPercentEl = document.getElementById('progressPercent');
+      const completedCountTextEl = document.getElementById('completedCountText');
+      const progressBarEl = document.getElementById('progressBar');
+
+      if (progressPercentEl) progressPercentEl.innerText = `${progressPct}%`;
+      if (completedCountTextEl) completedCountTextEl.innerText = `(${completedMissionsCount}/${totalMissionsCount} 완료)`;
+      if (progressBarEl) progressBarEl.style.width = `${progressPct}%`;
 
       // Pending Approval Section
       const pendingApprovalSection = document.getElementById('adminApprovalSection');
@@ -1574,12 +1633,19 @@
             <span class="font-bold text-slate-800 truncate">${escapeHtml(s.name)}</span>
             <span class="text-[10px] text-slate-400 shrink-0">(${formatClassBadge(s) || '학급미지정'})</span>
           </div>
-          <button onclick="deleteStudent('${s.id}')" class="bg-rose-500 hover:bg-rose-600 text-white font-extrabold px-2.5 py-1 rounded-lg text-[10px] flex items-center space-x-1 transition-all shrink-0 shadow-xs">
-            <i class="fa-solid fa-trash-can"></i>
-            <span>삭제</span>
-          </button>
+          ${isAdmin ? `
+            <button onclick="deleteStudent('${s.id}')" class="bg-rose-500 hover:bg-rose-600 text-white font-extrabold px-2.5 py-1 rounded-lg text-[10px] flex items-center space-x-1 transition-all shrink-0 shadow-xs">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>삭제</span>
+            </button>
+          ` : ''}
         </div>
       `).join('');
+
+      const studentModalLabel = document.getElementById('addStudentModalListLabel');
+      if (studentModalLabel) {
+        studentModalLabel.innerText = isAdmin ? '등록된 부원 목록 및 삭제 관리' : '등록된 부원 목록';
+      }
 
       const studentManagerList = document.getElementById('studentManagerList');
       if (studentManagerList) studentManagerList.innerHTML = renderStudentDeleteListHTML();
@@ -1709,53 +1775,98 @@
       const missions = student ? (student.missions || []) : [];
       const isAdmin = state.role === 'admin';
 
-      const filtered = missions.filter(m => (m.category || 'personal') === activeTab);
+      const searchVal = (document.getElementById('missionSearchInput')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('missionFilterStatus')?.value || 'all';
+
+      // Badges
+      const personalCount = missions.filter(m => (m.category || 'personal') === 'personal').length;
+      const teamCount = missions.filter(m => m.category === 'team').length;
+
+      const personalBadge = document.getElementById('personalBadge');
+      const teamBadge = document.getElementById('teamBadge');
+      if (personalBadge) personalBadge.innerText = personalCount;
+      if (teamBadge) teamBadge.innerText = teamCount;
+
+      // Tab styling
+      const tabPersonalBtn = document.getElementById('tabPersonalBtn');
+      const tabTeamBtn = document.getElementById('tabTeamBtn');
+
+      if (activeTab === 'personal') {
+        if (tabPersonalBtn) tabPersonalBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-1 shadow-sm bg-white text-emerald-800";
+        if (tabTeamBtn) tabTeamBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-1 text-slate-500 hover:text-slate-700";
+      } else {
+        if (tabTeamBtn) tabTeamBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-1 shadow-sm bg-white text-emerald-800";
+        if (tabPersonalBtn) tabPersonalBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-1 text-slate-500 hover:text-slate-700";
+      }
+
+      let filtered = missions.filter(m => (m.category || 'personal') === activeTab);
+
+      if (searchVal) {
+        filtered = filtered.filter(m => m.title.toLowerCase().includes(searchVal));
+      }
+
+      if (statusFilter === 'active') {
+        filtered = filtered.filter(m => !m.completed);
+      } else if (statusFilter === 'completed') {
+        filtered = filtered.filter(m => m.completed);
+      }
+
       const listContainer = document.getElementById('missionList');
+      const emptyState = document.getElementById('emptyState');
       if (!listContainer) return;
 
-      listContainer.innerHTML = filtered.map(mission => {
-        const isPending = mission.pending && !mission.completed;
-        return `
-        <div class="p-3.5 rounded-2xl bg-white border flex items-center justify-between shadow-xs ${
-          mission.completed 
-            ? 'border-emerald-200 bg-emerald-50/40' 
-            : isPending 
-              ? 'border-amber-300 bg-amber-50/30' 
-              : 'border-slate-100'
-        }">
-          <div class="flex items-center space-x-3 flex-1 min-w-0 pr-2">
-            <button onclick="handleMissionCheck('${mission.id}')" ${isReadOnly ? 'disabled' : ''} class="w-7 h-7 rounded-xl border-2 flex items-center justify-center shrink-0 ${
-              mission.completed 
-                ? 'bg-emerald-600 border-emerald-600 text-white' 
-                : isPending 
-                  ? 'bg-amber-400 border-amber-400 text-white animate-pulse' 
-                  : 'border-slate-300'
-            }">
-              <i class="fa-solid ${mission.completed ? 'fa-check' : isPending ? 'fa-clock' : 'fa-check'} text-xs"></i>
-            </button>
-            <div class="min-w-0 flex-1">
-              <p class="font-bold text-xs text-slate-800 truncate ${mission.completed ? 'line-through text-slate-400' : ''}">${escapeHtml(mission.title)}</p>
-              <div class="flex items-center space-x-1.5 mt-0.5">
-                <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">+${mission.points} P</span>
-                ${isPending ? `<span class="text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded-md">승인 대기 중</span>` : ''}
+      if (filtered.length === 0) {
+        listContainer.classList.add('hidden');
+        if (emptyState) emptyState.classList.remove('hidden');
+      } else {
+        listContainer.classList.remove('hidden');
+        if (emptyState) emptyState.classList.add('hidden');
+
+        listContainer.innerHTML = filtered.map(mission => {
+          const isPending = mission.pending && !mission.completed;
+          return `
+          <div class="p-3.5 rounded-2xl bg-white border flex items-center justify-between shadow-xs ${
+            mission.completed 
+              ? 'border-emerald-200 bg-emerald-50/40' 
+              : isPending 
+                ? 'border-amber-300 bg-amber-50/30' 
+                : 'border-slate-100'
+          }">
+            <div class="flex items-center space-x-3 flex-1 min-w-0 pr-2">
+              <button onclick="handleMissionCheck('${mission.id}')" ${isReadOnly ? 'disabled' : ''} class="w-7 h-7 rounded-xl border-2 flex items-center justify-center shrink-0 ${
+                mission.completed 
+                  ? 'bg-emerald-600 border-emerald-600 text-white' 
+                  : isPending 
+                    ? 'bg-amber-400 border-amber-400 text-white animate-pulse' 
+                    : 'border-slate-300'
+              }">
+                <i class="fa-solid ${mission.completed ? 'fa-check' : isPending ? 'fa-clock' : 'fa-check'} text-xs"></i>
+              </button>
+              <div class="min-w-0 flex-1">
+                <p class="font-bold text-xs text-slate-800 truncate ${mission.completed ? 'line-through text-slate-400' : ''}">${escapeHtml(mission.title)}</p>
+                <div class="flex items-center space-x-1.5 mt-0.5">
+                  <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">+${mission.points} P</span>
+                  <span class="text-[9px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.2 rounded-md">${mission.difficulty || '보통'}</span>
+                  ${isPending ? `<span class="text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded-md">승인 대기 중</span>` : ''}
+                </div>
               </div>
             </div>
+            <div class="flex items-center space-x-1 shrink-0">
+              ${isAdmin && isPending ? `
+                <button onclick="approvePendingMission('${student.id}', '${mission.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-xs">
+                  승인 💮
+                </button>
+              ` : ''}
+              ${isAdmin ? `
+                <button onclick="deleteMission('${mission.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              ` : ''}
+            </div>
           </div>
-          <div class="flex items-center space-x-1 shrink-0">
-            ${isAdmin && isPending ? `
-              <button onclick="approvePendingMission('${student.id}', '${mission.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-xs">
-                승인 💮
-              </button>
-            ` : ''}
-            ${isAdmin ? `
-              <button onclick="deleteMission('${mission.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            ` : ''}
-          </div>
-        </div>
-      `;
-      }).join('');
+        `;
+        }).join('');
+      }
     }
 
     function renderMatchesView() {
@@ -1841,19 +1952,23 @@
       container.innerHTML = html;
 
       if (historyList) {
-        historyList.innerHTML = state.matchHistory.map(m => `
-          <div class="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
-            <span class="font-bold text-slate-800">${escapeHtml(m.p1Name)} (${m.score1}) vs (${m.score2}) ${escapeHtml(m.p2Name)}</span>
-            <div class="flex items-center space-x-1">
-              <span class="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">🏆 ${escapeHtml(m.winnerName)}</span>
-              ${state.role === 'admin' ? `
-                <button onclick="deleteMatchRecord('${m.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
-              ` : ''}
+        if (state.matchHistory.length === 0) {
+          historyList.innerHTML = `<p class="text-slate-400 text-center py-3 text-xs">기록된 경기가 없습니다.</p>`;
+        } else {
+          historyList.innerHTML = state.matchHistory.map(m => `
+            <div class="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
+              <span class="font-bold text-slate-800">${escapeHtml(m.p1Name)} (${m.score1}) vs (${m.score2}) ${escapeHtml(m.p2Name)}</span>
+              <div class="flex items-center space-x-1">
+                <span class="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">🏆 ${escapeHtml(m.winnerName)}</span>
+                ${state.role === 'admin' ? `
+                  <button onclick="deleteMatchRecord('${m.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                ` : ''}
+              </div>
             </div>
-          </div>
-        `).join('');
+          `).join('');
+        }
       }
     }
 
@@ -1993,12 +2108,20 @@
 
       document.getElementById('sbP1ServeBadge').style.opacity = server === 1 ? '1' : '0';
       document.getElementById('sbP2ServeBadge').style.opacity = server === 2 ? '1' : '0';
+
+      const statusText = document.getElementById('sbStatusText');
+      if (statusText) {
+        if (isDeuce) statusText.innerText = `🔥 듀스 경기 진행 중! (1점 차 시 계속)`;
+        else statusText.innerText = `경기 진행 중 (${sbState.score1} : ${sbState.score2})`;
+      }
     }
 
     function resetScoreboard() {
       sbState.score1 = 0;
       sbState.score2 = 0;
       updateScore(1, 0);
+      const statusText = document.getElementById('sbStatusText');
+      if (statusText) statusText.innerText = "경기 준비 완료 (0:0)";
     }
 
     function endScoreboardMatch() {
@@ -2563,6 +2686,11 @@
     }
 
     function deleteStudent(studentId) {
+      if (state.role !== 'admin') {
+        showToast('선생님 모드에서만 부원을 삭제할 수 있습니다.', '🔒');
+        return;
+      }
+
       if (state.students.length <= 1) {
         showToast('최소 1명의 부원 정보는 유지되어야 합니다.', '⚠️');
         return;
@@ -2673,6 +2801,8 @@
       applyMissionPreset,
       handleAddMission,
       deleteMission,
+      renderMissionsView,
+      renderStudentDirectory,
       selectRewardIcon: (icon) => {
         selectedRewardIcon = icon;
         document.querySelectorAll('.reward-icon-opt').forEach(btn => {

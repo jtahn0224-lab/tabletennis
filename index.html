@@ -543,7 +543,6 @@
     </div>
   </div>
 
-
   <!-- MODAL: Student ID Login Modal -->
   <div id="studentLoginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
     <div class="bg-white w-full max-w-xs sm:max-w-sm rounded-3xl p-5 sm:p-6 shadow-2xl animate-pop text-center">
@@ -996,8 +995,6 @@
           </div>
           <p class="text-[10px] text-slate-500">학생들의 학번, 이름, 미션 성공 여부, 보상 쿠폰, 자기평가 점수, 경기 랭킹 데이터가 실시간 데이터베이스(RTDB)와 연동됩니다.</p>
         </div>
-          <p class="text-[10px] text-slate-500">학생들의 학번, 이름, 미션 성공 여부, 보상 쿠폰, 자기평가 점수, 경기 랭킹 데이터가 실시간으로 동기화됩니다.</p>
-        </div>
 
         <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
           <div>
@@ -1134,15 +1131,13 @@
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-    const STORAGE_KEY = 'pingpong_mission_app_v10';
+    const STORAGE_KEY = 'pingpong_mission_app_v11';
     const DEFAULT_PASSCODE = "1234";
 
     const rawAppId = typeof __app_id !== 'undefined' ? __app_id : 'pingpong-app';
-    // Sanitize appId because Firebase Realtime Database keys/paths cannot contain '.', '#', '$', '[', or ']'
     const appId = String(rawAppId).replace(/[.#$\[\]]/g, '_');
     const RTDB_URL = "https://tabletennis-1e702-default-rtdb.firebaseio.com";
 
-    // Firebase 실제 발급받은 설정 적용
     const firebaseConfig = typeof __firebase_config !== 'undefined' 
       ? { ...JSON.parse(__firebase_config), databaseURL: RTDB_URL } 
       : {
@@ -1380,11 +1375,107 @@
     function showLoginGate() {
       const gate = document.getElementById('loginGateScreen');
       if (gate) gate.classList.remove('hidden');
+      renderQuickStudentSelect();
     }
 
     function hideLoginGate() {
       const gate = document.getElementById('loginGateScreen');
       if (gate) gate.classList.add('hidden');
+    }
+
+    function renderQuickStudentSelect() {
+      const container = document.getElementById('quickStudentButtons');
+      const wrapper = document.getElementById('quickStudentSelectContainer');
+      if (!container || !wrapper) return;
+
+      if (state.students && state.students.length > 0) {
+        wrapper.classList.remove('hidden');
+        container.innerHTML = state.students.map(s => `
+          <button type="button" onclick="quickLoginStudent('${s.id}')" class="bg-slate-100 hover:bg-emerald-100 hover:text-emerald-800 text-slate-700 font-bold px-2.5 py-1 rounded-xl text-[11px] transition-all border border-slate-200 flex items-center space-x-1">
+            <span>${s.avatar || '🏓'}</span>
+            <span>${escapeHtml(s.name)}</span>
+          </button>
+        `).join('');
+      } else {
+        wrapper.classList.add('hidden');
+      }
+    }
+
+    function quickLoginStudent(studentId) {
+      const student = state.students.find(s => s.id === studentId);
+      if (!student) return;
+
+      state.loggedInStudentId = student.id;
+      state.activeStudentId = student.id;
+      state.isLoggedIn = true;
+
+      saveState();
+      hideLoginGate();
+      renderUI();
+      showToast(`${student.name} 부원님 환영합니다! 🏓`, '🎉');
+    }
+
+    function handleStudentLogin(event) {
+      event.preventDefault();
+      const gradeInput = document.getElementById('loginGrade') || document.getElementById('loginGradeModal');
+      const classInput = document.getElementById('loginClass') || document.getElementById('loginClassModal');
+      const numberInput = document.getElementById('loginNumber') || document.getElementById('loginNumberModal');
+      const nameInput = document.getElementById('loginName') || document.getElementById('loginNameModal');
+
+      const grade = gradeInput ? gradeInput.value.trim() : '';
+      const classNum = classInput ? classInput.value.trim() : '';
+      const number = numberInput ? numberInput.value.trim() : '';
+      const name = nameInput ? nameInput.value.trim() : '';
+
+      if (!name) {
+        showToast('학생 이름을 입력해 주세요!', '⚠️');
+        return;
+      }
+
+      let student = state.students.find(s => 
+        s.name === name && 
+        (s.grade === grade || (!s.grade && !grade)) && 
+        (s.classNum === classNum || (!s.classNum && !classNum)) &&
+        (s.number === number || (!s.number && !number))
+      );
+
+      if (!student) {
+        student = state.students.find(s => s.name === name);
+      }
+
+      if (!student) {
+        const newId = 'std_' + Date.now();
+        student = {
+          id: newId,
+          name: name,
+          grade: grade,
+          classNum: classNum,
+          number: number,
+          className: formatClassBadge({ grade, classNum, number }),
+          avatar: '🏓',
+          missions: JSON.parse(JSON.stringify(DEFAULT_MISSIONS)),
+          skills: { forehand: 3, backhand: 3, serve: 3, manner: 5 },
+          totalPoints: 0,
+          wins: 0,
+          losses: 0,
+          streak: 1,
+          lastActiveDate: new Date().toISOString().split('T')[0],
+          history: [],
+          redeemedRewards: []
+        };
+        state.students.push(student);
+        saveStudentToRTDB(student);
+      }
+
+      state.loggedInStudentId = student.id;
+      state.activeStudentId = student.id;
+      state.isLoggedIn = true;
+
+      saveState();
+      hideLoginGate();
+      closeModal('studentLoginModal');
+      renderUI();
+      showToast(`${student.name} 부원님 환영합니다! 🏓`, '🎉');
     }
 
     function handleLogout() {
@@ -1395,33 +1486,1233 @@
       showToast('로그아웃 되었습니다.', '👋');
     }
 
+    function openStudentLoginModal() {
+      openModal('studentLoginModal');
+    }
+
+    function switchToSelfAccount() {
+      if (state.loggedInStudentId) {
+        state.activeStudentId = state.loggedInStudentId;
+        saveState();
+        renderUI();
+        showToast('내 계정으로 돌아왔습니다.', '👤');
+      }
+    }
+
+    function openLevelGuideModal() {
+      const currentStudent = getCurrentStudent();
+      const points = currentStudent ? (currentStudent.totalPoints || 0) : 0;
+      const container = document.getElementById('levelGuideContainer');
+
+      if (container) {
+        container.innerHTML = TIERS.map(tier => {
+          const isCurrent = points >= tier.min && (TIERS.find(t => t.level === tier.level + 1) ? points < TIERS.find(t => t.level === tier.level + 1).min : true);
+          const isReached = points >= tier.min;
+
+          return `
+            <div class="p-2.5 rounded-xl border transition-all flex items-center justify-between ${
+              isCurrent 
+                ? 'bg-emerald-50 border-emerald-400 shadow-2xs font-bold' 
+                : isReached 
+                  ? 'bg-slate-50 border-slate-200 opacity-90' 
+                  : 'bg-slate-100/60 border-slate-200 opacity-50'
+            }">
+              <div class="flex items-center space-x-2 min-w-0 pr-1">
+                <span class="text-xl shrink-0">${tier.icon}</span>
+                <div class="min-w-0">
+                  <p class="text-xs font-bold text-slate-800 truncate">${escapeHtml(tier.title)} ${isCurrent ? '<span class="text-[9px] bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-extrabold ml-1">📍 내 등급</span>' : ''}</p>
+                  <p class="text-[10px] text-slate-500 truncate">${escapeHtml(tier.desc)}</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-black shrink-0 ${isReached ? 'text-emerald-700' : 'text-slate-400'}">${tier.min} P 이상</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      openModal('levelGuideModal');
+    }
+
     function toggleMobileRosterDrawer() {
       const panel = document.getElementById('studentDirectoryPanel');
       const backdrop = document.getElementById('mobileDrawerBackdrop');
-      if (!panel) return;
-      
-      if (panel.classList.contains('-translate-x-full')) {
-        panel.classList.remove('-translate-x-full');
-        if (backdrop) backdrop.classList.remove('hidden');
-      } else {
-        panel.classList.add('-translate-x-full');
-        if (backdrop) backdrop.classList.add('hidden');
+      if (panel && backdrop) {
+        const isHidden = panel.classList.contains('-translate-x-full');
+        if (isHidden) {
+          panel.classList.remove('-translate-x-full');
+          backdrop.classList.remove('hidden');
+        } else {
+          panel.classList.add('-translate-x-full');
+          backdrop.classList.add('hidden');
+        }
       }
+    }
+
+    function toggleGroupCollapse(groupKey) {
+      if (collapsedGroups.has(groupKey)) {
+        collapsedGroups.delete(groupKey);
+      } else {
+        collapsedGroups.add(groupKey);
+      }
+      renderStudentDirectory();
+    }
+
+    function toggleRoleModal() {
+      if (state.role === 'admin') {
+        state.role = 'student';
+        saveState();
+        renderUI();
+        showToast('탁구 부원 모드로 전환되었습니다.', '🎒');
+      } else {
+        const input = document.getElementById('adminRolePasscodeInput');
+        if (input) input.value = '';
+        const err = document.getElementById('roleAuthErrorMsg');
+        if (err) err.classList.add('hidden');
+        openModal('roleAuthModal');
+      }
+    }
+
+    function verifyAndSwitchToAdmin() {
+      const input = document.getElementById('adminRolePasscodeInput')?.value;
+      if (input === state.passcode) {
+        state.role = 'admin';
+        saveState();
+        renderUI();
+        closeModal('roleAuthModal');
+        showToast('선생님 모드로 전환되었습니다.', '🎓');
+      } else {
+        const err = document.getElementById('roleAuthErrorMsg');
+        if (err) err.classList.remove('hidden');
+      }
+    }
+
+    function openSettingsModal() {
+      const studentNotice = document.getElementById('studentSettingsNotice');
+      const adminSection = document.getElementById('adminSettingsSection');
+
+      if (state.role === 'admin') {
+        if (studentNotice) studentNotice.classList.add('hidden');
+        if (adminSection) adminSection.classList.remove('hidden');
+      } else {
+        if (studentNotice) studentNotice.classList.remove('hidden');
+        if (adminSection) adminSection.classList.add('hidden');
+      }
+      openModal('settingsModal');
+    }
+
+    function handleAvatarClick() {
+      if (state.role === 'admin') {
+        openEditStudentModal(state.activeStudentId);
+      } else {
+        showToast('선생님 모드에서만 프로필 수정이 가능합니다.', '🔒');
+      }
+    }
+
+    function openAddStudentModal() {
+      editingStudentId = null;
+      const title = document.getElementById('addStudentModalTitle');
+      if (title) title.innerText = '새 탁구 부원 등록';
+      document.getElementById('addStudentNameInput').value = '';
+      document.getElementById('addStudentGradeInput').value = '';
+      document.getElementById('addStudentClassInput').value = '';
+      document.getElementById('addStudentNumberInput').value = '';
+      selectNewStudentAvatar('🏓');
+      openModal('addStudentModal');
+    }
+
+    function openEditStudentModal(studentId) {
+      const student = state.students.find(s => s.id === studentId);
+      if (!student) return;
+
+      editingStudentId = studentId;
+      const title = document.getElementById('addStudentModalTitle');
+      if (title) title.innerText = '부원 정보 수정';
+      document.getElementById('addStudentNameInput').value = student.name || '';
+      document.getElementById('addStudentGradeInput').value = student.grade || '';
+      document.getElementById('addStudentClassInput').value = student.classNum || '';
+      document.getElementById('addStudentNumberInput').value = student.number || '';
+      selectNewStudentAvatar(student.avatar || '🏓');
+      openModal('addStudentModal');
+    }
+
+    function selectNewStudentAvatar(emoji) {
+      selectedNewStudentAvatar = emoji;
+      document.querySelectorAll('.new-avatar-opt').forEach(btn => {
+        if (btn.innerText.includes(emoji)) {
+          btn.classList.add('border-emerald-500', 'bg-emerald-100');
+        } else {
+          btn.classList.remove('border-emerald-500', 'bg-emerald-100');
+        }
+      });
+    }
+
+    function saveNewStudent() {
+      const name = document.getElementById('addStudentNameInput')?.value.trim();
+      const grade = document.getElementById('addStudentGradeInput')?.value;
+      const classNum = document.getElementById('addStudentClassInput')?.value;
+      const number = document.getElementById('addStudentNumberInput')?.value;
+
+      if (!name) {
+        showToast('학생 이름을 입력하세요!', '⚠️');
+        return;
+      }
+
+      if (editingStudentId) {
+        const student = state.students.find(s => s.id === editingStudentId);
+        if (student) {
+          student.name = name;
+          student.grade = grade;
+          student.classNum = classNum;
+          student.number = number;
+          student.className = formatClassBadge(student);
+          student.avatar = selectedNewStudentAvatar;
+          saveStudentToRTDB(student);
+        }
+        showToast('부원 정보가 수정되었습니다.', '✏️');
+      } else {
+        const newId = 'std_' + Date.now();
+        const newStudent = {
+          id: newId,
+          name: name,
+          grade: grade,
+          classNum: classNum,
+          number: number,
+          className: formatClassBadge({ grade, classNum, number }),
+          avatar: selectedNewStudentAvatar,
+          missions: JSON.parse(JSON.stringify(DEFAULT_MISSIONS)),
+          skills: { forehand: 3, backhand: 3, serve: 3, manner: 5 },
+          totalPoints: 0,
+          wins: 0,
+          losses: 0,
+          streak: 1,
+          lastActiveDate: new Date().toISOString().split('T')[0],
+          history: [],
+          redeemedRewards: []
+        };
+        state.students.push(newStudent);
+        state.activeStudentId = newId;
+        saveStudentToRTDB(newStudent);
+        showToast('새 부원이 등록되었습니다!', '✨');
+      }
+
+      saveState();
+      renderUI();
+      closeModal('addStudentModal');
+    }
+
+    function editStudentInfo(studentId) {
+      openEditStudentModal(studentId);
+    }
+
+    function deleteStudent(studentId) {
+      if (state.students.length <= 1) {
+        showToast('최소 1명의 부원 정보는 유지되어야 합니다.', '⚠️');
+        return;
+      }
+
+      showCustomConfirm('부원 삭제', '해당 부원 데이터를 삭제하시겠습니까?', () => {
+        state.students = state.students.filter(s => s.id !== studentId);
+        if (state.activeStudentId === studentId) {
+          state.activeStudentId = state.students[0].id;
+        }
+        saveState();
+        renderUI();
+        showToast('부원 정보가 삭제되었습니다.', '🗑️');
+      });
+    }
+
+    function openAddMissionModal() {
+      document.getElementById('editingMissionId').value = '';
+      document.getElementById('addMissionModalTitle').innerText = '✨ 새 탁구 미션 추가';
+      document.getElementById('missionTitleInput').value = '';
+      document.getElementById('missionTargetSection').classList.remove('hidden');
+      openModal('addMissionModal');
+    }
+
+    function openEditMissionModal(missionId) {
+      const student = getCurrentStudent();
+      const mission = student.missions.find(m => m.id === missionId);
+      if (!mission) return;
+
+      document.getElementById('editingMissionId').value = mission.id;
+      document.getElementById('addMissionModalTitle').innerText = '✏️ 미션 수정하기';
+      document.getElementById('missionTitleInput').value = mission.title;
+      document.getElementById('missionTargetSection').classList.add('hidden');
+
+      const catRadio = document.querySelector(`input[name="category"][value="${mission.category}"]`);
+      if (catRadio) catRadio.checked = true;
+      const diffRadio = document.querySelector(`input[name="difficulty"][value="${mission.difficulty}"]`);
+      if (diffRadio) diffRadio.checked = true;
+
+      openModal('addMissionModal');
+    }
+
+    function applyMissionPreset(title, category, difficulty, points) {
+      document.getElementById('missionTitleInput').value = title;
+      const catRadio = document.querySelector(`input[name="category"][value="${category}"]`);
+      if (catRadio) catRadio.checked = true;
+      const diffRadio = document.querySelector(`input[name="difficulty"][value="${difficulty}"]`);
+      if (diffRadio) diffRadio.checked = true;
+    }
+
+    function handleAddMission(event) {
+      event.preventDefault();
+      const editingId = document.getElementById('editingMissionId').value;
+      const titleInput = document.getElementById('missionTitleInput');
+      const title = titleInput.value.trim();
+      if (!title) return;
+
+      const targetRadio = document.querySelector('input[name="missionTarget"]:checked');
+      const targetScope = targetRadio ? targetRadio.value : 'all';
+
+      const categoryRadio = document.querySelector('input[name="category"]:checked');
+      const category = categoryRadio ? categoryRadio.value : 'personal';
+
+      const difficultyRadio = document.querySelector('input[name="difficulty"]:checked');
+      const difficulty = difficultyRadio ? difficultyRadio.value : '보통';
+      const points = difficultyRadio ? parseInt(difficultyRadio.dataset.points) : 20;
+
+      if (editingId) {
+        const currentStudent = getCurrentStudent();
+        const targetMission = currentStudent ? currentStudent.missions.find(m => m.id === editingId) : null;
+        const oldTitle = targetMission ? targetMission.title : null;
+
+        state.students.forEach(student => {
+          if (student.missions && Array.isArray(student.missions)) {
+            student.missions.forEach(m => {
+              if (m.id === editingId || (oldTitle && m.title === oldTitle)) {
+                m.title = title;
+                m.category = category;
+                m.difficulty = difficulty;
+                m.points = points;
+              }
+            });
+            saveStudentToRTDB(student);
+          }
+        });
+        showToast('모든 부원의 미션 정보가 수정되었습니다!', '✏️');
+      } else {
+        const commonId = 'm_' + Date.now();
+        const newMissionTemplate = {
+          id: commonId,
+          title: title,
+          category: category,
+          difficulty: difficulty,
+          points: points,
+          completed: false,
+          pending: false
+        };
+
+        if (targetScope === 'all') {
+          state.students.forEach(student => {
+            if (!student.missions) student.missions = [];
+            student.missions.push({ ...newMissionTemplate });
+            saveStudentToRTDB(student);
+          });
+          showToast('모든 부원에게 미션이 추가되었습니다!', '✨');
+        } else {
+          const currentStudent = getCurrentStudent();
+          if (currentStudent) {
+            if (!currentStudent.missions) currentStudent.missions = [];
+            currentStudent.missions.push(newMissionTemplate);
+            saveStudentToRTDB(currentStudent);
+          }
+          showToast('새 미션이 추가되었습니다!', '✨');
+        }
+      }
+
+      saveState();
+      renderUI();
+      closeModal('addMissionModal');
+      titleInput.value = '';
+    }
+
+    function moveMission(filteredIndex, direction) {
+      const student = getCurrentStudent();
+      const filteredMissions = student.missions.filter(m => (m.category || 'personal') === activeTab);
+      const targetFilteredIndex = direction === 'up' ? filteredIndex - 1 : filteredIndex + 1;
+      if (targetFilteredIndex < 0 || targetFilteredIndex >= filteredMissions.length) return;
+
+      const item1 = filteredMissions[filteredIndex];
+      const item2 = filteredMissions[targetFilteredIndex];
+
+      const idx1 = student.missions.findIndex(m => m.id === item1.id);
+      const idx2 = student.missions.findIndex(m => m.id === item2.id);
+
+      if (idx1 !== -1 && idx2 !== -1) {
+        const temp = student.missions[idx1];
+        student.missions[idx1] = student.missions[idx2];
+        student.missions[idx2] = temp;
+        saveStudentToRTDB(student);
+        saveState();
+        renderUI();
+      }
+    }
+
+    function deleteMission(missionId) {
+      const currentStudent = getCurrentStudent();
+      const targetMission = currentStudent ? currentStudent.missions.find(m => m.id === missionId) : null;
+      const targetTitle = targetMission ? targetMission.title : null;
+
+      const confirmMsg = targetTitle 
+        ? `'${targetTitle}' 미션을 모든 부원의 목록에서 삭제하시겠습니까?` 
+        : '이 미션을 모든 부원의 목록에서 삭제하시겠습니까?';
+
+      showCustomConfirm('전체 부원 미션 삭제', confirmMsg, () => {
+        state.students.forEach(student => {
+          if (student.missions && Array.isArray(student.missions)) {
+            student.missions = student.missions.filter(m => {
+              const isIdMatch = m.id === missionId;
+              const isTitleMatch = targetTitle && m.title === targetTitle;
+              return !(isIdMatch || isTitleMatch);
+            });
+            saveStudentToRTDB(student);
+          }
+        });
+
+        saveState();
+        renderUI();
+        showToast('모든 부원의 목록에서 미션이 삭제되었습니다.', '🗑️');
+      });
+    }
+
+    function handleMissionCheck(id) {
+      if (checkReadOnlyGuard()) {
+        showToast('본인 계정에서만 미션 완료가 가능합니다.', '🔒');
+        return;
+      }
+      const student = getCurrentStudent();
+      const mission = student.missions.find(m => m.id === id);
+      if (!mission) return;
+
+      if (state.role === 'admin') {
+        toggleMissionCompletion(mission);
+      } else {
+        if (mission.completed) return;
+
+        if (state.teacherMode) {
+          if (!mission.pending) {
+            mission.pending = true;
+            saveStudentToRTDB(student);
+            saveState();
+            renderUI();
+            showToast('선생님에게 승인 요청이 전송되었습니다!', '🚀');
+          } else {
+            pendingMissionId = id;
+            document.getElementById('passcodeInput').value = '';
+            document.getElementById('verifyErrorMsg').classList.add('hidden');
+            openModal('verifyModal');
+          }
+        } else {
+          toggleMissionCompletion(mission);
+        }
+      }
+    }
+
+    function toggleMissionCompletion(mission) {
+      const student = getCurrentStudent();
+      mission.completed = !mission.completed;
+      mission.pending = false;
+
+      if (!student.history) student.history = [];
+
+      if (mission.completed) {
+        student.totalPoints = (student.totalPoints || 0) + mission.points;
+        student.history.unshift({
+          title: `[미션 달성] ${mission.title}`,
+          points: mission.points,
+          date: new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+        });
+        playSuccessSound();
+        triggerConfetti();
+      } else {
+        student.totalPoints = Math.max(0, (student.totalPoints || 0) - mission.points);
+      }
+      saveStudentToRTDB(student);
+      saveState();
+      renderUI();
+    }
+
+    function approvePendingMission(id) {
+      const student = getCurrentStudent();
+      const mission = student.missions.find(m => m.id === id);
+      if (mission) {
+        mission.pending = false;
+        toggleMissionCompletion(mission);
+      }
+    }
+
+    function approveAllPendingMissions() {
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      const pendingList = student.missions.filter(m => m.pending && !m.completed);
+      if (pendingList.length === 0) return;
+
+      pendingList.forEach(m => {
+        m.pending = false;
+        m.completed = true;
+        student.totalPoints = (student.totalPoints || 0) + m.points;
+        if (!student.history) student.history = [];
+        student.history.unshift({
+          title: `[미션 달성] ${m.title}`,
+          points: m.points,
+          date: new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+        });
+      });
+
+      saveStudentToRTDB(student);
+      saveState();
+      renderUI();
+      playSuccessSound();
+      triggerConfetti();
+      showToast('모든 대기 미션이 승인되었습니다!', '🎉');
+    }
+
+    function rejectPendingMission(id) {
+      const student = getCurrentStudent();
+      const mission = student.missions.find(m => m.id === id);
+      if (mission) {
+        mission.pending = false;
+        saveStudentToRTDB(student);
+        saveState();
+        renderUI();
+      }
+    }
+
+    function confirmTeacherPasscode() {
+      const input = document.getElementById('passcodeInput').value;
+      if (input === state.passcode) {
+        closeModal('verifyModal');
+        if (pendingMissionId) {
+          const student = getCurrentStudent();
+          const mission = student.missions.find(m => m.id === pendingMissionId);
+          if (mission && !mission.completed) {
+            toggleMissionCompletion(mission);
+          }
+          pendingMissionId = null;
+        }
+      } else {
+        document.getElementById('verifyErrorMsg').classList.remove('hidden');
+      }
+    }
+
+    function openScoreboardModal() {
+      const p1Select = document.getElementById('sbPlayer1Select');
+      if (!p1Select) return;
+
+      const sortedStudents = [...state.students].sort((a, b) => {
+        const gA = parseInt(a.grade) || 0;
+        const gB = parseInt(b.grade) || 0;
+        if (gA !== gB) return gA - gB;
+        const cA = parseInt(a.classNum) || 0;
+        const cB = parseInt(b.classNum) || 0;
+        if (cA !== cB) return cA - cB;
+        return a.name.localeCompare(b.name, 'ko');
+      });
+
+      p1Select.innerHTML = sortedStudents.map(s => `
+        <option value="${s.id}">👤 [${formatClassBadge(s)}] ${escapeHtml(s.name)}</option>
+      `).join('');
+
+      updateSbPlayer2Options();
+      openModal('scoreboardModal');
+    }
+
+    function updateSbPlayer2Options() {
+      const p1Id = document.getElementById('sbPlayer1Select')?.value;
+      const p2Select = document.getElementById('sbPlayer2Select');
+      if (!p1Id || !p2Select) return;
+
+      const p1 = state.students.find(s => s.id === p1Id);
+      if (!p1) return;
+
+      const sameClassStudents = state.students.filter(s => {
+        if (s.id === p1Id) return false;
+        if (p1.grade && p1.classNum) {
+          return s.grade === p1.grade && s.classNum === p1.classNum;
+        }
+        return true;
+      });
+
+      if (sameClassStudents.length === 0) {
+        p2Select.innerHTML = `<option value="">(해당 학년·반에 상대 부원이 없습니다)</option>`;
+        p2Select.disabled = true;
+      } else {
+        p2Select.disabled = false;
+        p2Select.innerHTML = sameClassStudents.map(s => `
+          <option value="${s.id}">👤 [${formatClassBadge(s)}] ${escapeHtml(s.name)}</option>
+        `).join('');
+      }
+
+      onSbPlayer2Changed();
+    }
+
+    function onSbPlayer2Changed() {
+      const p1Id = document.getElementById('sbPlayer1Select')?.value;
+      const p2Id = document.getElementById('sbPlayer2Select')?.value;
+
+      const p1 = state.students.find(s => s.id === p1Id);
+      const p2 = state.students.find(s => s.id === p2Id);
+
+      sbState.p1 = p1 || null;
+      sbState.p2 = p2 || null;
+      sbState.score1 = 0;
+      sbState.score2 = 0;
+      sbState.serveP1 = true;
+
+      updateSbUI();
+    }
+
+    function updateSbUI() {
+      const name1El = document.getElementById('sbPlayer1Name');
+      const name2El = document.getElementById('sbPlayer2Name');
+      const score1El = document.getElementById('sbScore1');
+      const score2El = document.getElementById('sbScore2');
+      const serve1Ind = document.getElementById('sbServe1Indicator');
+      const serve2Ind = document.getElementById('sbServe2Indicator');
+
+      if (name1El) name1El.innerText = sbState.p1 ? sbState.p1.name : '선수 1';
+      if (name2El) name2El.innerText = sbState.p2 ? sbState.p2.name : '선수 2';
+      if (score1El) score1El.innerText = sbState.score1;
+      if (score2El) score2El.innerText = sbState.score2;
+
+      const totalPoints = sbState.score1 + sbState.score2;
+      let isP1Serve = true;
+
+      if (sbState.score1 >= 10 && sbState.score2 >= 10) {
+        isP1Serve = (totalPoints % 2) === 0;
+      } else {
+        isP1Serve = (Math.floor(totalPoints / 2) % 2) === 0;
+      }
+
+      if (serve1Ind) serve1Ind.classList.toggle('hidden', !isP1Serve);
+      if (serve2Ind) serve2Ind.classList.toggle('hidden', isP1Serve);
+    }
+
+    function changeScore(playerNum, delta) {
+      if (playerNum === 1) {
+        sbState.score1 = Math.max(0, sbState.score1 + delta);
+      } else {
+        sbState.score2 = Math.max(0, sbState.score2 + delta);
+      }
+      playSuccessSound();
+      updateSbUI();
+    }
+
+    function resetScoreboard() {
+      sbState.score1 = 0;
+      sbState.score2 = 0;
+      updateSbUI();
+      showToast('전광판 점수가 리셋되었습니다.', '🔄');
+    }
+
+    function finishScoreboardMatch() {
+      if (state.role !== 'admin') {
+        showToast('선생님 모드에서만 경기 결과를 저장할 수 있습니다.', '🔒');
+        return;
+      }
+
+      if (!sbState.p1 || !sbState.p2) {
+        showToast('선수 1과 선수 2를 선택해 주세요!', '⚠️');
+        return;
+      }
+
+      if (sbState.score1 === sbState.score2) {
+        showToast('동점 무승부는 저장할 수 없습니다! 승패가 결정되어야 합니다.', '⚠️');
+        return;
+      }
+
+      const s1 = sbState.score1;
+      const s2 = sbState.score2;
+      const winner = s1 > s2 ? sbState.p1 : sbState.p2;
+      const loser = s1 > s2 ? sbState.p2 : sbState.p1;
+
+      winner.wins = (winner.wins || 0) + 1;
+      winner.totalPoints = (winner.totalPoints || 0) + 10;
+      loser.losses = (loser.losses || 0) + 1;
+      loser.totalPoints = (loser.totalPoints || 0) + 5;
+
+      const dateStr = new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+      if (!winner.history) winner.history = [];
+      winner.history.unshift({
+        title: `[전광판 경기 승리] vs ${loser.name} (${s1}:${s2})`,
+        points: 10,
+        date: dateStr
+      });
+
+      if (!loser.history) loser.history = [];
+      loser.history.unshift({
+        title: `[전광판 경기 참가] vs ${winner.name} (${s1}:${s2})`,
+        points: 5,
+        date: dateStr
+      });
+
+      const newMatch = {
+        id: 'm_' + Date.now(),
+        p1Id: sbState.p1.id,
+        p2Id: sbState.p2.id,
+        winnerId: winner.id,
+        loserId: loser.id,
+        p1Name: sbState.p1.name,
+        p2Name: sbState.p2.name,
+        score1: s1,
+        score2: s2,
+        winnerName: winner.name,
+        date: dateStr
+      };
+
+      if (!state.matchHistory) state.matchHistory = [];
+      state.matchHistory.unshift(newMatch);
+
+      saveStudentToRTDB(winner);
+      saveStudentToRTDB(loser);
+      saveMatchToRTDB(newMatch);
+
+      closeModal('scoreboardModal');
+      renderUI();
+      playSuccessSound();
+      triggerConfetti();
+      showToast(`전광판 경기 저장 완료! (${winner.name} 승리)`, '🏆');
+    }
+
+    function openTournamentModal() {
+      const classSelect = document.getElementById('tournamentClassSelect');
+      if (!classSelect) return;
+
+      const groups = {};
+      state.students.forEach(s => {
+        let key = '기타 / 학년 미지정';
+        if (s.grade && s.classNum) {
+          key = `${s.grade}학년 ${s.classNum}반`;
+        }
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(s);
+      });
+
+      const sortedKeys = Object.keys(groups).sort();
+      classSelect.innerHTML = sortedKeys.map(k => `
+        <option value="${escapeHtml(k)}">${escapeHtml(k)} (${groups[k].length}명)</option>
+      `).join('');
+
+      openModal('tournamentModal');
+    }
+
+    function generateTournamentBracket() {
+      const selectedGroup = document.getElementById('tournamentClassSelect')?.value;
+      const container = document.getElementById('tournamentResultsContainer');
+      if (!selectedGroup || !container) return;
+
+      const classStudents = state.students.filter(s => {
+        let key = '기타 / 학년 미지정';
+        if (s.grade && s.classNum) {
+          key = `${s.grade}학년 ${s.classNum}반`;
+        }
+        return key === selectedGroup;
+      });
+
+      if (classStudents.length < 2) {
+        container.innerHTML = `<p class="text-rose-500 text-center py-4 font-bold">대진표 생성을 위해 최소 2명 이상의 부원이 필요합니다.</p>`;
+        return;
+      }
+
+      const shuffled = [...classStudents].sort(() => Math.random() - 0.5);
+      let matchupsHtml = `<div class="font-extrabold text-slate-800 mb-2 border-b border-slate-200 pb-1">🎲 ${escapeHtml(selectedGroup)} 무작위 토너먼트 대진표</div>`;
+      matchupsHtml += `<div class="space-y-2">`;
+
+      for (let i = 0; i < shuffled.length; i += 2) {
+        const matchNum = Math.floor(i / 2) + 1;
+        if (i + 1 < shuffled.length) {
+          matchupsHtml += `
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex justify-between items-center shadow-2xs">
+              <span class="font-extrabold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md text-[10px]">경기 #${matchNum}</span>
+              <div class="flex items-center space-x-2 font-bold text-slate-800 text-xs">
+                <span>${shuffled[i].avatar} ${escapeHtml(shuffled[i].name)}</span>
+                <span class="text-rose-500 font-black">VS</span>
+                <span>${shuffled[i+1].avatar} ${escapeHtml(shuffled[i+1].name)}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          matchupsHtml += `
+            <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200 flex justify-between items-center shadow-2xs">
+              <span class="font-extrabold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-md text-[10px]">부전승 패스</span>
+              <span class="font-bold text-amber-900 text-xs">${shuffled[i].avatar} ${escapeHtml(shuffled[i].name)} (다음 라운드 직행)</span>
+            </div>
+          `;
+        }
+      }
+      matchupsHtml += `</div>`;
+      container.innerHTML = matchupsHtml;
+    }
+
+    function saveSkillEvaluation() {
+      if (checkReadOnlyGuard()) {
+        showToast('본인 계정에서만 자평 저장이 가능합니다.', '🔒');
+        return;
+      }
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      const v1 = parseInt(document.getElementById('skillVal1')?.value) || 3;
+      const v2 = parseInt(document.getElementById('skillVal2')?.value) || 3;
+      const v3 = parseInt(document.getElementById('skillVal3')?.value) || 3;
+      const v4 = parseInt(document.getElementById('skillVal4')?.value) || 5;
+
+      student.skills = {
+        forehand: v1,
+        backhand: v2,
+        serve: v3,
+        manner: v4
+      };
+
+      saveStudentToRTDB(student);
+      saveState();
+      showToast('탁구 기량 셀프 평가 점수가 저장되었습니다!', '🌟');
+    }
+
+    function deleteMatchRecord(matchId) {
+      if (state.role !== 'admin') {
+        showToast('선생님 모드에서만 삭제 가능합니다.', '🔒');
+        return;
+      }
+
+      showCustomConfirm('경기 기록 삭제', '이 경기 기록을 삭제하시겠습니까? 승패 및 포인트 수치도 되돌려집니다.', () => {
+        const match = (state.matchHistory || []).find(m => m.id === matchId);
+        if (match) {
+          const winner = state.students.find(s => s.id === match.winnerId || s.name === match.winnerName);
+          const loser = state.students.find(s => s.id === match.loserId || (s.name !== match.winnerName && (s.name === match.p1Name || s.name === match.p2Name)));
+
+          if (winner) {
+            winner.wins = Math.max(0, (winner.wins || 0) - 1);
+            winner.totalPoints = Math.max(0, (winner.totalPoints || 0) - 10);
+            saveStudentToRTDB(winner);
+          }
+          if (loser) {
+            loser.losses = Math.max(0, (loser.losses || 0) - 1);
+            loser.totalPoints = Math.max(0, (loser.totalPoints || 0) - 5);
+            saveStudentToRTDB(loser);
+          }
+
+          state.matchHistory = state.matchHistory.filter(m => m.id !== matchId);
+          deleteMatchFromRTDB(matchId);
+          saveState();
+          renderUI();
+          showToast('경기 기록이 삭제 및 원상 복구 되었습니다.', '🗑️');
+        }
+      });
+    }
+
+    function openMatchRecordModal() {
+      if (state.role !== 'admin') {
+        showToast('선생님 모드에서만 경기 결과를 기록할 수 있습니다.', '🔒');
+        return;
+      }
+
+      const player1Select = document.getElementById('matchPlayer1Select');
+      if (!player1Select) return;
+
+      const sortedStudents = [...state.students].sort((a, b) => {
+        const gA = parseInt(a.grade) || 0;
+        const gB = parseInt(b.grade) || 0;
+        if (gA !== gB) return gA - gB;
+        const cA = parseInt(a.classNum) || 0;
+        const cB = parseInt(b.classNum) || 0;
+        if (cA !== cB) return cA - cB;
+        return a.name.localeCompare(b.name, 'ko');
+      });
+
+      player1Select.innerHTML = sortedStudents.map(s => `
+        <option value="${s.id}">👤 [${formatClassBadge(s)}] ${escapeHtml(s.name)}</option>
+      `).join('');
+
+      updatePlayer2Options();
+      openModal('matchRecordModal');
+    }
+
+    function updatePlayer2Options() {
+      const p1Id = document.getElementById('matchPlayer1Select')?.value;
+      const p2Select = document.getElementById('matchPlayer2Select');
+      if (!p1Id || !p2Select) return;
+
+      const p1 = state.students.find(s => s.id === p1Id);
+      if (!p1) return;
+
+      const sameClassStudents = state.students.filter(s => {
+        if (s.id === p1Id) return false;
+        if (p1.grade && p1.classNum) {
+          return s.grade === p1.grade && s.classNum === p1.classNum;
+        }
+        return true;
+      });
+
+      if (sameClassStudents.length === 0) {
+        p2Select.innerHTML = `<option value="">(해당 학년·반에 대결 상대가 없습니다)</option>`;
+        p2Select.disabled = true;
+      } else {
+        p2Select.disabled = false;
+        p2Select.innerHTML = sameClassStudents.map(s => `
+          <option value="${s.id}">👤 [${formatClassBadge(s)}] ${escapeHtml(s.name)}</option>
+        `).join('');
+      }
+    }
+
+    function validateScoreTie() {
+      const s1 = parseInt(document.getElementById('matchScore1')?.value) || 0;
+      const s2 = parseInt(document.getElementById('matchScore2')?.value) || 0;
+      const warning = document.getElementById('scoreTieWarning');
+      const btn = document.getElementById('recordMatchSubmitBtn');
+      if (s1 === s2) {
+        if (warning) warning.classList.remove('hidden');
+        if (btn) btn.disabled = true;
+      } else {
+        if (warning) warning.classList.add('hidden');
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    function handleRecordMatch(event) {
+      event.preventDefault();
+      if (state.role !== 'admin') {
+        showToast('선생님 모드에서만 기록 가능합니다.', '🔒');
+        return;
+      }
+
+      const p1Id = document.getElementById('matchPlayer1Select')?.value;
+      const p2Id = document.getElementById('matchPlayer2Select')?.value;
+      const s1 = parseInt(document.getElementById('matchScore1')?.value) || 0;
+      const s2 = parseInt(document.getElementById('matchScore2')?.value) || 0;
+
+      if (!p1Id || !p2Id || p1Id === p2Id) {
+        showToast('서로 다른 두 부원을 선택해 주세요!', '⚠️');
+        return;
+      }
+
+      if (s1 === s2) {
+        showToast('무승부는 기록할 수 없습니다!', '⚠️');
+        return;
+      }
+
+      const p1 = state.students.find(s => s.id === p1Id);
+      const p2 = state.students.find(s => s.id === p2Id);
+      if (!p1 || !p2) return;
+
+      const winner = s1 > s2 ? p1 : p2;
+      const loser = s1 > s2 ? p2 : p1;
+
+      winner.wins = (winner.wins || 0) + 1;
+      winner.totalPoints = (winner.totalPoints || 0) + 10;
+      loser.losses = (loser.losses || 0) + 1;
+      loser.totalPoints = (loser.totalPoints || 0) + 5;
+
+      const dateStr = new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+      if (!winner.history) winner.history = [];
+      winner.history.unshift({
+        title: `[경기 승리] vs ${loser.name} (${s1}:${s2})`,
+        points: 10,
+        date: dateStr
+      });
+
+      if (!loser.history) loser.history = [];
+      loser.history.unshift({
+        title: `[경기 참가] vs ${winner.name} (${s1}:${s2})`,
+        points: 5,
+        date: dateStr
+      });
+
+      const newMatch = {
+        id: 'm_' + Date.now(),
+        p1Id: p1.id,
+        p2Id: p2.id,
+        winnerId: winner.id,
+        loserId: loser.id,
+        p1Name: p1.name,
+        p2Name: p2.name,
+        score1: s1,
+        score2: s2,
+        winnerName: winner.name,
+        date: dateStr
+      };
+
+      if (!state.matchHistory) state.matchHistory = [];
+      state.matchHistory.unshift(newMatch);
+
+      saveStudentToRTDB(winner);
+      saveStudentToRTDB(loser);
+      saveMatchToRTDB(newMatch);
+
+      renderUI();
+      closeModal('matchRecordModal');
+      playSuccessSound();
+      triggerConfetti();
+      showToast(`경기 결과 저장 완료! (${winner.name} 승리)`, '🏆');
+    }
+
+    function applyPointAdjustment() {
+      const input = document.getElementById('adjustPointInput');
+      const reasonInput = document.getElementById('adjustPointReasonInput');
+      const val = parseInt(input?.value);
+      const reason = reasonInput ? reasonInput.value.trim() : '';
+
+      if (isNaN(val) || val === 0) {
+        showToast('올바른 포인트 값을 입력하세요!', '⚠️');
+        return;
+      }
+
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      student.totalPoints = Math.max(0, (student.totalPoints || 0) + val);
+
+      if (!student.history) student.history = [];
+      const historyTitle = reason 
+        ? `[선생님 직권] ${reason}` 
+        : (val > 0 ? '[선생님 칭찬 포인트]' : '[선생님 포인트 차감]');
+
+      student.history.unshift({
+        title: historyTitle,
+        points: val,
+        date: new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+      });
+
+      saveStudentToRTDB(student);
+      renderUI();
+      if (input) input.value = '';
+      if (reasonInput) reasonInput.value = '';
+      showToast(`${val > 0 ? '+' : ''}${val} P 적용되었습니다.`, '⭐');
+    }
+
+    function openAddRewardModal() {
+      openModal('addRewardModal');
+    }
+
+    function selectRewardIcon(icon) {
+      selectedRewardIcon = icon;
+      document.querySelectorAll('.reward-icon-opt').forEach(btn => {
+        if (btn.innerText.includes(icon)) {
+          btn.classList.add('border-emerald-500', 'bg-emerald-100');
+        } else {
+          btn.classList.remove('border-emerald-500', 'bg-emerald-100');
+        }
+      });
+    }
+
+    function handleAddReward(e) {
+      e.preventDefault();
+      const title = document.getElementById('rewardTitleInput')?.value.trim();
+      const points = parseInt(document.getElementById('rewardPointsInput')?.value);
+
+      if (!title || !points) return;
+
+      const newReward = {
+        id: 'r_' + Date.now(),
+        title: title,
+        points: points,
+        icon: selectedRewardIcon
+      };
+
+      state.rewards.push(newReward);
+      saveRewardToRTDB(newReward);
+
+      saveState();
+      renderUI();
+      closeModal('addRewardModal');
+      document.getElementById('rewardTitleInput').value = '';
+      showToast('새 보상이 등록되었습니다!', '🎁');
+    }
+
+    function redeemReward(rewardId) {
+      if (checkReadOnlyGuard()) {
+        showToast('본인 계정에서만 보상 교환이 가능합니다.', '🔒');
+        return;
+      }
+      const student = getCurrentStudent();
+      const reward = state.rewards.find(r => r.id === rewardId);
+      if (!student || !reward) return;
+
+      if ((student.totalPoints || 0) < reward.points) {
+        showToast('포인트가 부족합니다!', '⚠️');
+        return;
+      }
+
+      showCustomConfirm('보상 교환', `'${reward.title}' 쿠폰으로 교환하시겠습니까? (${reward.points} P 차감)`, () => {
+        student.totalPoints -= reward.points;
+        
+        if (!student.redeemedRewards) student.redeemedRewards = [];
+        student.redeemedRewards.push({
+          id: 'coupon_' + Date.now(),
+          title: reward.title,
+          icon: reward.icon,
+          date: new Date().toLocaleDateString('ko-KR')
+        });
+
+        if (!student.history) student.history = [];
+        student.history.unshift({
+          title: `[보상 교환] ${reward.title}`,
+          points: -reward.points,
+          date: new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+        });
+
+        saveStudentToRTDB(student);
+        saveState();
+        renderUI();
+        playSuccessSound();
+        triggerConfetti();
+        showToast(`'${reward.title}' 쿠폰 교환 완료!`, '🎉');
+      });
+    }
+
+    function useCoupon(index) {
+      if (checkReadOnlyGuard()) {
+        showToast('본인 계정에서만 쿠폰 사용이 가능합니다.', '🔒');
+        return;
+      }
+      const student = getCurrentStudent();
+      if (!student || !student.redeemedRewards || !student.redeemedRewards[index]) return;
+
+      const coupon = student.redeemedRewards[index];
+      showCustomConfirm('쿠폰 사용', `'${coupon.title}' 쿠폰을 사용 처리하시겠습니까?`, () => {
+        student.redeemedRewards.splice(index, 1);
+        saveStudentToRTDB(student);
+        saveState();
+        renderUI();
+        showToast('쿠폰을 사용했습니다!', '✨');
+      });
+    }
+
+    function deleteReward(rewardId) {
+      state.rewards = state.rewards.filter(r => r.id !== rewardId);
+      deleteRewardFromRTDB(rewardId);
+      saveState();
+      renderUI();
+      showToast('보상이 삭제되었습니다.', '🗑️');
+    }
+
+    function toggleTeacherMode(enabled) {
+      state.teacherMode = enabled;
+      saveState();
+      renderUI();
+      showToast(`선생님 승인 모드가 ${enabled ? '켜졌습니다' : '꺼졌습니다'}.`, '⚙️');
+    }
+
+    function updatePasscode() {
+      const input = document.getElementById('newPasscodeInput');
+      const newPass = input?.value.trim();
+      if (!newPass || newPass.length < 4) {
+        showToast('비밀번호는 4자리 이상이어야 합니다.', '⚠️');
+        return;
+      }
+      state.passcode = newPass;
+      saveState();
+      if (input) input.value = '';
+      showToast('선생님 비밀번호가 변경되었습니다.', '🔒');
+    }
+
+    function exportAppData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `pingpong_mission_data_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('백업 파일이 다운로드되었습니다.', '💾');
+    }
+
+    function triggerImportDialog() {
+      document.getElementById('importFileInput')?.click();
+    }
+
+    function importAppData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && imported.students) {
+            state = imported;
+            saveState();
+            renderUI();
+            showToast('데이터가 성공적으로 복원되었습니다!', '🎉');
+          } else {
+            showToast('올바르지 않은 백업 파일 형식입니다.', '⚠️');
+          }
+        } catch (err) {
+          showToast('파일 읽기 오류 발생', '⚠️');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetAllData() {
+      showCustomConfirm('데이터 초기화', '모든 부원, 미션, 포인트 기록을 완전히 초기화하시겠습니까?', () => {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      });
+    }
+
+    function switchMainTab(tabName) {
+      currentMainTab = tabName;
+
+      ['viewMissions', 'viewMatches', 'viewRewards', 'viewStats'].forEach(v => {
+        const el = document.getElementById(v);
+        if (el) el.classList.add('hidden');
+      });
+
+      ['mainNavMissionsBtn', 'mainNavMatchesBtn', 'mainNavRewardsBtn', 'mainNavStatsBtn'].forEach(b => {
+        const btn = document.getElementById(b);
+        if (btn) btn.className = "py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:space-x-1 text-slate-600 hover:text-slate-800";
+      });
+
+      if (tabName === 'missions') {
+        document.getElementById('viewMissions')?.classList.remove('hidden');
+        document.getElementById('mainNavMissionsBtn').className = "py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:space-x-1 bg-white text-emerald-800 shadow-2xs";
+      } else if (tabName === 'matches') {
+        document.getElementById('viewMatches')?.classList.remove('hidden');
+        document.getElementById('mainNavMatchesBtn').className = "py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:space-x-1 bg-white text-emerald-800 shadow-2xs";
+      } else if (tabName === 'rewards') {
+        document.getElementById('viewRewards')?.classList.remove('hidden');
+        document.getElementById('mainNavRewardsBtn').className = "py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:space-x-1 bg-white text-emerald-800 shadow-2xs";
+      } else if (tabName === 'stats') {
+        document.getElementById('viewStats')?.classList.remove('hidden');
+        document.getElementById('mainNavStatsBtn').className = "py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:space-x-1 bg-white text-emerald-800 shadow-2xs";
+      }
+      renderUI();
+    }
+
+    function switchTab(cat) {
+      activeTab = cat;
+      renderUI();
+    }
+
+    function switchRankingView(mode) {
+      rankingViewMode = mode;
+      renderMatchesView();
+    }
+
+    function switchActiveStudent(studentId) {
+      state.activeStudentId = studentId;
+      saveState();
+      renderUI();
+      showToast('탁구 부원 정보가 전환되었습니다.', '👤');
     }
 
     function renderUI() {
       const student = getCurrentStudent();
       const isAdmin = state.role === 'admin';
-      const isReadOnly = checkReadOnlyGuard();
 
+      const readOnly = checkReadOnlyGuard();
       const readOnlyBanner = document.getElementById('readOnlyBanner');
       const readOnlyBannerText = document.getElementById('readOnlyBannerText');
+
       if (readOnlyBanner) {
-        if (isReadOnly) {
+        if (readOnly && student) {
           readOnlyBanner.classList.remove('hidden');
-          if (readOnlyBannerText && student) {
-            readOnlyBannerText.innerText = `👀 ${student.name} 부원의 현황을 보는 중입니다 (읽기 전용)`;
-          }
+          if (readOnlyBannerText) readOnlyBannerText.innerText = `👀 [${formatClassBadge(student)}] ${student.name} 부원의 현황 보는 중 (읽기 전용)`;
         } else {
           readOnlyBanner.classList.add('hidden');
         }
@@ -1435,36 +2726,24 @@
       const modeSwitchBtnText = document.getElementById('modeSwitchBtnText');
 
       const addMissionBtn = document.getElementById('addMissionBtn');
-      if (addMissionBtn) {
-        if (isAdmin) addMissionBtn.classList.remove('hidden');
-        else addMissionBtn.classList.add('hidden');
-      }
+      if (addMissionBtn) addMissionBtn.classList.toggle('hidden', !isAdmin);
 
       const addMatchBtn = document.getElementById('addMatchBtn');
-      if (addMatchBtn) {
-        if (isAdmin) addMatchBtn.classList.remove('hidden');
-        else addMatchBtn.classList.add('hidden');
-      }
+      if (addMatchBtn) addMatchBtn.classList.toggle('hidden', !isAdmin);
 
       const addRewardBtn = document.getElementById('addRewardBtn');
-      if (addRewardBtn) {
-        if (isAdmin) addRewardBtn.classList.remove('hidden');
-        else addRewardBtn.classList.add('hidden');
-      }
+      if (addRewardBtn) addRewardBtn.classList.toggle('hidden', !isAdmin);
 
       const adminPointAdjustBox = document.getElementById('adminPointAdjustBox');
-      if (adminPointAdjustBox) {
-        if (isAdmin) adminPointAdjustBox.classList.remove('hidden');
-        else adminPointAdjustBox.classList.add('hidden');
-      }
+      if (adminPointAdjustBox) adminPointAdjustBox.classList.toggle('hidden', !isAdmin);
 
       if (isAdmin) {
-        if (modeBanner) modeBanner.className = "mb-2 px-3 py-1.5 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-extrabold flex items-center justify-between shadow-2xs bg-gradient-to-r from-slate-800 to-slate-900 text-emerald-400 border border-slate-700";
+        if (modeBanner) modeBanner.className = "mb-2 px-3 py-1.5 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-extrabold flex items-center justify-between shadow-2xs bg-slate-800 text-emerald-400 border border-slate-700";
         if (modeIcon) modeIcon.innerText = '🎓';
         if (modeTitle) modeTitle.innerText = '선생님 모드';
-        if (modeSwitchBtnText) modeSwitchBtnText.innerText = '탁구 부원 모드';
+        if (modeSwitchBtnText) modeSwitchBtnText.innerText = '부원 모드로 전환';
 
-        if (progressWidget) progressWidget.className = "bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 text-white shadow-md mb-3 relative overflow-hidden transition-all duration-300 border border-slate-700";
+        if (progressWidget) progressWidget.className = "bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 text-white shadow-md mb-3 relative overflow-hidden border border-slate-700";
 
         if (adminSelect) {
           adminSelect.classList.remove('hidden');
@@ -1475,17 +2754,12 @@
             const cA = parseInt(a.classNum) || 0;
             const cB = parseInt(b.classNum) || 0;
             if (cA !== cB) return cA - cB;
-            const nA = parseInt(a.number) || 0;
-            const nB = parseInt(b.number) || 0;
-            if (nA !== nB) return nA - nB;
             return a.name.localeCompare(b.name, 'ko');
           });
 
-          adminSelect.innerHTML = sortedStudents.map(s => {
-            const badge = formatClassBadge(s);
-            const classTag = badge ? `[${badge}] ` : '';
-            return `<option value="${s.id}" ${s.id === state.activeStudentId ? 'selected' : ''}>👤 ${classTag}${escapeHtml(s.name)}</option>`;
-          }).join('');
+          adminSelect.innerHTML = sortedStudents.map(s => `
+            <option value="${s.id}" ${s.id === state.activeStudentId ? 'selected' : ''}>👤 [${formatClassBadge(s)}] ${escapeHtml(s.name)}</option>
+          `).join('');
         }
       } else {
         if (modeBanner) modeBanner.className = "mb-2 px-3 py-1.5 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-extrabold flex items-center justify-between shadow-2xs bg-emerald-100 text-emerald-900 border border-emerald-200";
@@ -1516,21 +2790,16 @@
       }
 
       const points = student ? (student.totalPoints || 0) : 0;
-      let currentTier = TIERS[0];
-      for (let i = TIERS.length - 1; i >= 0; i--) {
-        if (points >= TIERS[i].min) {
-          currentTier = TIERS[i];
-          break;
-        }
-      }
+      let levelTitle = '🌱 탁구 입문자';
+      const tierObj = TIERS.slice().reverse().find(t => points >= t.min);
+      if (tierObj) levelTitle = tierObj.title;
+
       const userLevelTitleEl = document.getElementById('userLevelTitle');
-      if (userLevelTitleEl) {
-        userLevelTitleEl.innerHTML = `<span>${currentTier.icon} ${currentTier.title}</span><i class="fa-solid fa-circle-info text-[9px] text-emerald-500"></i>`;
-      }
+      if (userLevelTitleEl) userLevelTitleEl.innerHTML = `<span>${escapeHtml(levelTitle)}</span><i class="fa-solid fa-circle-info text-[9px] text-emerald-500"></i>`;
 
       const streakBadge = document.getElementById('streakBadge');
       if (streakBadge) {
-        if (student && student.streak >= 3) {
+        if (student && student.streak >= 1) {
           streakBadge.classList.remove('hidden');
           streakBadge.classList.add('flex');
           const streakCountEl = document.getElementById('streakCount');
@@ -1541,10 +2810,8 @@
       }
 
       const teacherModeTag = document.getElementById('teacherModeTag');
-      if (teacherModeTag) {
-        if (state.teacherMode) teacherModeTag.classList.remove('hidden');
-        else teacherModeTag.classList.add('hidden');
-      }
+      if (teacherModeTag) teacherModeTag.classList.toggle('hidden', !state.teacherMode);
+
       const teacherModeToggle = document.getElementById('teacherModeToggle');
       if (teacherModeToggle) teacherModeToggle.checked = state.teacherMode;
 
@@ -1575,16 +2842,16 @@
         if (pendingCountBadge) pendingCountBadge.innerText = `${pendingMissions.length}건`;
         if (pendingList) {
           pendingList.innerHTML = pendingMissions.map(m => `
-            <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-amber-200 shadow-2xs">
+            <div class="flex items-center justify-between bg-white p-2 sm:p-2.5 rounded-xl border border-amber-200 shadow-2xs">
               <div class="min-w-0 flex-1 pr-2">
-                <p class="text-xs font-bold text-slate-800 truncate">${escapeHtml(m.title)}</p>
-                <span class="text-[10px] font-bold text-amber-600">+${m.points} P</span>
+                <p class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">${escapeHtml(m.title)}</p>
+                <span class="text-[9px] font-bold text-amber-600">+${m.points} P</span>
               </div>
-              <div class="flex space-x-1.5 shrink-0">
-                <button onclick="approvePendingMission('${m.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-2xs">
-                  승인(도장)
+              <div class="flex space-x-1 shrink-0">
+                <button onclick="approvePendingMission('${m.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-2xs">
+                  승인
                 </button>
-                <button onclick="rejectPendingMission('${m.id}')" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-[11px] font-bold px-2 py-1 rounded-lg">
+                <button onclick="rejectPendingMission('${m.id}')" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md">
                   반려
                 </button>
               </div>
@@ -1603,19 +2870,18 @@
       const studentManagerList = document.getElementById('studentManagerList');
       if (studentManagerList) {
         studentManagerList.innerHTML = state.students.map(s => `
-          <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 text-xs shadow-2xs">
+          <div class="flex justify-between items-center bg-white p-2 rounded-xl border border-slate-100 text-xs shadow-2xs">
             <div class="flex items-center space-x-1.5 min-w-0 pr-1">
-              <span class="text-base">${s.avatar}</span>
-              ${s.className ? `<span class="bg-emerald-100 text-emerald-800 font-extrabold text-[10px] px-1.5 py-0.5 rounded-md shrink-0">${escapeHtml(s.className)}</span>` : ''}
-              <span class="font-bold text-slate-800 truncate">${escapeHtml(s.name)}</span>
+              <span class="text-sm sm:text-base">${s.avatar || '🏓'}</span>
+              <span class="font-bold text-slate-800 truncate text-[11px]">${escapeHtml(s.name)}</span>
+              <span class="bg-emerald-100 text-emerald-800 font-extrabold text-[9px] px-1 rounded shrink-0">${formatClassBadge(s)}</span>
             </div>
             <div class="flex items-center space-x-1 shrink-0">
-              <span class="text-[10px] text-emerald-700 font-extrabold bg-emerald-50 px-2 py-0.5 rounded-full mr-1">${s.totalPoints || 0} P</span>
-              <button onclick="editStudentInfo('${s.id}')" class="text-slate-400 hover:text-emerald-600 p-1 text-xs" title="수정">
+              <button onclick="editStudentInfo('${s.id}')" class="text-slate-400 hover:text-emerald-600 p-1 text-xs">
                 <i class="fa-solid fa-pen"></i>
               </button>
               ${state.students.length > 1 ? `
-                <button onclick="deleteStudent('${s.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs" title="삭제">
+                <button onclick="deleteStudent('${s.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
                   <i class="fa-solid fa-trash-can"></i>
                 </button>
               ` : ''}
@@ -1625,11 +2891,158 @@
       }
     }
 
+    function renderStudentDirectory() {
+      const container = document.getElementById('groupedStudentList');
+      const badge = document.getElementById('directoryTotalBadge');
+      const sidebarAddStudentBtn = document.getElementById('sidebarAddStudentBtn');
+
+      if (sidebarAddStudentBtn) {
+        sidebarAddStudentBtn.classList.toggle('hidden', state.role !== 'admin');
+      }
+
+      if (!container) return;
+
+      const query = (document.getElementById('directorySearchInput')?.value || '').toLowerCase().trim();
+      const filtered = state.students.filter(s => s.name.toLowerCase().includes(query));
+
+      if (badge) badge.innerText = `${state.students.length}명`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">검색 결과가 없습니다.</p>`;
+        return;
+      }
+
+      const groups = {};
+      filtered.forEach(s => {
+        let key = '기타 / 학년 미지정';
+        if (s.grade && s.classNum) {
+          key = `${s.grade}학년 ${s.classNum}반`;
+        } else if (s.grade) {
+          key = `${s.grade}학년`;
+        }
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(s);
+      });
+
+      const sortedGroupKeys = Object.keys(groups).sort((a, b) => {
+        const matchA = a.match(/(\d+)학년\s*(\d+)?반/);
+        const matchB = b.match(/(\d+)학년\s*(\d+)?반/);
+
+        if (matchA && matchB) {
+          const gA = parseInt(matchA[1], 10);
+          const gB = parseInt(matchB[1], 10);
+          if (gA !== gB) return gA - gB;
+
+          const cA = matchA[2] ? parseInt(matchA[2], 10) : 0;
+          const cB = matchB[2] ? parseInt(matchB[2], 10) : 0;
+          return cA - cB;
+        }
+        return a.localeCompare(b, 'ko');
+      });
+
+      let html = '';
+      sortedGroupKeys.forEach(groupKey => {
+        const list = groups[groupKey];
+        list.sort((x, y) => (parseInt(x.number) || 99) - (parseInt(y.number) || 99));
+
+        const isCollapsed = collapsedGroups.has(groupKey);
+
+        html += `
+          <div class="bg-white/70 rounded-xl border border-emerald-100 overflow-hidden shadow-2xs">
+            <button onclick="toggleGroupCollapse('${escapeHtml(groupKey)}')" class="w-full px-2.5 py-1.5 bg-emerald-50/80 hover:bg-emerald-100/80 flex items-center justify-between text-xs font-bold text-emerald-950 transition-colors">
+              <span class="flex items-center space-x-1.5">
+                <i class="fa-solid ${isCollapsed ? 'fa-chevron-right' : 'fa-chevron-down'} text-[10px] text-emerald-600"></i>
+                <span>${escapeHtml(groupKey)}</span>
+              </span>
+              <span class="bg-emerald-200 text-emerald-900 text-[10px] px-1.5 rounded-full font-extrabold">${list.length}명</span>
+            </button>
+            ${!isCollapsed ? `
+              <div class="p-1.5 space-y-1 bg-white/40">
+                ${list.map(s => {
+                  const isActive = s.id === state.activeStudentId;
+                  const numTag = s.number ? `${s.number}번` : '';
+                  return `
+                    <div onclick="switchActiveStudent('${s.id}')" class="flex items-center justify-between p-1.5 rounded-xl cursor-pointer transition-all ${
+                      isActive 
+                        ? 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-2xs font-bold' 
+                        : 'hover:bg-emerald-50 text-slate-700 bg-white border border-slate-100'
+                    }">
+                      <div class="flex items-center space-x-1.5 min-w-0 pr-1">
+                        <span class="text-sm shrink-0">${s.avatar || '🏓'}</span>
+                        <div class="min-w-0 flex flex-col">
+                          <span class="text-[11px] truncate ${isActive ? 'text-white' : 'text-slate-800 font-bold'}">${escapeHtml(s.name)}</span>
+                          ${numTag ? `<span class="text-[9px] ${isActive ? 'text-emerald-200' : 'text-slate-400'}">${numTag}</span>` : ''}
+                        </div>
+                      </div>
+                      <span class="text-[10px] font-black shrink-0 ${isActive ? 'text-amber-300' : 'text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md'}">${s.totalPoints || 0} P</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      renderClassIndividualProgress();
+    }
+
+    function renderClassIndividualProgress() {
+      const container = document.getElementById('classIndividualProgressContainer');
+      if (!container) return;
+
+      const activeStudent = getCurrentStudent();
+      let activeGradeClass = '기타 / 학년 미지정';
+      if (activeStudent && activeStudent.grade && activeStudent.classNum) {
+        activeGradeClass = `${activeStudent.grade}학년 ${activeStudent.classNum}반`;
+      }
+
+      const classStudents = state.students.filter(s => {
+        if (s.grade && s.classNum) {
+          return `${s.grade}학년 ${s.classNum}반` === activeGradeClass;
+        }
+        return activeGradeClass === '기타 / 학년 미지정';
+      });
+
+      if (classStudents.length === 0) {
+        container.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">소속 학급에 다른 부원이 없습니다.</p>`;
+        return;
+      }
+
+      let html = `<div class="text-[10px] sm:text-[11px] font-bold text-emerald-800 mb-1 px-0.5 flex items-center justify-between">
+                    <span>📍 ${escapeHtml(activeGradeClass)} 소속 부원 현황</span>
+                  </div>`;
+
+      classStudents.forEach(s => {
+        const missions = s.missions || [];
+        const total = missions.length;
+        const completed = missions.filter(m => m.completed).length;
+        const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+        const isActive = s.id === state.activeStudentId;
+
+        html += `
+          <div onclick="switchActiveStudent('${s.id}')" class="p-1.5 rounded-xl border transition-all cursor-pointer ${
+            isActive ? 'bg-emerald-50 border-emerald-300 shadow-2xs' : 'bg-white border-slate-100 hover:border-emerald-200'
+          }">
+            <div class="flex justify-between items-center text-[10px] sm:text-[11px] mb-1">
+              <span class="font-bold text-slate-800 truncate">${s.avatar || '🏓'} ${escapeHtml(s.name)}</span>
+              <span class="font-black text-emerald-700">${pct}% <span class="text-[9px] text-slate-400">(${completed}/${total})</span></span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-1 overflow-hidden">
+              <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
     function renderMissionsView() {
       const student = getCurrentStudent();
       const missions = student ? (student.missions || []) : [];
       const isAdmin = state.role === 'admin';
-      const isReadOnly = checkReadOnlyGuard();
 
       const personalMissions = missions.filter(m => (m.category || 'personal') === 'personal');
       const teamMissions = missions.filter(m => m.category === 'team');
@@ -1681,7 +3094,7 @@
 
           filteredMissions.forEach((mission, filteredIndex) => {
             const card = document.createElement('div');
-            card.className = `p-3 rounded-2xl bg-white border transition-all duration-200 flex items-center justify-between shadow-2xs relative overflow-hidden group ${
+            card.className = `p-2.5 sm:p-3 rounded-2xl bg-white border transition-all duration-200 flex items-center justify-between shadow-2xs relative overflow-hidden group ${
               mission.completed 
                 ? 'border-emerald-200 bg-emerald-50/40' 
                 : mission.pending 
@@ -1697,54 +3110,52 @@
             const isLast = filteredIndex === filteredMissions.length - 1;
 
             card.innerHTML = `
-              <div class="flex items-center space-x-2.5 flex-1 min-w-0 pr-2">
-                <button onclick="handleMissionCheck('${mission.id}')" ${isReadOnly ? 'disabled' : ''} class="w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all shrink-0 ${
+              <div class="flex items-center space-x-2 flex-1 min-w-0 pr-1">
+                <button onclick="handleMissionCheck('${mission.id}')" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl border-2 flex items-center justify-center transition-all shrink-0 ${
                   mission.completed 
                     ? 'bg-emerald-600 border-emerald-600 text-white shadow-2xs' 
                     : mission.pending
                       ? 'bg-amber-400 border-amber-400 text-white animate-pulse'
                       : 'border-slate-300 hover:border-emerald-400 text-transparent'
-                } ${isReadOnly ? 'opacity-50 cursor-not-allowed' : ''}">
-                  <i class="fa-solid ${mission.completed ? 'fa-check' : mission.pending ? 'fa-clock' : 'fa-check'} text-sm"></i>
+                }">
+                  <i class="fa-solid ${mission.completed ? 'fa-check' : mission.pending ? 'fa-clock' : 'fa-check'} text-xs sm:text-sm"></i>
                 </button>
 
                 <div class="min-w-0 flex-1">
                   <p class="font-bold text-xs sm:text-sm text-slate-800 truncate ${mission.completed ? 'line-through text-slate-400' : ''}">
                     ${escapeHtml(mission.title)}
                   </p>
-                  <div class="flex items-center space-x-2 mt-0.5">
-                    <span class="text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full ${diffColor}">${mission.difficulty}</span>
-                    <span class="text-[9px] sm:text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/50">+${mission.points} P</span>
-                    ${mission.pending && !mission.completed ? `<span class="text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded">확인 대기 중</span>` : ''}
+                  <div class="flex items-center space-x-1.5 mt-0.5">
+                    <span class="text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.2 rounded-full ${diffColor}">${mission.difficulty}</span>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.2 rounded-full border border-amber-200/50">+${mission.points} P</span>
+                    ${mission.pending && !mission.completed ? `<span class="text-[8px] font-bold text-amber-700 bg-amber-100 px-1 rounded">확인 대기</span>` : ''}
                   </div>
                 </div>
               </div>
 
-              <div class="flex items-center space-x-1 shrink-0">
-                ${!isReadOnly ? `
-                  <div class="flex flex-col space-y-0.5">
-                    <button onclick="moveMission(${filteredIndex}, 'up')" ${isFirst ? 'disabled class="opacity-20 text-slate-300 cursor-not-allowed"' : 'class="text-slate-400 hover:text-emerald-600 p-1 text-xs hover:bg-emerald-50 rounded transition-all"'}>
-                      <i class="fa-solid fa-chevron-up"></i>
-                    </button>
-                    <button onclick="moveMission(${filteredIndex}, 'down')" ${isLast ? 'disabled class="opacity-20 text-slate-300 cursor-not-allowed"' : 'class="text-slate-400 hover:text-emerald-600 p-1 text-xs hover:bg-emerald-50 rounded transition-all"'}>
-                      <i class="fa-solid fa-chevron-down"></i>
-                    </button>
-                  </div>
-                ` : ''}
+              <div class="flex items-center space-x-0.5 shrink-0">
+                <div class="flex flex-col space-y-0.5">
+                  <button onclick="moveMission(${filteredIndex}, 'up')" ${isFirst ? 'disabled class="opacity-20 text-slate-300 cursor-not-allowed"' : 'class="text-slate-400 hover:text-emerald-600 p-0.5 text-[10px]"'}>
+                    <i class="fa-solid fa-chevron-up"></i>
+                  </button>
+                  <button onclick="moveMission(${filteredIndex}, 'down')" ${isLast ? 'disabled class="opacity-20 text-slate-300 cursor-not-allowed"' : 'class="text-slate-400 hover:text-emerald-600 p-0.5 text-[10px]"'}>
+                    <i class="fa-solid fa-chevron-down"></i>
+                  </button>
+                </div>
 
                 ${isAdmin ? `
-                  <button onclick="openEditMissionModal('${mission.id}')" class="text-slate-300 hover:text-emerald-600 p-1.5 transition-colors" title="수정">
-                    <i class="fa-solid fa-pen text-xs"></i>
+                  <button onclick="openEditMissionModal('${mission.id}')" class="text-slate-300 hover:text-emerald-600 p-1 text-xs">
+                    <i class="fa-solid fa-pen"></i>
                   </button>
-                  <button onclick="deleteMission('${mission.id}')" class="text-slate-300 hover:text-rose-500 p-1.5 transition-colors" title="모든 학생 목록에서 일괄 삭제">
-                    <i class="fa-solid fa-trash-can text-xs"></i>
+                  <button onclick="deleteMission('${mission.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
+                    <i class="fa-solid fa-trash-can"></i>
                   </button>
                 ` : ''}
               </div>
 
               ${mission.completed ? `
-                <div class="absolute right-14 top-1.5 pointer-events-none opacity-80 stamp-effect">
-                  <span class="inline-block text-[9px] sm:text-[10px] font-black tracking-widest text-emerald-600 border-2 border-emerald-500 px-1.5 py-0.5 rounded uppercase rotate-[-12deg]">COMPLETE</span>
+                <div class="absolute right-12 top-1.5 pointer-events-none opacity-80 stamp-effect">
+                  <span class="inline-block text-[9px] font-black tracking-widest text-emerald-600 border-2 border-emerald-500 px-1 py-0.2 rounded uppercase rotate-[-12deg]">COMPLETE</span>
                 </div>
               ` : ''}
             `;
@@ -1802,23 +3213,22 @@
       sortedKeys.forEach(groupKey => {
         const list = groups[groupKey];
         list.sort((a, b) => {
-          const totalA = (a.wins || 0) + (a.losses || 0);
-          const totalB = (b.wins || 0) + (b.losses || 0);
-          const rateA = totalA > 0 ? (a.wins / totalA) : 0;
-          const rateB = totalB > 0 ? (b.wins / totalB) : 0;
-
+          const totA = (a.wins || 0) + (a.losses || 0);
+          const totB = (b.wins || 0) + (b.losses || 0);
+          const rateA = totA > 0 ? (a.wins / totA) : 0;
+          const rateB = totB > 0 ? (b.wins / totB) : 0;
           if (rateB !== rateA) return rateB - rateA;
           if ((b.wins || 0) !== (a.wins || 0)) return (b.wins || 0) - (a.wins || 0);
           return (b.totalPoints || 0) - (a.totalPoints || 0);
         });
 
         html += `
-          <div class="bg-white/80 rounded-2xl border border-emerald-200 overflow-hidden shadow-2xs p-3 sm:p-4">
-            <div class="flex justify-between items-center mb-2.5 pb-1.5 border-b border-emerald-100">
-              <h4 class="font-black text-xs sm:text-sm text-emerald-950 flex items-center space-x-1.5">
+          <div class="bg-white/80 rounded-2xl border border-emerald-200 overflow-hidden shadow-2xs p-3 sm:p-3.5">
+            <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-emerald-100">
+              <h4 class="font-black text-xs sm:text-sm text-emerald-950 flex items-center space-x-1">
                 <span>🏫 ${escapeHtml(groupKey)}</span>
               </h4>
-              <span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+              <span class="text-[9px] sm:text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
                 부원 ${list.length}명
               </span>
             </div>
@@ -1837,14 +3247,14 @@
 
             html += `
               <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-100 shadow-2xs">
-                <div class="flex items-center space-x-2 min-w-0 pr-2">
+                <div class="flex items-center space-x-2 min-w-0 pr-1">
                   ${rankBadge}
                   <span class="text-sm shrink-0">${s.avatar || '🏓'}</span>
                   <div class="min-w-0 flex flex-col">
                     <span class="font-bold text-xs text-slate-800 truncate">${escapeHtml(s.name)}</span>
                   </div>
                 </div>
-                <span class="font-extrabold text-[10px] text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 shrink-0">
+                <span class="font-extrabold text-[11px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200 shrink-0">
                   ${s.wins || 0}승 ${s.losses || 0}패 (${winRate}%)
                 </span>
               </div>
@@ -1852,7 +3262,7 @@
           });
           html += `</div>`;
         } else {
-          html += `<div class="space-y-2.5 pt-1">`;
+          html += `<div class="space-y-2 pt-1">`;
           list.forEach((s, idx) => {
             const totalMatches = (s.wins || 0) + (s.losses || 0);
             const winRate = totalMatches > 0 ? Math.round((s.wins / totalMatches) * 100) : 0;
@@ -1863,15 +3273,15 @@
 
             html += `
               <div>
-                <div class="flex justify-between items-center text-xs font-bold mb-0.5">
-                  <span class="text-slate-800 flex items-center space-x-1 text-[11px]">
+                <div class="flex justify-between items-center text-[11px] font-bold mb-0.5">
+                  <span class="text-slate-800 flex items-center space-x-1">
                     <span>${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}</span>
                     <span>${s.avatar || '🏓'} ${escapeHtml(s.name)}</span>
                   </span>
-                  <span class="text-emerald-700 font-extrabold text-[11px]">${s.wins}승 ${s.losses}패 (${winRate}%)</span>
+                  <span class="text-emerald-700 font-extrabold">${winRate}% <span class="text-[9px] text-slate-400 font-normal">(${s.wins}승 ${s.losses}패)</span></span>
                 </div>
                 <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden p-0.5">
-                  <div class="bg-gradient-to-r ${barGradient} h-full rounded-full transition-all duration-700 ease-out" style="width: ${Math.max(6, winRate)}%"></div>
+                  <div class="bg-gradient-to-r ${barGradient} h-full rounded-full transition-all duration-500" style="width: ${Math.max(6, winRate)}%"></div>
                 </div>
               </div>
             `;
@@ -1889,20 +3299,20 @@
           historyList.innerHTML = `<p class="text-slate-400 text-center py-3 text-xs">등록된 경기 기록이 없습니다.</p>`;
         } else {
           historyList.innerHTML = state.matchHistory.slice(0, 10).map(m => `
-            <div class="flex justify-between items-center py-1.5 border-b border-slate-100 last:border-b-0 text-xs">
-              <div class="min-w-0 pr-2">
-                <p class="font-bold text-slate-800 truncate">
+            <div class="flex justify-between items-center py-1 border-b border-slate-100 last:border-b-0 text-xs">
+              <div class="min-w-0 pr-1">
+                <p class="font-bold text-slate-800 truncate text-[11px]">
                   <span class="text-emerald-700 font-extrabold">${escapeHtml(m.p1Name)}</span> (${m.score1}) vs (${m.score2}) <span class="text-slate-600">${escapeHtml(m.p2Name)}</span>
                 </p>
-                <p class="text-[10px] text-slate-400">${m.date}</p>
+                <p class="text-[9px] text-slate-400">${m.date}</p>
               </div>
               <div class="flex items-center space-x-1 shrink-0">
-                <span class="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                  🏆 승: ${escapeHtml(m.winnerName)}
+                <span class="text-[9px] font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+                  🏆 ${escapeHtml(m.winnerName)}
                 </span>
                 ${state.role === 'admin' ? `
-                  <button onclick="deleteMatchRecord('${m.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs" title="경기 삭제">
-                    <i class="fa-solid fa-trash-can"></i>
+                  <button onclick="deleteMatchRecord('${m.id}')" class="text-slate-300 hover:text-rose-500 p-0.5" title="삭제">
+                    <i class="fa-solid fa-trash-can text-[10px]"></i>
                   </button>
                 ` : ''}
               </div>
@@ -1920,32 +3330,31 @@
       const student = getCurrentStudent();
       const studentPoints = student ? (student.totalPoints || 0) : 0;
       const isAdmin = state.role === 'admin';
-      const isReadOnly = checkReadOnlyGuard();
 
       if (!state.rewards || state.rewards.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">등록된 보상이 없습니다.</p>`;
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">등록된 보상이 없습니다.</p>`;
       } else {
         container.innerHTML = state.rewards.map(r => {
-          const canAfford = studentPoints >= r.points && !isReadOnly;
+          const canAfford = studentPoints >= r.points;
           return `
-            <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-2xs flex items-center justify-between space-x-2">
+            <div class="bg-white p-2.5 rounded-2xl border border-slate-100 shadow-2xs flex items-center justify-between space-x-2">
               <div class="flex items-center space-x-2.5 min-w-0 flex-1">
-                <div class="w-9 h-9 bg-emerald-50 text-xl rounded-2xl flex items-center justify-center shrink-0">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 bg-emerald-50 text-xl rounded-xl flex items-center justify-center shrink-0">
                   ${r.icon || '🎁'}
                 </div>
                 <div class="min-w-0 flex-1">
                   <p class="font-bold text-xs sm:text-sm text-slate-800 truncate">${escapeHtml(r.title)}</p>
-                  <p class="text-[11px] font-black text-amber-500 mt-0.5">${r.points} P 필요</p>
+                  <p class="text-[10px] font-black text-amber-500">${r.points} P 필요</p>
                 </div>
               </div>
 
               <div class="flex items-center space-x-1 shrink-0">
-                <button onclick="redeemReward('${r.id}')" ${!canAfford ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+                <button onclick="redeemReward('${r.id}')" ${!canAfford ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold transition-all ${
                   canAfford 
-                    ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-2xs active:scale-95 hover:from-amber-500 hover:to-orange-600' 
+                    ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-2xs active:scale-95' 
                     : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                 }">
-                  교환하기 🎟️
+                  교환
                 </button>
 
                 ${isAdmin ? `
@@ -1962,18 +3371,18 @@
       if (redeemedContainer) {
         const redeemed = student ? (student.redeemedRewards || []) : [];
         if (redeemed.length === 0) {
-          redeemedContainer.innerHTML = `<p class="text-[11px] text-amber-800/70 text-center py-2">보유 중인 보상 쿠폰이 없습니다.</p>`;
+          redeemedContainer.innerHTML = `<p class="text-[10px] text-amber-800/70 text-center py-2">보유 중인 보상 쿠폰이 없습니다.</p>`;
         } else {
           redeemedContainer.innerHTML = redeemed.map((coupon, idx) => `
             <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-amber-200 text-xs shadow-2xs">
-              <div class="flex items-center space-x-2 min-w-0 pr-1">
-                <span class="text-base shrink-0">${coupon.icon || '🎫'}</span>
+              <div class="flex items-center space-x-1.5 min-w-0 pr-1">
+                <span class="text-sm shrink-0">${coupon.icon || '🎫'}</span>
                 <div class="min-w-0">
                   <p class="font-bold text-slate-800 truncate text-[11px]">${escapeHtml(coupon.title)}</p>
                   <p class="text-[9px] text-slate-400">${coupon.date}</p>
                 </div>
               </div>
-              <button onclick="useCoupon(${idx})" ${isReadOnly ? 'disabled' : ''} class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-extrabold px-2 py-1 rounded-lg shrink-0 shadow-2xs ${isReadOnly ? 'opacity-50 cursor-not-allowed' : ''}">
+              <button onclick="useCoupon(${idx})" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md shrink-0">
                 사용 완료
               </button>
             </div>
@@ -1987,8 +3396,7 @@
       if (!student) return;
 
       const completedCount = student.missions ? student.missions.filter(m => m.completed).length : 0;
-      const statCompletedEl = document.getElementById('statCompletedCount');
-      if (statCompletedEl) statCompletedEl.innerText = `${completedCount}개`;
+      document.getElementById('statCompletedCount').innerText = `${completedCount}개`;
 
       let earned = 0;
       if (student.history) {
@@ -1996,34 +3404,16 @@
           if (h.points > 0) earned += h.points;
         });
       }
-      const statEarnedEl = document.getElementById('statTotalEarnedPoints');
-      if (statEarnedEl) statEarnedEl.innerText = `${earned} P`;
-
-      if (student.skills) {
-        const v1 = document.getElementById('skillVal1');
-        const v2 = document.getElementById('skillVal2');
-        const v3 = document.getElementById('skillVal3');
-        const v4 = document.getElementById('skillVal4');
-
-        if (v1) v1.value = student.skills.forehand || 3;
-        if (v2) v2.value = student.skills.backhand || 3;
-        if (v3) v3.value = student.skills.serve || 3;
-        if (v4) v4.value = student.skills.manner || 5;
-
-        if (document.getElementById('skillVal1Text')) document.getElementById('skillVal1Text').innerText = (student.skills.forehand || 3) + '점';
-        if (document.getElementById('skillVal2Text')) document.getElementById('skillVal2Text').innerText = (student.skills.backhand || 3) + '점';
-        if (document.getElementById('skillVal3Text')) document.getElementById('skillVal3Text').innerText = (student.skills.serve || 3) + '점';
-        if (document.getElementById('skillVal4Text')) document.getElementById('skillVal4Text').innerText = (student.skills.manner || 5) + '점';
-      }
+      document.getElementById('statTotalEarnedPoints').innerText = `${earned} P`;
 
       const historyList = document.getElementById('historyLogList');
       if (historyList) {
         if (!student.history || student.history.length === 0) {
-          historyList.innerHTML = `<p class="text-slate-400 text-center py-4">아직 달성한 활동 기록이 없습니다.</p>`;
+          historyList.innerHTML = `<p class="text-slate-400 text-center py-3 text-xs">아직 달성한 활동 기록이 없습니다.</p>`;
         } else {
           historyList.innerHTML = student.history.slice(0, 15).map(h => `
             <div class="flex justify-between items-center py-1 border-b border-slate-100 last:border-b-0">
-              <div class="min-w-0 pr-2">
+              <div class="min-w-0 pr-1">
                 <p class="font-bold text-slate-800 truncate text-[11px]">${escapeHtml(h.title)}</p>
                 <p class="text-[9px] text-slate-400">${h.date}</p>
               </div>
@@ -2036,581 +3426,10 @@
       }
     }
 
-    function renderStudentDirectory() {
-      const container = document.getElementById('groupedStudentList');
-      const badge = document.getElementById('directoryTotalBadge');
-      const sidebarAddStudentBtn = document.getElementById('sidebarAddStudentBtn');
-
-      if (sidebarAddStudentBtn) {
-        if (state.role === 'admin') sidebarAddStudentBtn.classList.remove('hidden');
-        else sidebarAddStudentBtn.classList.add('hidden');
-      }
-
-      if (!container) return;
-
-      const query = (document.getElementById('directorySearchInput')?.value || '').toLowerCase().trim();
-      const filtered = state.students.filter(s => s.name.toLowerCase().includes(query));
-
-      if (badge) badge.innerText = `${state.students.length}명`;
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">검색 결과가 없습니다.</p>`;
-        return;
-      }
-
-      const groups = {};
-      filtered.forEach(s => {
-        let key = '기타 / 학년 미지정';
-        if (s.grade && s.classNum) {
-          key = `${s.grade}학년 ${s.classNum}반`;
-        } else if (s.grade) {
-          key = `${s.grade}학년`;
-        }
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(s);
-      });
-
-      const sortedGroupKeys = Object.keys(groups).sort((a, b) => {
-        const matchA = a.match(/(\d+)학년\s*(\d+)?반/);
-        const matchB = b.match(/(\d+)학년\s*(\d+)?반/);
-
-        if (matchA && matchB) {
-          const gA = parseInt(matchA[1], 10);
-          const gB = parseInt(matchB[1], 10);
-          if (gA !== gB) return gA - gB;
-
-          const cA = matchA[2] ? parseInt(matchA[2], 10) : 0;
-          const cB = matchB[2] ? parseInt(matchB[2], 10) : 0;
-          return cA - cB;
-        }
-        return a.localeCompare(b, 'ko');
-      });
-
-      let html = '';
-      sortedGroupKeys.forEach(groupKey => {
-        const list = groups[groupKey];
-        list.sort((x, y) => (parseInt(x.number) || 99) - (parseInt(y.number) || 99));
-
-        const isCollapsed = collapsedGroups.has(groupKey);
-
-        html += `
-          <div class="bg-white/70 rounded-2xl border border-emerald-100 overflow-hidden shadow-2xs">
-            <button onclick="toggleGroupCollapse('${escapeHtml(groupKey)}')" class="w-full px-3 py-1.5 bg-emerald-50/80 hover:bg-emerald-100/80 flex items-center justify-between text-xs font-bold text-emerald-950 transition-colors">
-              <span class="flex items-center space-x-1.5">
-                <i class="fa-solid ${isCollapsed ? 'fa-chevron-right' : 'fa-chevron-down'} text-[10px] text-emerald-600"></i>
-                <span>${escapeHtml(groupKey)}</span>
-              </span>
-              <span class="bg-emerald-200 text-emerald-900 text-[9px] px-2 py-0.2 rounded-full font-extrabold">${list.length}명</span>
-            </button>
-            ${!isCollapsed ? `
-              <div class="p-1.5 space-y-1 bg-white/40">
-                ${list.map(s => {
-                  const isActive = s.id === state.activeStudentId;
-                  const numTag = s.number ? `${s.number}번` : '';
-                  return `
-                    <div onclick="switchActiveStudent('${s.id}')" class="flex items-center justify-between p-1.5 rounded-xl cursor-pointer transition-all ${
-                      isActive 
-                        ? 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-2xs font-bold' 
-                        : 'hover:bg-emerald-50 text-slate-700 bg-white border border-slate-100'
-                    }">
-                      <div class="flex items-center space-x-2 min-w-0 pr-1">
-                        <span class="text-sm shrink-0">${s.avatar || '🏓'}</span>
-                        <div class="min-w-0 flex flex-col">
-                          <span class="text-xs truncate ${isActive ? 'text-white' : 'text-slate-800 font-bold'}">${escapeHtml(s.name)}</span>
-                          ${numTag ? `<span class="text-[9px] ${isActive ? 'text-emerald-200' : 'text-slate-400'}">${numTag}</span>` : ''}
-                        </div>
-                      </div>
-                      <span class="text-[9px] font-black shrink-0 ${isActive ? 'text-amber-300' : 'text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md'}">${s.totalPoints || 0} P</span>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            ` : ''}
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
-      renderClassIndividualProgress();
-    }
-
-    function renderClassIndividualProgress() {
-      const container = document.getElementById('classIndividualProgressContainer');
-      if (!container) return;
-
-      const activeStudent = getCurrentStudent();
-      let activeGradeClass = '기타 / 학년 미지정';
-      if (activeStudent && activeStudent.grade && activeStudent.classNum) {
-        activeGradeClass = `${activeStudent.grade}학년 ${activeStudent.classNum}반`;
-      }
-
-      const classStudents = state.students.filter(s => {
-        if (s.grade && s.classNum) {
-          return `${s.grade}학년 ${s.classNum}반` === activeGradeClass;
-        }
-        return activeGradeClass === '기타 / 학년 미지정';
-      });
-
-      if (classStudents.length === 0) {
-        container.innerHTML = `<p class="text-[10px] text-slate-400 text-center py-2">소속 학급에 부원이 없습니다.</p>`;
-        return;
-      }
-
-      let html = `<div class="text-[10px] font-bold text-emerald-800 mb-1 px-1 flex items-center justify-between">
-                    <span>📍 ${escapeHtml(activeGradeClass)} 소속 달성 현황</span>
-                  </div>`;
-
-      classStudents.forEach(s => {
-        const missions = s.missions || [];
-        const total = missions.length;
-        const completed = missions.filter(m => m.completed).length;
-        const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
-        const isActive = s.id === state.activeStudentId;
-
-        html += `
-          <div onclick="switchActiveStudent('${s.id}')" class="p-1.5 rounded-xl border transition-all cursor-pointer ${
-            isActive ? 'bg-emerald-50 border-emerald-300 shadow-2xs' : 'bg-white border-slate-100 hover:border-emerald-200'
-          }">
-            <div class="flex justify-between items-center text-[10px] mb-1">
-              <span class="font-bold text-slate-800 truncate">${s.avatar || '🏓'} ${escapeHtml(s.name)}</span>
-              <span class="font-black text-emerald-700">${pct}% <span class="text-[8px] text-slate-400">(${completed}/${total})</span></span>
-            </div>
-            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
-            </div>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
-    }
-
-    function switchMainTab(tabName) {
-      currentMainTab = tabName;
-
-      ['viewMissions', 'viewMatches', 'viewRewards', 'viewStats'].forEach(v => {
-        const el = document.getElementById(v);
-        if (el) el.classList.add('hidden');
-      });
-
-      ['mainNavMissionsBtn', 'mainNavMatchesBtn', 'mainNavRewardsBtn', 'mainNavStatsBtn'].forEach(b => {
-        const btn = document.getElementById(b);
-        if (btn) btn.className = "py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:space-x-1 text-slate-600 hover:text-slate-800";
-      });
-
-      if (tabName === 'missions') {
-        document.getElementById('viewMissions')?.classList.remove('hidden');
-        document.getElementById('mainNavMissionsBtn').className = "py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:space-x-1 bg-white text-emerald-800 shadow-2xs";
-      } else if (tabName === 'matches') {
-        document.getElementById('viewMatches')?.classList.remove('hidden');
-        document.getElementById('mainNavMatchesBtn').className = "py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:space-x-1 bg-white text-emerald-800 shadow-2xs";
-      } else if (tabName === 'rewards') {
-        document.getElementById('viewRewards')?.classList.remove('hidden');
-        document.getElementById('mainNavRewardsBtn').className = "py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:space-x-1 bg-white text-emerald-800 shadow-2xs";
-      } else if (tabName === 'stats') {
-        document.getElementById('viewStats')?.classList.remove('hidden');
-        document.getElementById('mainNavStatsBtn').className = "py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:space-x-1 bg-white text-emerald-800 shadow-2xs";
-      }
-      renderUI();
-    }
-
-    function switchTab(cat) {
-      activeTab = cat;
-      renderUI();
-    }
-
-    function switchRankingView(mode) {
-      rankingViewMode = mode;
-      renderMatchesView();
-    }
-
-    function switchActiveStudent(studentId) {
-      state.activeStudentId = studentId;
-      saveState();
-      renderUI();
-      showToast('탁구 부원 정보가 전환되었습니다.', '👤');
-    }
-
-    function switchToSelfAccount() {
-      if (state.loggedInStudentId) {
-        state.activeStudentId = state.loggedInStudentId;
-        saveState();
-        renderUI();
-        showToast('내 계정으로 돌아왔습니다.', '🏠');
-      }
-    }
-
-    function openStudentLoginModal() {
-      openModal('studentLoginModal');
-    }
-
-    function handleStudentLogin(event) {
-      event.preventDefault();
-      const grade = document.getElementById('loginGradeModal')?.value || document.getElementById('loginGrade').value;
-      const classNum = document.getElementById('loginClassModal')?.value || document.getElementById('loginClass').value;
-      const number = document.getElementById('loginNumberModal')?.value || document.getElementById('loginNumber').value;
-      const name = (document.getElementById('loginNameModal')?.value || document.getElementById('loginName').value).trim();
-
-      if (!name) {
-        showToast('학생 이름을 입력해 주세요.', '⚠️');
-        return;
-      }
-
-      let matched = state.students.find(s => 
-        s.name === name && 
-        String(s.grade) === String(grade) && 
-        String(s.classNum) === String(classNum) && 
-        String(s.number) === String(number)
-      );
-
-      if (!matched) {
-        matched = {
-          id: 'std_' + Date.now(),
-          name: name,
-          grade: grade,
-          classNum: classNum,
-          number: number,
-          className: formatClassBadge({ grade, classNum, number }),
-          avatar: '🏓',
-          missions: JSON.parse(JSON.stringify(DEFAULT_MISSIONS)),
-          skills: { forehand: 3, backhand: 3, serve: 3, manner: 5 },
-          totalPoints: 0,
-          wins: 0,
-          losses: 0,
-          streak: 1,
-          lastActiveDate: new Date().toISOString().split('T')[0],
-          history: [],
-          redeemedRewards: []
-        };
-        state.students.push(matched);
-        saveStudentToFirestore(matched);
-      }
-
-      state.isLoggedIn = true;
-      state.loggedInStudentId = matched.id;
-      state.activeStudentId = matched.id;
-      saveState();
-
-      closeModal('studentLoginModal');
-      hideLoginGate();
-      renderUI();
-      showToast(`${matched.name} 부원 계정으로 로그인되었습니다!`, '🎉');
-    }
-
-    function openLevelGuideModal() {
-      const container = document.getElementById('levelGuideContainer');
-      if (!container) return;
-
-      const student = getCurrentStudent();
-      const currentPoints = student ? (student.totalPoints || 0) : 0;
-
-      container.innerHTML = TIERS.map(t => {
-        const isCurrent = currentPoints >= t.min && (TIERS.find(x => x.level === t.level + 1) ? currentPoints < TIERS.find(x => x.level === t.level + 1).min : true);
-        return `
-          <div class="p-2.5 rounded-2xl border transition-all ${isCurrent ? 'bg-emerald-50 border-emerald-400 shadow-2xs' : 'bg-slate-50 border-slate-100'}">
-            <div class="flex justify-between items-center mb-0.5">
-              <span class="font-extrabold text-xs text-slate-800">${t.icon} ${t.title}</span>
-              <span class="text-[10px] font-black ${isCurrent ? 'text-emerald-700' : 'text-slate-400'}">${t.min} P 이상</span>
-            </div>
-            <p class="text-[10px] text-slate-500">${t.desc}</p>
-            ${isCurrent ? `<span class="inline-block mt-1 text-[9px] bg-emerald-600 text-white font-extrabold px-2 py-0.2 rounded-full">📍 현재 등급</span>` : ''}
-          </div>
-        `;
-      }).join('');
-
-      openModal('levelGuideModal');
-    }
-
-    function openScoreboardModal() {
-      const p1Select = document.getElementById('sbPlayer1Select');
-      if (!p1Select) return;
-
-      const sortedStudents = [...state.students].sort((a, b) => {
-        const gA = parseInt(a.grade) || 0;
-        const gB = parseInt(b.grade) || 0;
-        if (gA !== gB) return gA - gB;
-        const cA = parseInt(a.classNum) || 0;
-        const cB = parseInt(b.classNum) || 0;
-        if (cA !== cB) return cA - cB;
-        return a.name.localeCompare(b.name, 'ko');
-      });
-
-      p1Select.innerHTML = sortedStudents.map(s => `
-        <option value="${s.id}">👤 [${formatClassBadge(s)}] ${escapeHtml(s.name)}</option>
-      `).join('');
-
-      updateSbPlayer2Options();
-      resetScoreboard();
-      openModal('scoreboardModal');
-    }
-
-    function updateSbPlayer2Options() {
-      const p1Id = document.getElementById('sbPlayer1Select')?.value;
-      const p2Select = document.getElementById('sbPlayer2Select');
-      if (!p1Id || !p2Select) return;
-
-      const p1 = state.students.find(s => s.id === p1Id);
-      if (!p1) return;
-
-      const sameClassStudents = state.students.filter(s => {
-        if (s.id === p1Id) return false;
-        if (p1.grade && p1.classNum) {
-          return s.grade === p1.grade && s.classNum === p1.classNum;
-        }
-        return true;
-      });
-
-      if (sameClassStudents.length === 0) {
-        p2Select.innerHTML = `<option value="">(같은 반 상대가 없습니다)</option>`;
-        p2Select.disabled = true;
-        sbState.p1 = p1;
-        sbState.p2 = null;
-      } else {
-        p2Select.disabled = false;
-        p2Select.innerHTML = sameClassStudents.map(s => `
-          <option value="${s.id}">👤 [${formatClassBadge(s)}] ${escapeHtml(s.name)}</option>
-        `).join('');
-        sbState.p1 = p1;
-        sbState.p2 = sameClassStudents[0];
-      }
-      updateSbDisplay();
-    }
-
-    function onSbPlayer2Changed() {
-      const p2Id = document.getElementById('sbPlayer2Select')?.value;
-      sbState.p2 = state.students.find(s => s.id === p2Id);
-      updateSbDisplay();
-    }
-
-    function changeScore(playerNum, delta) {
-      if (playerNum === 1) {
-        sbState.score1 = Math.max(0, sbState.score1 + delta);
-      } else {
-        sbState.score2 = Math.max(0, sbState.score2 + delta);
-      }
-      playSuccessSound();
-      updateSbDisplay();
-    }
-
-    function resetScoreboard() {
-      sbState.score1 = 0;
-      sbState.score2 = 0;
-      sbState.serveP1 = true;
-      updateSbDisplay();
-    }
-
-    function updateSbDisplay() {
-      document.getElementById('sbPlayer1Name').innerText = sbState.p1 ? sbState.p1.name : '선수 1';
-      document.getElementById('sbPlayer2Name').innerText = sbState.p2 ? sbState.p2.name : '선수 2';
-      document.getElementById('sbScore1').innerText = sbState.score1;
-      document.getElementById('sbScore2').innerText = sbState.score2;
-
-      const total = sbState.score1 + sbState.score2;
-      const isDeuce = sbState.score1 >= 10 && sbState.score2 >= 10;
-      const serveChangeFreq = isDeuce ? 1 : 2;
-      const isP1Serve = (Math.floor(total / serveChangeFreq) % 2 === 0);
-
-      document.getElementById('sbServe1Indicator').classList.toggle('hidden', !isP1Serve);
-      document.getElementById('sbServe2Indicator').classList.toggle('hidden', isP1Serve);
-    }
-
-    function openTournamentModal() {
-      const select = document.getElementById('tournamentClassSelect');
-      if (!select) return;
-
-      const classes = new Set();
-      state.students.forEach(s => {
-        if (s.grade && s.classNum) classes.add(`${s.grade}학년 ${s.classNum}반`);
-      });
-
-      const arr = Array.from(classes).sort();
-      select.innerHTML = arr.map(c => `<option value="${c}">${c}</option>`).join('');
-      openModal('tournamentModal');
-    }
-
-    function generateTournamentBracket() {
-      const targetClass = document.getElementById('tournamentClassSelect')?.value;
-      const resultsContainer = document.getElementById('tournamentResultsContainer');
-      if (!targetClass || !resultsContainer) return;
-
-      const members = state.students.filter(s => `${s.grade}학년 ${s.classNum}반` === targetClass);
-      if (members.length < 2) {
-        resultsContainer.innerHTML = `<p class="text-rose-500 font-bold text-center py-4">대진표를 생성하기 위해 최소 2명의 부원이 필요합니다.</p>`;
-        return;
-      }
-
-      const shuffled = [...members].sort(() => Math.random() - 0.5);
-      let html = `<div class="space-y-1.5"><p class="font-bold text-emerald-800 text-[11px]">🎲 ${targetClass} 무작위 토너먼트 대진표</p>`;
-
-      for (let i = 0; i < shuffled.length; i += 2) {
-        const p1 = shuffled[i];
-        const p2 = shuffled[i + 1];
-
-        if (p2) {
-          html += `
-            <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-200">
-              <span class="font-bold text-slate-800">${p1.avatar} ${p1.name}</span>
-              <span class="font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">VS</span>
-              <span class="font-bold text-slate-800">${p2.avatar} ${p2.name}</span>
-            </div>
-          `;
-        } else {
-          html += `
-            <div class="flex items-center justify-between bg-emerald-50 p-2 rounded-xl border border-emerald-200">
-              <span class="font-bold text-emerald-900">${p1.avatar} ${p1.name}</span>
-              <span class="text-[10px] font-bold text-emerald-700">부전승 🚀</span>
-            </div>
-          `;
-        }
-      }
-      html += `</div>`;
-      resultsContainer.innerHTML = html;
-    }
-
-    window.syncDataWithCloud = () => showToast('파이어베이스 실시간 연동 중입니다.', '🔥');
-    window.handleStudentLogin = handleStudentLogin;
-    window.handleLogout = handleLogout;
-    window.toggleMobileRosterDrawer = toggleMobileRosterDrawer;
-    window.openStudentLoginModal = openStudentLoginModal;
-    window.openLevelGuideModal = openLevelGuideModal;
-    window.openScoreboardModal = openScoreboardModal;
-    window.updateSbPlayer2Options = updateSbPlayer2Options;
-    window.onSbPlayer2Changed = onSbPlayer2Changed;
-    window.changeScore = changeScore;
-    window.resetScoreboard = resetScoreboard;
-    window.openTournamentModal = openTournamentModal;
-    window.generateTournamentBracket = generateTournamentBracket;
-    window.switchMainTab = switchMainTab;
-    window.switchTab = switchTab;
-    window.switchRankingView = switchRankingView;
-    window.switchActiveStudent = switchActiveStudent;
-    window.switchToSelfAccount = switchToSelfAccount;
-
-    window.saveSkillEvaluation = function() {
-      if (checkReadOnlyGuard()) {
-        showToast('본인 계정에서만 자평 저장이 가능합니다.', '🔒');
-        return;
-      }
-      const student = getCurrentStudent();
-      if (!student) return;
-
-      student.skills = {
-        forehand: parseInt(document.getElementById('skillVal1').value) || 3,
-        backhand: parseInt(document.getElementById('skillVal2').value) || 3,
-        serve: parseInt(document.getElementById('skillVal3').value) || 3,
-        manner: parseInt(document.getElementById('skillVal4').value) || 5
-      };
-
-      saveStudentToFirestore(student);
-      showToast('탁구 기술 자평 기록이 저장되었습니다!', '⭐');
-    };
-
-    window.finishScoreboardMatch = function() {
-      if (!sbState.p1 || !sbState.p2) {
-        showToast('선수를 지정해 주세요.', '⚠️');
-        return;
-      }
-
-      if (sbState.score1 === sbState.score2) {
-        showToast('무승부는 기록할 수 없습니다! 승패가 갈릴 때까지 진행하세요.', '⚠️');
-        return;
-      }
-
-      const player1 = state.students.find(s => s.id === sbState.p1.id);
-      const player2 = state.students.find(s => s.id === sbState.p2.id);
-      if (!player1 || !player2) return;
-
-      const winner = sbState.score1 > sbState.score2 ? player1 : player2;
-      const loser = sbState.score1 > sbState.score2 ? player2 : player1;
-
-      winner.wins = (winner.wins || 0) + 1;
-      winner.totalPoints = (winner.totalPoints || 0) + 10;
-      loser.losses = (loser.losses || 0) + 1;
-      loser.totalPoints = (loser.totalPoints || 0) + 5;
-
-      const dateStr = new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-
-      if (!winner.history) winner.history = [];
-      winner.history.unshift({
-        title: `[전광판 경기 승리] vs ${loser.name} (${sbState.score1}:${sbState.score2})`,
-        points: 10,
-        date: dateStr
-      });
-
-      if (!loser.history) loser.history = [];
-      loser.history.unshift({
-        title: `[전광판 경기 참가] vs ${winner.name} (${sbState.score1}:${sbState.score2})`,
-        points: 5,
-        date: dateStr
-      });
-
-      const newMatch = {
-        id: 'm_' + Date.now(),
-        p1Id: player1.id,
-        p2Id: player2.id,
-        winnerId: winner.id,
-        loserId: loser.id,
-        p1Name: player1.name,
-        p2Name: player2.name,
-        score1: sbState.score1,
-        score2: sbState.score2,
-        winnerName: winner.name,
-        date: dateStr
-      };
-
-      if (!state.matchHistory) state.matchHistory = [];
-      state.matchHistory.unshift(newMatch);
-
-      saveStudentToFirestore(winner);
-      saveStudentToFirestore(loser);
-      saveMatchToFirestore(newMatch);
-
-      renderUI();
-      closeModal('scoreboardModal');
-      playSuccessSound();
-      triggerConfetti();
-      showToast(`경기 종료! (${winner.name} 승리)`, '🏆');
-    };
-
-    window.deleteMatchRecord = function(matchId) {
-      if (state.role !== 'admin') {
-        showToast('선생님 모드에서만 삭제할 수 있습니다.', '🔒');
-        return;
-      }
-      const match = (state.matchHistory || []).find(m => m.id === matchId);
-      if (!match) return;
-
-      showCustomConfirm('경기 기록 삭제', `'${match.p1Name} vs ${match.p2Name}' 경기 기록을 삭제하시겠습니까?`, () => {
-        if (match.winnerId) {
-          const winner = state.students.find(s => s.id === match.winnerId);
-          if (winner) {
-            winner.wins = Math.max(0, (winner.wins || 0) - 1);
-            winner.totalPoints = Math.max(0, (winner.totalPoints || 0) - 10);
-            saveStudentToFirestore(winner);
-          }
-        }
-        if (match.loserId) {
-          const loser = state.students.find(s => s.id === match.loserId);
-          if (loser) {
-            loser.losses = Math.max(0, (loser.losses || 0) - 1);
-            loser.totalPoints = Math.max(0, (loser.totalPoints || 0) - 5);
-            saveStudentToFirestore(loser);
-          }
-        }
-
-        state.matchHistory = state.matchHistory.filter(m => m.id !== matchId);
-        deleteMatchFromFirestore(matchId);
-        renderUI();
-        showToast('경기 기록이 삭제되었습니다.', '🗑️');
-      });
-    };
-
     async function initFirebase() {
       try {
         if (firebaseConfig.apiKey === "YOUR_ACTUAL_FIREBASE_API_KEY") {
-          console.warn("⚠️ Firebase API Key가 설정되지 않았습니다. index.html의 firebaseConfig에 실제 API Key를 작성해 주세요.");
           updateCloudStatusBadge('error');
-          showToast('Firebase API Key 설정이 필요합니다.', '⚠️');
           return;
         }
 
@@ -2625,7 +3444,6 @@
       } catch (err) {
         console.error("Firebase auth error:", err);
         updateCloudStatusBadge('error');
-        showToast('파이어베이스 연동 오류: 콘솔 및 익명 인증 설정을 확인하세요.', '⚠️');
       }
     }
 
@@ -2636,8 +3454,7 @@
       onValue(studentsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          const loadedStudents = Object.values(data);
-          state.students = loadedStudents;
+          state.students = Object.values(data);
           validateStateArrays();
           renderUI();
         } else {
@@ -2662,8 +3479,7 @@
       onValue(rewardsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          const loadedRewards = Object.values(data);
-          state.rewards = loadedRewards;
+          state.rewards = Object.values(data);
         } else {
           state.rewards.forEach(r => saveRewardToRTDB(r));
         }
@@ -2711,11 +3527,15 @@
       }
     }
 
-    // 기존 함수 호환성 바인딩
-    const saveStudentToFirestore = saveStudentToRTDB;
-    const saveMatchToFirestore = saveMatchToRTDB;
-    const deleteMatchFromFirestore = deleteMatchFromRTDB;
-    const saveRewardToFirestore = saveRewardToRTDB;
+    async function deleteRewardFromRTDB(rewardId) {
+      if (!firebaseUser || !rewardId) return;
+      try {
+        const rewardRef = ref(db, `artifacts/${appId}/public/data/rewards/${rewardId}`);
+        await remove(rewardRef);
+      } catch (err) {
+        console.error("Failed to delete reward from RTDB:", err);
+      }
+    }
 
     function saveState() {
       try {
@@ -2758,6 +3578,71 @@
         });
       }
     }
+
+    Object.assign(window, {
+      syncDataWithCloud: () => showToast('파이어베이스 실시간 연동 중입니다.', '🔥'),
+      handleStudentLogin,
+      handleLogout,
+      quickLoginStudent,
+      toggleMobileRosterDrawer,
+      openStudentLoginModal,
+      openLevelGuideModal,
+      openScoreboardModal,
+      updateSbPlayer2Options,
+      onSbPlayer2Changed,
+      changeScore,
+      resetScoreboard,
+      finishScoreboardMatch,
+      openTournamentModal,
+      generateTournamentBracket,
+      switchMainTab,
+      switchTab,
+      switchRankingView,
+      switchActiveStudent,
+      switchToSelfAccount,
+      saveSkillEvaluation,
+      deleteMatchRecord,
+      toggleRoleModal,
+      verifyAndSwitchToAdmin,
+      openSettingsModal,
+      handleAvatarClick,
+      openAddStudentModal,
+      openEditStudentModal,
+      selectNewStudentAvatar,
+      saveNewStudent,
+      editStudentInfo,
+      deleteStudent,
+      openAddMissionModal,
+      openEditMissionModal,
+      applyMissionPreset,
+      handleAddMission,
+      moveMission,
+      deleteMission,
+      handleMissionCheck,
+      approvePendingMission,
+      approveAllPendingMissions,
+      rejectPendingMission,
+      confirmTeacherPasscode,
+      openMatchRecordModal,
+      updatePlayer2Options,
+      validateScoreTie,
+      handleRecordMatch,
+      applyPointAdjustment,
+      openAddRewardModal,
+      selectRewardIcon,
+      handleAddReward,
+      redeemReward,
+      useCoupon,
+      deleteReward,
+      toggleTeacherMode,
+      updatePasscode,
+      exportAppData,
+      triggerImportDialog,
+      importAppData,
+      resetAllData,
+      toggleGroupCollapse,
+      closeModal
+    });
 
     window.onload = function() {
       initFirebase();

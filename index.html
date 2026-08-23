@@ -1805,13 +1805,19 @@
               <span class="text-[10px] bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full font-black">${list.length}명</span>
             </div>
             <div class="p-1.5 space-y-1">
-              ${list.map(s => `
+              ${list.map(s => {
+                const levelTitle = calculateLevelTitle(s.totalPoints);
+                const isSelected = s.id === state.activeStudentId;
+                return `
                 <div onclick="switchActiveStudent('${s.id}')" class="flex justify-between items-center p-2 rounded-xl cursor-pointer text-xs transition-all ${
-                  s.id === state.activeStudentId ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'hover:bg-slate-50 text-slate-800 bg-white border border-slate-100'
+                  isSelected ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'hover:bg-slate-50 text-slate-800 bg-white border border-slate-100'
                 }">
-                  <span class="truncate">${s.avatar || '🏓'} ${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}${s.id === loggedInStudentId ? ' (나)' : ''}</span>
+                  <div class="flex flex-col min-w-0 pr-1">
+                    <span class="truncate font-bold">${s.avatar || '🏓'} ${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}${s.id === loggedInStudentId ? ' (나)' : ''}</span>
+                    <span class="text-[10px] ${isSelected ? 'text-emerald-100' : 'text-slate-500'} font-semibold truncate">${levelTitle}</span>
+                  </div>
                   <div class="flex items-center space-x-1.5 shrink-0">
-                    <span class="font-extrabold ${s.id === state.activeStudentId ? 'text-amber-300' : 'text-emerald-700'}">${s.totalPoints || 0} P</span>
+                    <span class="font-extrabold ${isSelected ? 'text-amber-300' : 'text-emerald-700'}">${s.totalPoints || 0} P</span>
                     ${isAdmin ? `
                       <button onclick="event.stopPropagation(); deleteStudent('${s.id}')" class="text-rose-400 hover:text-rose-600 hover:bg-rose-50 p-1 rounded-md transition-all text-xs" title="부원 삭제">
                         <i class="fa-solid fa-trash-can"></i>
@@ -1819,7 +1825,8 @@
                     ` : ''}
                   </div>
                 </div>
-              `).join('')}
+              `;
+              }).join('')}
             </div>
           </div>
         `;
@@ -1863,14 +1870,18 @@
         const completed = missions.filter(m => m.completed).length;
         const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
         const isActive = s.id === state.activeStudentId;
+        const levelTitle = calculateLevelTitle(s.totalPoints);
 
         html += `
           <div onclick="switchActiveStudent('${s.id}')" class="p-2 rounded-xl border transition-all cursor-pointer ${
             isActive ? 'bg-emerald-50 border-emerald-300 shadow-xs' : 'bg-white border-slate-100 hover:border-emerald-200'
           }">
             <div class="flex justify-between items-center text-[11px] mb-1">
-              <span class="font-bold text-slate-800 truncate">${s.avatar || '🏓'} ${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}</span>
-              <span class="font-black text-emerald-700">${pct}% <span class="text-[9px] text-slate-400">(${completed}/${total})</span></span>
+              <div class="flex items-center space-x-1 min-w-0 pr-1">
+                <span class="font-bold text-slate-800 truncate">${s.avatar || '🏓'} ${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}</span>
+                <span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-md font-semibold shrink-0">${levelTitle}</span>
+              </div>
+              <span class="font-black text-emerald-700 shrink-0">${pct}% <span class="text-[9px] text-slate-400">(${completed}/${total})</span></span>
             </div>
             <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
               <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>

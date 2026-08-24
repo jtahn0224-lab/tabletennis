@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>양주중학교 체육수업 - 스핀 & 스매시! 탁구 미션 챌린지</title>
+  <title>스핀 & 스매시! 중학교 탁구 미션 챌린지 - 양주중학교 체육수업</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -45,20 +45,11 @@
     }
 
     @keyframes pop-in {
-      0% { transform: scale(0.88); opacity: 0; }
+      0% { transform: scale(0.92); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
     .animate-pop {
       animation: pop-in 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-
-    @keyframes stamp-animation {
-      0% { transform: scale(3) rotate(-15deg); opacity: 0; }
-      50% { transform: scale(1) rotate(-15deg); opacity: 1; }
-      100% { transform: scale(1) rotate(-12deg); opacity: 0.95; }
-    }
-    .stamp-effect {
-      animation: stamp-animation 0.35s ease-out forwards;
     }
 
     ::-webkit-scrollbar {
@@ -73,33 +64,38 @@
       background: #cbd5e1;
       border-radius: 10px;
     }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
   </style>
 </head>
 <body class="p-2 sm:p-4 md:p-6 flex justify-center items-center min-h-screen">
 
   <div id="loginGateScreen" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl animate-pop text-center max-h-[90vh] overflow-y-auto">
+      <div class="inline-flex items-center space-x-1 bg-emerald-100 text-emerald-800 font-black text-xs px-3 py-1 rounded-full mb-3">
+        <span>🏫 양주중학교 체육수업</span>
+      </div>
       <div class="w-16 h-16 bg-gradient-to-tr from-emerald-500 to-teal-600 text-white rounded-3xl flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg shadow-emerald-500/30">
         🏓
       </div>
-      <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full mb-2 border border-emerald-200">🏫 양주중학교 체육수업</span>
       <h2 class="text-2xl font-black text-slate-800">스핀 & 스매시!</h2>
-      <p class="text-xs text-slate-500 font-bold mt-1 mb-6">중학교 탁구 미션 챌린지 로그인</p>
+      <p class="text-xs text-slate-500 font-bold mt-0.5 mb-5">탁구 미션 챌린지 부원 로그인</p>
 
       <form onsubmit="handleStudentLogin(event)" class="space-y-4 text-left">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">학번 (학년 / 반 / 번호)</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">학번 정보 (학년 / 반 / 번호)</label>
           <div class="grid grid-cols-3 gap-2">
             <div class="relative flex items-center">
-              <input type="number" id="loginGradeInput" min="1" max="6" placeholder="1" required class="w-full pl-3 pr-7 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-bold text-slate-800 text-sm text-center">
+              <input type="number" id="loginGradeInput" min="1" max="6" placeholder="1" required class="w-full pl-3 pr-7 py-2.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-bold text-slate-800 text-sm text-center">
               <span class="absolute right-2 text-xs font-bold text-slate-400 pointer-events-none">학년</span>
             </div>
             <div class="relative flex items-center">
-              <input type="number" id="loginClassInput" min="1" max="30" placeholder="1" required class="w-full pl-3 pr-5 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-bold text-slate-800 text-sm text-center">
+              <input type="number" id="loginClassInput" min="1" max="30" placeholder="1" required class="w-full pl-3 pr-5 py-2.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-bold text-slate-800 text-sm text-center">
               <span class="absolute right-2 text-xs font-bold text-slate-400 pointer-events-none">반</span>
             </div>
             <div class="relative flex items-center">
-              <input type="number" id="loginNumberInput" min="1" max="50" placeholder="1" required class="w-full pl-3 pr-5 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-bold text-slate-800 text-sm text-center">
+              <input type="number" id="loginNumberInput" min="1" max="50" placeholder="1" required class="w-full pl-3 pr-5 py-2.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-bold text-slate-800 text-sm text-center">
               <span class="absolute right-2 text-xs font-bold text-slate-400 pointer-events-none">번</span>
             </div>
           </div>
@@ -107,33 +103,32 @@
 
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">학생 이름</label>
-          <input type="text" id="loginNameInput" placeholder="예: 김탁구" required class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-bold text-slate-800 text-sm">
+          <input type="text" id="loginNameInput" placeholder="예: 김탁구" required class="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-bold text-slate-800 text-sm">
         </div>
 
         <button type="submit" class="w-full mt-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-emerald-600/30 active:scale-95 transition-all text-sm flex items-center justify-center space-x-2">
           <i class="fa-solid fa-right-to-bracket"></i>
-          <span>학번으로 접속하기</span>
+          <span>학생 학번으로 접속하기</span>
         </button>
       </form>
 
-      <!-- 선생님(관리자) 전용 빠른 로그인 버튼 -->
-      <div class="mt-3">
-        <button type="button" onclick="loginAsTeacher()" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold py-2.5 rounded-2xl border border-amber-200/80 active:scale-95 transition-all text-xs flex items-center justify-center space-x-1.5 shadow-xs">
-          <i class="fa-solid fa-user-shield text-amber-600"></i>
+      <div class="mt-4 pt-3 border-t border-slate-100 flex justify-center">
+        <button onclick="toggleRoleModalFromLogin()" class="w-full bg-slate-800 hover:bg-slate-900 text-emerald-400 font-extrabold py-2.5 rounded-2xl text-xs transition-all flex items-center justify-center space-x-1.5 shadow-sm">
+          <i class="fa-solid fa-graduation-cap"></i>
           <span>🎓 선생님(관리자) 로그인</span>
         </button>
       </div>
 
-      <div class="mt-4 pt-4 border-t border-slate-100 text-left">
+      <div class="mt-5 pt-3 border-t border-slate-100 text-left">
         <p class="text-[11px] font-bold text-slate-400 mb-2">등록된 부원 빠른 입장:</p>
-        <div id="loginQuickRosterChips" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1">
+        <div id="loginQuickRosterChips" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
           <!-- Dynamic Chips -->
         </div>
       </div>
     </div>
   </div>
 
-  <div class="w-full max-w-6xl flex flex-col lg:flex-row gap-5 items-start justify-center my-auto">
+  <div class="w-full max-w-6xl flex flex-col lg:flex-row gap-5 items-stretch justify-center my-auto">
 
     <!-- MOBILE TOP BAR -->
     <div class="w-full lg:hidden flex justify-between items-center bg-slate-900/80 backdrop-blur-md p-3 rounded-2xl text-white border border-slate-700 mb-1">
@@ -153,10 +148,10 @@
     </div>
 
     <!-- LEFT PANEL: Student Directory -->
-    <aside id="studentDirectoryPanel" class="fixed inset-y-0 left-0 z-40 w-80 bg-white/95 lg:bg-white/90 backdrop-blur-xl p-5 flex flex-col shrink-0 transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out lg:rounded-3xl glass-card order-2 lg:order-1 shadow-2xl lg:shadow-none">
-      <div class="flex justify-between items-center mb-2 pb-2 border-b border-emerald-100">
+    <aside id="studentDirectoryPanel" class="fixed inset-y-0 left-0 z-40 w-80 bg-white/95 lg:bg-white/90 backdrop-blur-xl p-4 flex flex-col shrink-0 transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out lg:rounded-3xl glass-card order-2 lg:order-1 shadow-2xl lg:shadow-none min-h-[85vh]">
+      <div class="mb-2 pb-2 border-b border-emerald-100 flex justify-between items-center">
         <div>
-          <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md inline-block mb-1">🏫 양주중학교 체육수업</span>
+          <span class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md inline-block mb-1">🏫 양주중학교 체육수업</span>
           <h3 class="font-extrabold text-slate-800 text-sm flex items-center space-x-2">
             <span class="text-base">🏓</span>
             <span>탁구 부원 명단</span>
@@ -175,60 +170,64 @@
         <input type="text" id="directorySearchInput" oninput="renderStudentDirectory()" placeholder="부원 이름 검색..." class="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-400">
       </div>
 
-      <p class="text-[11px] text-slate-500 mb-3">부원 클릭 시 해당 부원의 정보로 전환됩니다.</p>
+      <p class="text-[11px] text-slate-500 mb-2">부원 클릭 시 해당 부원의 정보로 전환됩니다.</p>
 
-      <div id="groupedStudentList" class="space-y-3 max-h-[40vh] lg:max-h-[35vh] overflow-y-auto pr-1">
-        <!-- Dynamic grouped student list -->
+      <div id="groupedStudentList" class="space-y-3 max-h-[50vh] overflow-y-auto pr-1 flex-1">
+        <!-- Dynamic grouped student list with accordion summaries -->
       </div>
 
-      <div class="mt-4 pt-3 border-t border-slate-200">
+      <div class="mt-3 pt-3 border-t border-slate-200">
         <div class="flex justify-between items-center mb-2">
           <h4 class="font-extrabold text-slate-800 text-xs flex items-center space-x-1">
             <i class="fa-solid fa-chart-line text-emerald-600"></i>
             <span>학급 내 개별 부원 달성률</span>
           </h4>
         </div>
-        <div id="classIndividualProgressContainer" class="space-y-2 max-h-[20vh] overflow-y-auto pr-1">
+        <div id="classIndividualProgressContainer" class="space-y-2 max-h-[22vh] overflow-y-auto pr-1">
           <!-- Dynamic Individual Progress Bar Cards -->
         </div>
       </div>
 
-      <button id="sidebarAddStudentBtn" onclick="openAddStudentModal()" class="hidden mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-2.5 rounded-2xl text-xs border border-emerald-200 transition-all flex items-center justify-center space-x-1.5 shadow-xs">
+      <!-- Visible ONLY in Teacher Mode -->
+      <button id="sidebarAddStudentBtn" onclick="openAddStudentModal()" class="hidden mt-3 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-2.5 rounded-2xl text-xs border border-emerald-200 transition-all flex items-center justify-center space-x-1.5 shadow-xs">
         <i class="fa-solid fa-user-plus"></i>
         <span>+ 신규 부원 추가 등록</span>
       </button>
     </aside>
 
+    <!-- MAIN APP CONTAINER -->
     <div id="appContainer" class="w-full lg:flex-1 max-w-xl min-h-[85vh] glass-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between relative overflow-hidden order-1 lg:order-2">
       
-      <!-- School Branding Header Tag -->
-      <div class="flex justify-between items-center mb-2 px-0.5">
-        <span class="text-[11px] font-extrabold text-emerald-800 bg-emerald-100/90 px-2.5 py-1 rounded-xl border border-emerald-200/80 flex items-center space-x-1 shadow-2xs">
-          <span>🏫</span>
-          <span>양주중학교 체육수업</span>
-        </span>
-        <span class="text-[10px] font-bold text-slate-400">스핀 & 스매시! 탁구 챌린지</span>
-      </div>
-
-      <!-- Mode Indicator Banner -->
-      <div id="modeBanner" class="mb-3 px-3 py-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm bg-emerald-100 text-emerald-900 border border-emerald-200">
-        <div class="flex items-center space-x-1.5 truncate pr-2">
-          <span id="modeIcon">🎒</span>
-          <span id="modeTitle" class="truncate">탁구 부원 모드</span>
+      <!-- Top School Branding Tag & Mode Indicator -->
+      <div class="mb-3">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-[11px] font-black text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-lg border border-emerald-200/80">
+            🏫 양주중학교 체육수업 - 탁구 단원
+          </span>
+          <span id="roleBadgeTag" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-600 text-white">
+            부원 모드
+          </span>
         </div>
-        <div class="flex items-center space-x-2 shrink-0">
-          <button id="modeSwitchBtn" onclick="toggleRoleModal()" class="hidden hover:underline text-[11px] font-bold flex items-center space-x-1">
-            <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
-            <span id="modeSwitchBtnText">부원 모드로 전환</span>
-          </button>
+
+        <div id="modeBanner" class="px-3 py-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm bg-emerald-100 text-emerald-900 border border-emerald-200">
+          <div class="flex items-center space-x-1.5 truncate pr-2">
+            <span id="modeIcon">🎒</span>
+            <span id="modeTitle" class="truncate">탁구 부원 모드</span>
+          </div>
+          <div class="flex items-center space-x-2 shrink-0">
+            <button id="modeSwitchBtn" onclick="toggleRoleModal()" class="hidden hover:underline text-[11px] font-bold flex items-center space-x-1 text-emerald-800">
+              <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
+              <span id="modeSwitchBtnText">부원 모드로 변경</span>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Read-Only Notice Banner -->
       <div id="readOnlyNoticeBanner" class="hidden mb-3 p-2.5 bg-amber-500/10 border border-amber-300 text-amber-900 rounded-2xl text-xs font-bold flex items-center justify-between">
-        <div class="flex items-center space-x-1.5 truncate">
+        <div class="flex items-center space-x-1.5 truncate pr-1">
           <span>👁️</span>
-          <span>타 부원 정보 조회 중 (열람 전용)</span>
+          <span class="truncate">타 부원 정보 조회 중 (열람 전용)</span>
         </div>
         <button onclick="switchToSelfAccount()" class="bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-xl shadow-xs shrink-0">
           내 계정으로 돌아가기
@@ -254,7 +253,7 @@
         </div>
 
         <select id="adminStudentSelect" onchange="switchActiveStudent(this.value)" class="hidden bg-slate-800 border border-slate-700 text-emerald-400 font-bold text-xs rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-emerald-400 max-w-[140px] truncate">
-          <!-- Dynamic student options -->
+          <!-- Dynamic student options sorted ascending -->
         </select>
 
         <div class="flex items-center space-x-1.5">
@@ -274,8 +273,8 @@
       </header>
 
       <!-- Points & Progress Widget -->
-      <section id="progressWidget" class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-4 sm:p-5 text-white shadow-lg mb-4 relative overflow-hidden transition-all duration-300">
-        <div class="flex justify-between items-end mb-3">
+      <section id="progressWidget" class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-4 sm:p-5 text-white shadow-lg mb-3 relative overflow-hidden transition-all duration-300">
+        <div class="flex justify-between items-end mb-2.5">
           <div>
             <p id="widgetSubTitle" class="text-xs font-medium text-emerald-100 uppercase tracking-wider mb-0.5">오늘의 미션 달성률</p>
             <div class="flex items-baseline space-x-2">
@@ -295,8 +294,22 @@
         </div>
       </section>
 
+      <!-- 10-Week Curriculum Scrollable Chips Filter -->
+      <div class="mb-3 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80">
+        <div class="flex items-center justify-between mb-1 px-1">
+          <span class="text-[10px] font-extrabold text-slate-500 flex items-center space-x-1">
+            <i class="fa-solid fa-calendar-week text-emerald-600"></i>
+            <span>학기 차수 선택 (1~10주차)</span>
+          </span>
+          <span id="currentWeekLabel" class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.2 rounded-full">전체 주차</span>
+        </div>
+        <div id="weekFilterBar" class="flex space-x-1 overflow-x-auto pb-1 scrollbar-none">
+          <!-- Dynamic Week Chips (All, 1주차 ~ 10주차) -->
+        </div>
+      </div>
+
       <!-- Pending Approval Box (Teacher Mode) -->
-      <div id="adminApprovalSection" class="hidden mb-4 p-3.5 bg-amber-50 border border-amber-200 rounded-2xl shadow-sm">
+      <div id="adminApprovalSection" class="hidden mb-3 p-3 bg-amber-50 border border-amber-200 rounded-2xl shadow-sm">
         <div class="flex justify-between items-center mb-2">
           <h4 class="text-xs font-extrabold text-amber-900 flex items-center space-x-1.5">
             <i class="fa-solid fa-clock-rotate-left text-amber-600"></i>
@@ -309,7 +322,7 @@
             <span id="pendingCountBadge" class="bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0건</span>
           </div>
         </div>
-        <div id="pendingList" class="space-y-2 max-h-36 overflow-y-auto">
+        <div id="pendingList" class="space-y-1.5 max-h-32 overflow-y-auto">
           <!-- Dynamic pending items -->
         </div>
       </div>
@@ -334,25 +347,14 @@
       </div>
 
       <!-- VIEW 1: Missions View -->
-      <main id="viewMissions" class="flex-1 flex flex-col min-h-0 mb-4">
-        <div class="flex justify-between items-center mb-3">
+      <main id="viewMissions" class="flex-1 flex flex-col min-h-0 mb-3">
+        <div class="flex justify-between items-center mb-2">
           <h3 class="font-extrabold text-slate-800 text-sm sm:text-base flex items-center space-x-2">
-            <span id="missionSectionTitle">🎯 오늘의 탁구 미션</span>
+            <span id="missionSectionTitle">🎯 탁구 미션 챌린지</span>
           </h3>
-          <div id="teacherModeTag" class="hidden text-[10px] sm:text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold flex items-center space-x-1">
-            <i class="fa-solid fa-user-shield text-amber-600"></i>
-            <span>선생님 확인 ON</span>
-          </div>
         </div>
 
-        <!-- 1~10주차 회차 선택 필터 바 -->
-        <div class="mb-3 overflow-x-auto pb-1">
-          <div id="weekFilterChips" class="flex items-center space-x-1.5 min-w-max text-xs font-bold">
-            <!-- Dynamic week chips (1주차 ~ 10주차 + 전체주차) -->
-          </div>
-        </div>
-
-        <div class="flex bg-slate-100/90 p-1 rounded-2xl mb-3 border border-slate-200/60 shadow-inner">
+        <div class="flex bg-slate-100/90 p-1 rounded-2xl mb-2.5 border border-slate-200/60 shadow-inner">
           <button id="tabPersonalBtn" onclick="switchTab('personal')" class="flex-1 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-1 shadow-sm bg-white text-emerald-800">
             <i class="fa-solid fa-user"></i>
             <span>개인 챌린지</span>
@@ -365,32 +367,32 @@
           </button>
         </div>
 
-        <div class="flex items-center space-x-2 mb-3">
+        <div class="flex items-center space-x-2 mb-2.5">
           <div class="relative flex-1">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
-            <input type="text" id="missionSearchInput" oninput="renderMissionsView()" placeholder="미션 검색..." class="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            <input type="text" id="missionSearchInput" oninput="renderUI()" placeholder="미션 제목 검색..." class="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-400">
           </div>
-          <select id="missionFilterStatus" onchange="renderMissionsView()" class="bg-white border border-slate-200 text-slate-700 font-bold text-xs rounded-xl px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+          <select id="missionFilterStatus" onchange="renderUI()" class="bg-white border border-slate-200 text-slate-700 font-bold text-xs rounded-xl px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-400">
             <option value="all">전체 상태</option>
             <option value="active">진행 중</option>
             <option value="completed">완료됨</option>
           </select>
         </div>
 
-        <div id="missionList" class="flex-1 overflow-y-auto space-y-2.5 pr-1 min-h-[200px]">
+        <div id="missionList" class="flex-1 overflow-y-auto space-y-2 pr-1 min-h-[200px]">
           <!-- Dynamic Mission Cards -->
         </div>
 
         <div id="emptyState" class="hidden flex-1 flex-col items-center justify-center text-center p-6 bg-white/40 rounded-3xl border border-dashed border-emerald-200">
           <div class="text-4xl mb-2">🏓</div>
           <p id="emptyStateText" class="font-bold text-slate-700">등록된 미션이 없어요!</p>
-          <p class="text-xs text-slate-500 mt-1">새로운 탁구 미션을 추가해 보세요.</p>
+          <p class="text-xs text-slate-500 mt-1">새로운 주차의 미션을 확인해 보세요.</p>
         </div>
       </main>
 
-      <!-- VIEW 2: Matches & Rankings View -->
-      <main id="viewMatches" class="hidden flex-1 flex-col min-h-0 mb-4 overflow-y-auto pr-1">
-        <div class="flex flex-wrap gap-2 justify-between items-center mb-3">
+      <!-- VIEW 2: Matches & Leaderboard View -->
+      <main id="viewMatches" class="hidden flex-1 flex-col min-h-0 mb-3 overflow-y-auto pr-1">
+        <div class="flex flex-wrap gap-2 justify-between items-center mb-2.5">
           <h3 class="font-extrabold text-slate-800 text-sm sm:text-base flex items-center space-x-1.5">
             <span>🏓 학급별 경기 & 랭킹</span>
           </h3>
@@ -401,12 +403,12 @@
             </button>
             <button id="addMatchBtn" onclick="openMatchRecordModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-2.5 py-1.5 rounded-xl transition-all shadow-sm flex items-center space-x-1">
               <i class="fa-solid fa-plus"></i>
-              <span>기록</span>
+              <span>수동 기록</span>
             </button>
           </div>
         </div>
 
-        <div class="flex bg-slate-100 p-1 rounded-2xl mb-3 border border-slate-200/80">
+        <div class="flex bg-slate-100 p-1 rounded-2xl mb-2.5 border border-slate-200/80">
           <button id="rankingViewListBtn" onclick="switchRankingView('list')" class="flex-1 py-1.5 rounded-xl text-xs font-black transition-all bg-white text-emerald-800 shadow-sm flex items-center justify-center space-x-1">
             <i class="fa-solid fa-list-ol"></i>
             <span>리스트 보기</span>
@@ -417,13 +419,13 @@
           </button>
         </div>
 
-        <p class="text-xs text-slate-500 mb-3">동일 학년·반 부원 간 경기 결과와 **승패 및 승률(%)** 기준 랭킹입니다.</p>
+        <p class="text-xs text-slate-500 mb-2.5">동일 학년·반 부원 간 경기 결과와 **승패 및 승률(%)** 기준 랭킹입니다.</p>
 
-        <div id="classLeaderboardContainer" class="space-y-4 mb-4">
+        <div id="classLeaderboardContainer" class="space-y-3 mb-3">
           <!-- Dynamic Leaderboard Cards -->
         </div>
 
-        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
           <h4 class="text-xs font-extrabold text-slate-700 mb-2 flex items-center justify-between">
             <span class="flex items-center space-x-1.5">
               <i class="fa-solid fa-table-tennis-paddle-ball text-emerald-600"></i>
@@ -431,15 +433,15 @@
             </span>
             <span class="text-[10px] text-slate-400 font-semibold">(무승부 없음)</span>
           </h4>
-          <div id="matchHistoryList" class="space-y-2 max-h-36 overflow-y-auto">
+          <div id="matchHistoryList" class="space-y-1.5 max-h-36 overflow-y-auto">
             <!-- Dynamic match history logs -->
           </div>
         </div>
       </main>
 
-      <!-- VIEW 3: Rewards View -->
-      <main id="viewRewards" class="hidden flex-1 flex-col min-h-0 mb-4 overflow-y-auto pr-1">
-        <div class="flex justify-between items-center mb-3">
+      <!-- VIEW 3: Reward Shop & Coupon Vault -->
+      <main id="viewRewards" class="hidden flex-1 flex-col min-h-0 mb-3 overflow-y-auto pr-1">
+        <div class="flex justify-between items-center mb-2">
           <h3 class="font-extrabold text-slate-800 text-sm sm:text-base flex items-center space-x-1.5">
             <span>🎁 탁구 보상 상점 & 쿠폰</span>
           </h3>
@@ -451,7 +453,7 @@
 
         <p class="text-xs text-slate-500 mb-3">획득한 포인트로 탁구 수업 특권 및 보상 쿠폰으로 교환하세요!</p>
 
-        <div id="rewardsList" class="space-y-2.5 mb-5">
+        <div id="rewardsList" class="space-y-2 mb-4">
           <!-- Dynamic Rewards -->
         </div>
 
@@ -460,19 +462,19 @@
             <i class="fa-solid fa-ticket text-amber-600"></i>
             <span>보관 중인 보상 쿠폰함</span>
           </h4>
-          <div id="redeemedCouponsList" class="space-y-2 max-h-36 overflow-y-auto">
+          <div id="redeemedCouponsList" class="space-y-1.5 max-h-36 overflow-y-auto">
             <!-- Dynamic Active Coupons -->
           </div>
         </div>
       </main>
 
-      <!-- VIEW 4: Activity Stats & Skill Evaluation View -->
-      <main id="viewStats" class="hidden flex-1 flex-col min-h-0 mb-4 overflow-y-auto pr-1">
-        <h3 class="font-extrabold text-slate-800 text-sm sm:text-base mb-3 flex items-center space-x-1.5">
+      <!-- VIEW 4: Activity Stats & Skill Self Evaluation -->
+      <main id="viewStats" class="hidden flex-1 flex-col min-h-0 mb-3 overflow-y-auto pr-1">
+        <h3 class="font-extrabold text-slate-800 text-sm sm:text-base mb-2.5 flex items-center space-x-1.5">
           <span>📊 나의 탁구 활동 기록 & 자평</span>
         </h3>
 
-        <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="grid grid-cols-2 gap-2.5 mb-3">
           <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-3 rounded-2xl border border-emerald-100 text-center">
             <p class="text-[11px] font-bold text-slate-500">완료한 미션</p>
             <p id="statCompletedCount" class="text-2xl font-black text-emerald-700 mt-0.5">0개</p>
@@ -484,8 +486,8 @@
         </div>
 
         <!-- Skill Self-Evaluation Section -->
-        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 mb-4 shadow-xs">
-          <h4 class="text-xs font-extrabold text-slate-800 mb-3 flex items-center justify-between">
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 mb-3 shadow-xs">
+          <h4 class="text-xs font-extrabold text-slate-800 mb-2.5 flex items-center justify-between">
             <span class="flex items-center space-x-1.5">
               <i class="fa-solid fa-sliders text-emerald-600"></i>
               <span>탁구 기술 자평 (5점 만점)</span>
@@ -526,7 +528,8 @@
           </div>
         </div>
 
-        <div id="adminPointAdjustBox" class="hidden mb-4 p-3.5 bg-slate-800 text-white rounded-2xl border border-slate-700 shadow-sm">
+        <!-- Teacher Point Adjust Section -->
+        <div id="adminPointAdjustBox" class="hidden mb-3 p-3 bg-slate-800 text-white rounded-2xl border border-slate-700 shadow-sm">
           <p class="text-xs font-bold text-emerald-400 mb-2 flex items-center justify-between">
             <span>⭐ 포인트 수동 부여 / 차감</span>
             <span class="text-[10px] text-slate-300">선생님 전용</span>
@@ -542,21 +545,24 @@
           </div>
         </div>
 
-        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-          <h4 class="text-xs font-extrabold text-slate-700 mb-2.5 flex items-center space-x-1.5">
-            <i class="fa-solid fa-clock-rotate-left text-emerald-600"></i>
-            <span>최근 활동 타임라인</span>
+        <!-- Activity Log Timeline -->
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+          <h4 class="text-xs font-extrabold text-slate-700 mb-2 flex items-center justify-between">
+            <span class="flex items-center space-x-1.5">
+              <i class="fa-solid fa-clock-rotate-left text-emerald-600"></i>
+              <span>최근 활동 타임라인</span>
+            </span>
           </h4>
-          <div id="historyLogList" class="space-y-2 max-h-48 overflow-y-auto text-xs">
+          <div id="historyLogList" class="space-y-1.5 max-h-44 overflow-y-auto text-xs">
             <!-- Dynamic History -->
           </div>
         </div>
       </main>
 
       <footer class="pt-2">
-        <button id="addMissionBtn" onclick="openAddMissionModal()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold py-3 px-4 rounded-2xl shadow-lg shadow-emerald-600/25 active:scale-95 transition-all flex items-center justify-center space-x-2 text-sm sm:text-base">
-          <i class="fa-solid fa-plus-circle text-lg"></i>
-          <span>새 탁구 미션 만들기</span>
+        <button id="addMissionBtn" onclick="openAddMissionModal()" class="hidden w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold py-3 px-4 rounded-2xl shadow-lg shadow-emerald-600/25 active:scale-95 transition-all flex items-center justify-center space-x-2 text-sm">
+          <i class="fa-solid fa-plus-circle text-base"></i>
+          <span>새 탁구 미션 만들기 (선생님)</span>
         </button>
       </footer>
     </div>
@@ -574,7 +580,7 @@
         </button>
       </div>
 
-      <div class="space-y-2.5 text-xs">
+      <div class="space-y-2 text-xs">
         <div id="tier_1" class="p-2.5 rounded-2xl border bg-slate-50 border-slate-200">
           <p class="font-bold text-slate-800">🌱 탁구 입문자 (0 ~ 49 P)</p>
           <p class="text-[10px] text-slate-500 mt-0.5">기본 자세 및 라켓 잡는 법 익히기 단계</p>
@@ -619,9 +625,9 @@
       </button>
 
       <h3 class="text-base font-extrabold text-emerald-400 mb-1">🏓 11점제 정식 경기 전광판</h3>
-      <p class="text-[11px] text-slate-400 mb-4">동일 학급 대결 (2점/듀스 서브 자동 교대)</p>
+      <p class="text-[11px] text-slate-400 mb-3">동일 학급 대결 (2점/듀스 서브 자동 교대)</p>
 
-      <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="grid grid-cols-2 gap-3 mb-3 text-left">
         <div>
           <label class="block text-[11px] text-slate-400 mb-1">선수 1 (동일 학급)</label>
           <select id="sbPlayer1Select" onchange="updateScoreboardPlayer2()" class="w-full bg-slate-800 border border-slate-700 text-white font-bold text-xs rounded-xl p-2 focus:outline-none">
@@ -656,7 +662,7 @@
         </div>
       </div>
 
-      <p id="sbStatusText" class="text-xs font-bold text-emerald-400 mb-4">경기 준비 완료 (0:0)</p>
+      <p id="sbStatusText" class="text-xs font-bold text-emerald-400 mb-3">경기 준비 완료 (0:0)</p>
 
       <div class="grid grid-cols-2 gap-2">
         <button onclick="resetScoreboard()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-2xl text-xs">
@@ -676,7 +682,7 @@
         <i class="fa-solid fa-lock"></i>
       </div>
       <h3 class="text-lg font-extrabold text-slate-800">선생님 모드 인증</h3>
-      <p class="text-xs text-slate-500 mt-1 mb-4">선생님 모드로 전환하려면 비밀번호를 입력해 주세요.</p>
+      <p class="text-xs text-slate-500 mt-1 mb-4">선생님 모드로 접속하려면 비밀번호를 입력해 주세요.</p>
 
       <div class="space-y-3">
         <input type="password" id="adminRolePasscodeInput" maxlength="6" placeholder="비밀번호 입력 (기본: 1234)" class="w-full text-center tracking-widest text-lg py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-bold">
@@ -697,7 +703,7 @@
   <!-- MODAL: Match Record Modal (No Draw Allowed) -->
   <div id="matchRecordModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
     <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl animate-pop">
-      <div class="flex justify-between items-center mb-4">
+      <div class="flex justify-between items-center mb-3">
         <h3 class="text-lg font-extrabold text-slate-800 flex items-center space-x-2">
           <span>🏓 경기 결과 수동 기록</span>
         </h3>
@@ -706,11 +712,11 @@
         </button>
       </div>
 
-      <p class="text-xs text-amber-800 bg-amber-50 border border-amber-200 p-2.5 rounded-xl mb-4 font-semibold">
+      <p class="text-xs text-amber-800 bg-amber-50 border border-amber-200 p-2.5 rounded-xl mb-3 font-semibold">
         ⚠️ **동일 학년·반** 부원 간 대결만 가능하며, **무승부는 불허**됩니다.
       </p>
 
-      <form onsubmit="handleRecordMatch(event)" class="space-y-4">
+      <form onsubmit="handleRecordMatch(event)" class="space-y-3">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">선수 1 선택</label>
           <select id="matchPlayer1Select" onchange="updatePlayer2Options()" required class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400">
@@ -743,7 +749,7 @@
   <!-- MODAL: Add/Edit Mission Modal -->
   <div id="addMissionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
     <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl animate-pop max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-4">
+      <div class="flex justify-between items-center mb-3">
         <h3 id="addMissionModalTitle" class="text-lg font-extrabold text-slate-800 flex items-center space-x-2">
           <span>✨ 새 탁구 미션 추가</span>
         </h3>
@@ -752,49 +758,49 @@
         </button>
       </div>
 
-      <div class="mb-4 p-3 bg-emerald-50 border border-emerald-100 rounded-2xl">
+      <div class="mb-3 p-3 bg-emerald-50 border border-emerald-100 rounded-2xl">
         <p class="text-xs font-bold text-emerald-900 mb-2 flex items-center space-x-1">
           <i class="fa-solid fa-wand-magic-sparkles text-emerald-600"></i>
           <span>탁구 미션 추천 프리셋</span>
         </p>
         <div class="flex flex-wrap gap-1.5">
           <button type="button" onclick="applyMissionPreset('포핸드 stroke 랠리 20회 성공', 'personal', '보통', 20, 1)" class="text-[11px] bg-white border border-emerald-200 text-emerald-800 hover:bg-emerald-100 px-2 py-1 rounded-lg font-bold">
-            🏓 포핸드 20회
+            🏓 1주차 포핸드
           </button>
           <button type="button" onclick="applyMissionPreset('백핸드 쇼트 기본자세 완성', 'personal', '쉬움', 10, 2)" class="text-[11px] bg-white border border-emerald-200 text-emerald-800 hover:bg-emerald-100 px-2 py-1 rounded-lg font-bold">
-            🛡️ 백핸드 자세
+            🛡️ 2주차 백핸드
           </button>
-          <button type="button" onclick="applyMissionPreset('대각선 정확한 서브 5회 성공', 'personal', '어려움', 30, 4)" class="text-[11px] bg-white border border-emerald-200 text-emerald-800 hover:bg-emerald-100 px-2 py-1 rounded-lg font-bold">
-            🎯 서브 5회
+          <button type="button" onclick="applyMissionPreset('대각선 정확한 서브 5회 성공', 'personal', '어려움', 30, 3)" class="text-[11px] bg-white border border-emerald-200 text-emerald-800 hover:bg-emerald-100 px-2 py-1 rounded-lg font-bold">
+            🎯 3주차 서브
           </button>
-          <button type="button" onclick="applyMissionPreset('파트너와 10구 복식 랠리 성공', 'team', '보통', 20, 9)" class="text-[11px] bg-white border border-emerald-200 text-emerald-800 hover:bg-emerald-100 px-2 py-1 rounded-lg font-bold">
-            🤝 복식 랠리
+          <button type="button" onclick="applyMissionPreset('파트너와 10구 복식 랠리 성공', 'team', '보통', 20, 8)" class="text-[11px] bg-white border border-emerald-200 text-emerald-800 hover:bg-emerald-100 px-2 py-1 rounded-lg font-bold">
+            🤝 8주차 복식
           </button>
         </div>
       </div>
 
-      <form id="addMissionForm" onsubmit="handleAddMission(event)" class="space-y-4">
+      <form id="addMissionForm" onsubmit="handleAddMission(event)" class="space-y-3">
         <input type="hidden" id="editingMissionId" value="">
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">회차 / 주차 선택 (총 10회차)</label>
-          <select id="missionWeekInput" class="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400">
-            <option value="1">1주차 (1회차) - 기본 그립 & 포핸드</option>
-            <option value="2">2주차 (2회차) - 백핸드 쇼트 & 랠리</option>
-            <option value="3">3주차 (3회차) - 포/백 전환 랠리</option>
-            <option value="4">4주차 (4회차) - 정확한 서비스 연습</option>
-            <option value="5">5주차 (5회차) - 풋워크 & 이동 타구</option>
-            <option value="6">6주차 (6회차) - 백스핀 커트 기초</option>
-            <option value="7">7주차 (7회차) - 포핸드 드라이브</option>
-            <option value="8">8주차 (8회차) - 스매시 & 로빙 방어</option>
-            <option value="9">9주차 (9회차) - 복식 콤비네이션</option>
-            <option value="10">10주차 (10회차) - 학급 토너먼트 매치</option>
+          <label class="block text-xs font-bold text-slate-700 mb-1">학기 주차 선택 (1주차 ~ 10주차)</label>
+          <select id="missionWeekInput" class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-xs font-bold">
+            <option value="1">1주차 (라켓 그립 & 포핸드 스트로크)</option>
+            <option value="2">2주차 (백핸드 쇼트 & 리턴)</option>
+            <option value="3">3주차 (기초 서브 & 리시브)</option>
+            <option value="4">4주차 (풋워크 & 2보 이동 랠리)</option>
+            <option value="5">5주차 (포핸드 드라이브 스핀)</option>
+            <option value="6">6주차 (백핸드 커트 방어)</option>
+            <option value="7">7주차 (기회공 스매시 찬스 결승)</option>
+            <option value="8">8주차 (복식 호흡 & 체인지)</option>
+            <option value="9">9주차 (단식/복식 리그 경기)</option>
+            <option value="10">10주차 (학급 토너먼트 & 심판 활동)</option>
           </select>
         </div>
 
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">미션 제목</label>
-          <input type="text" id="missionTitleInput" required placeholder="예: 백핸드 쇼트 랠리 15회 성공" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm font-semibold">
+          <input type="text" id="missionTitleInput" required placeholder="예: 백핸드 쇼트 랠리 15회 성공" class="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm font-semibold">
         </div>
 
         <div id="missionTargetSection">
@@ -868,21 +874,21 @@
   <!-- MODAL: Add Reward Modal -->
   <div id="addRewardModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
     <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl animate-pop">
-      <div class="flex justify-between items-center mb-4">
+      <div class="flex justify-between items-center mb-3">
         <h3 class="text-lg font-extrabold text-slate-800">🎁 새 보상 쿠폰 등록</h3>
         <button onclick="closeModal('addRewardModal')" class="text-slate-400 hover:text-slate-600 p-1">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <form onsubmit="handleAddReward(event)" class="space-y-4">
+      <form onsubmit="handleAddReward(event)" class="space-y-3">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">보상 이름</label>
-          <input type="text" id="rewardTitleInput" required placeholder="예: 자유 경기 진행권" class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm font-semibold">
+          <input type="text" id="rewardTitleInput" required placeholder="예: 자유 경기 진행권" class="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-sm font-semibold">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">필요 포인트</label>
-          <input type="number" id="rewardPointsInput" required min="10" placeholder="50" class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm font-bold">
+          <input type="number" id="rewardPointsInput" required min="10" placeholder="50" class="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-sm font-bold">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">아이콘 선택</label>
@@ -903,7 +909,7 @@
   <!-- MODAL: Settings Modal -->
   <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
     <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl animate-pop max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-4">
+      <div class="flex justify-between items-center mb-3">
         <h3 class="text-lg font-extrabold text-slate-800 flex items-center space-x-2">
           <span>⚙️ 앱 설정 & 파이어베이스</span>
         </h3>
@@ -918,20 +924,20 @@
         </div>
         <div>
           <h4 class="font-extrabold text-slate-800 text-sm">선생님 전용 설정입니다</h4>
-          <p class="text-xs text-slate-500 mt-1">비밀번호 변경 및 부원 관리는<br>선생님 모드에서만 가능합니다.</p>
+          <p class="text-xs text-slate-500 mt-1">비밀번호 변경 및 부원 관리는<br>선생님 모드에서 가능합니다.</p>
         </div>
       </div>
 
-      <div id="adminSettingsSection" class="space-y-4">
-        <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-100">
+      <div id="adminSettingsSection" class="space-y-3">
+        <div class="p-3 bg-emerald-50 rounded-2xl border border-emerald-100">
           <p class="text-xs font-bold text-emerald-900 mb-1">🔥 Realtime Database 상태</p>
           <p id="rtDbStatusText" class="text-[11px] font-bold text-emerald-600">실시간 연동 중...</p>
         </div>
 
-        <div class="flex items-center justify-between p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
           <div>
             <p class="text-xs font-bold text-slate-800">선생님 승인 모드</p>
-            <p class="text-[10px] text-slate-500 mt-0.5">미션 완료 시 비밀번호 필요</p>
+            <p class="text-[10px] text-slate-500 mt-0.5">미션 완료 시 승인 필요</p>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" id="teacherModeToggle" onchange="toggleTeacherMode(this.checked)" class="sr-only peer">
@@ -939,8 +945,8 @@
           </label>
         </div>
 
-        <div id="addStudentSection" class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-          <p class="text-xs font-bold text-slate-800 mb-2">탁구 부원 목록 및 관리</p>
+        <div id="addStudentSection" class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+          <p class="text-xs font-bold text-slate-800 mb-2">탁구 부원 목록 및 삭제 관리 (선생님)</p>
           <div id="studentManagerList" class="space-y-1.5 mb-2 max-h-28 overflow-y-auto">
             <!-- Dynamic student badges -->
           </div>
@@ -950,11 +956,11 @@
           </button>
         </div>
 
-        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
           <p class="text-xs font-bold text-slate-800 mb-2">선생님 비밀번호 변경</p>
           <div class="flex space-x-2">
-            <input type="password" id="newPasscodeInput" maxlength="6" placeholder="새 비밀번호 (4자리 이상)" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-xs font-bold">
-            <button onclick="updatePasscode()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shrink-0">
+            <input type="password" id="newPasscodeInput" maxlength="6" placeholder="새 비밀번호 (4자리 이상)" class="flex-1 px-3 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-xs font-bold">
+            <button onclick="updatePasscode()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs shrink-0">
               변경
             </button>
           </div>
@@ -970,7 +976,7 @@
         <i class="fa-solid fa-user-plus"></i>
       </div>
       <h3 id="addStudentModalTitle" class="text-lg font-extrabold text-slate-800">새 탁구 부원 등록</h3>
-      <p class="text-xs text-slate-500 mt-1 mb-4">등록할 부원의 정보와 학번을 입력해 주세요.</p>
+      <p class="text-xs text-slate-500 mt-1 mb-3">등록할 부원의 정보와 학번을 입력해 주세요.</p>
 
       <div class="space-y-3 text-left">
         <div>
@@ -996,11 +1002,11 @@
         </div>
       </div>
 
-      <!-- Existing Students Management & Delete List -->
-      <div class="mt-4 pt-3 border-t border-slate-100 text-left">
-        <label id="addStudentModalListLabel" class="block text-xs font-bold text-slate-700 mb-2">등록된 부원 목록</label>
+      <!-- Existing Students Management & Delete List (Visible in Teacher Mode) -->
+      <div id="modalStudentDeleteListSection" class="mt-4 pt-3 border-t border-slate-100 text-left">
+        <label id="modalStudentDeleteListLabel" class="block text-xs font-bold text-slate-700 mb-2">등록된 부원 목록</label>
         <div id="modalStudentDeleteList" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
-          <!-- Dynamic student delete badges -->
+          <!-- Dynamic student badges -->
         </div>
       </div>
 
@@ -1103,21 +1109,17 @@
 
     const DEFAULT_PASSCODE = "1234";
 
+    /* 10-WEEK TABLE TENNIS CURRICULUM DEFAULT MISSIONS */
     const DEFAULT_MISSIONS = [
-      { id: '1', week: 1, title: '포핸드 stroke 랠리 20회 성공', category: 'personal', difficulty: '보통', points: 20, completed: false, pending: false },
-      { id: '2', week: 1, title: '백핸드 쇼트 기본자세 및 10회 리턴', category: 'personal', difficulty: '쉬움', points: 10, completed: false, pending: false },
-      { id: '3', week: 1, title: '파트너와 함께 10구 복식 랠리 성공', category: 'team', difficulty: '어려움', points: 30, completed: false, pending: false },
-      { id: '4', week: 2, title: '백핸드 쇼트 연속 랠리 15회 성공', category: 'personal', difficulty: '보통', points: 20, completed: false, pending: false },
-      { id: '5', week: 2, title: '포핸드/백핸드 1:1 전환 랠리 10회', category: 'personal', difficulty: '어려움', points: 30, completed: false, pending: false },
-      { id: '6', week: 3, title: '대각선 타겟 존에 정확한 서브 5회', category: 'personal', difficulty: '보통', points: 20, completed: false, pending: false },
-      { id: '7', week: 3, title: '서브 후 3구 공격 연속 3회 성공', category: 'team', difficulty: '어려움', points: 30, completed: false, pending: false },
-      { id: '8', week: 4, title: '포핸드 풋워크 2스텝 이동 타구 10회', category: 'personal', difficulty: '보통', points: 20, completed: false, pending: false },
-      { id: '9', week: 5, title: '백스핀 커트 회전공 5회 정타 리턴', category: 'personal', difficulty: '어려움', points: 30, completed: false, pending: false },
-      { id: '10', week: 6, title: '포핸드 드라이브 상회전 공격 10회 성공', category: 'personal', difficulty: '어려움', points: 30, completed: false, pending: false },
-      { id: '11', week: 7, title: '찬스볼 스매시 결정타 5회 성공', category: 'personal', difficulty: '보통', points: 20, completed: false, pending: false },
-      { id: '12', week: 8, title: '로빙 수비 후 반격 스매시 3회', category: 'personal', difficulty: '어려움', points: 30, completed: false, pending: false },
-      { id: '13', week: 9, title: '복식 파트너 신호 서비스 및 호흡 랠리', category: 'team', difficulty: '보통', points: 20, completed: false, pending: false },
-      { id: '14', week: 10, title: '학급 토너먼트 매치 참가 및 심판 활동', category: 'personal', difficulty: '보통', points: 20, completed: false, pending: false }
+      { id: 'm_w1_1', week: 1, title: '쉐이크핸드/펜홀더 라켓 올바른 그립 잡기', category: 'personal', difficulty: '쉬움', points: 10, completed: false, pending: false },
+      { id: 'm_w1_2', week: 1, title: '포핸드 stroke 기본 랠리 20회 성공', category: 'personal', difficulty: '보통', points: 20, completed: false, pending: false },
+      { id: 'm_w2_1', week: 2, title: '백핸드 쇼트 기본자세 및 10회 안정 리턴', category: 'personal', difficulty: '쉬움', points: 10, completed: false, pending: false },
+      { id: 'm_w2_2', week: 2, title: '포핸드 & 백핸드 대각선 랠리 교대 성공', category: 'personal', difficulty: '보통', points: 20, completed: false, pending: false },
+      { id: 'm_w3_1', week: 3, title: '정확한 법규 대각선 서브 5회 성공', category: 'personal', difficulty: '보통', points: 20, completed: false, pending: false },
+      { id: 'm_w4_1', week: 4, title: '2보 풋워크 좌우 이동 포핸드 10회 랠리', category: 'personal', difficulty: '어려움', points: 30, completed: false, pending: false },
+      { id: 'm_w5_1', week: 5, title: '포핸드 드라이브 상회전 공 만들기', category: 'personal', difficulty: '어려움', points: 30, completed: false, pending: false },
+      { id: 'm_w8_1', week: 8, title: '파트너와 함께 10구 복식 랠리 성공', category: 'team', difficulty: '보통', points: 20, completed: false, pending: false },
+      { id: 'm_w10_1', week: 10, title: '학급 토너먼트 경기 심판 활동 성실 수행', category: 'team', difficulty: '보통', points: 20, completed: false, pending: false }
     ];
 
     const DEFAULT_REWARDS = [
@@ -1141,8 +1143,8 @@
           avatar: '🏓',
           missions: JSON.parse(JSON.stringify(DEFAULT_MISSIONS)),
           skills: { forehand: 3, backhand: 3, serve: 3, manner: 5 },
-          totalPoints: 0,
-          wins: 0,
+          totalPoints: 20,
+          wins: 1,
           losses: 0,
           streak: 1,
           lastActiveDate: null,
@@ -1161,8 +1163,9 @@
 
     let currentMainTab = 'missions';
     let activeTab = 'personal';
-    let selectedWeek = '1';
+    let selectedWeek = 'all'; // 'all' or 1~10
     let rankingViewMode = 'list';
+    let collapsedClasses = {}; // Accordion state
     let selectedNewStudentAvatar = '🏓';
     let selectedRewardIcon = '🏓';
     let pendingMissionContext = null;
@@ -1177,6 +1180,48 @@
       server: 1,
       totalPoints: 0
     };
+
+    function calculateLevelTitle(points) {
+      const p = points || 0;
+      if (p >= 1000) return '🌟 탁구의 신';
+      if (p >= 750) return '👑 핑퐁 챔피언';
+      if (p >= 500) return '🛡️ 철벽 커트 에이스';
+      if (p >= 350) return '🔥 스매시 마스터';
+      if (p >= 200) return '⚡ 드라이브 스페셜리스트';
+      if (p >= 100) return '⭐ 스핀 루키';
+      if (p >= 50) return '🏓 핑퐁 아마추어';
+      return '🌱 탁구 입문자';
+    }
+
+    function getInitialMissionsForNewStudent() {
+      const missionMap = new Map();
+      DEFAULT_MISSIONS.forEach(m => missionMap.set(m.title, JSON.parse(JSON.stringify(m))));
+
+      state.students.forEach(s => {
+        if (s.missions && Array.isArray(s.missions)) {
+          s.missions.forEach(m => {
+            if (!missionMap.has(m.title)) {
+              missionMap.set(m.title, {
+                id: 'm_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                week: m.week || 1,
+                title: m.title,
+                category: m.category || 'personal',
+                difficulty: m.difficulty || '보통',
+                points: m.points || 20,
+                completed: false,
+                pending: false
+              });
+            }
+          });
+        }
+      });
+
+      return Array.from(missionMap.values()).map(m => ({
+        ...m,
+        completed: false,
+        pending: false
+      }));
+    }
 
     async function saveStudentToRTDB(student) {
       if (!firebaseUser || !student || !student.id) return;
@@ -1248,7 +1293,7 @@
             state.students = loaded.map(s => ({
               ...s,
               skills: s.skills || { forehand: 3, backhand: 3, serve: 3, manner: 5 },
-              missions: s.missions || JSON.parse(JSON.stringify(DEFAULT_MISSIONS)),
+              missions: s.missions || getInitialMissionsForNewStudent(),
               history: s.history || [],
               redeemedRewards: s.redeemedRewards || []
             }));
@@ -1308,52 +1353,6 @@
       return student.className || '';
     }
 
-    function calculateLevelTitle(points) {
-      const pts = points || 0;
-      if (pts < 50) return '🌱 탁구 입문자';
-      if (pts < 100) return '🏓 핑퐁 아마추어';
-      if (pts < 200) return '⭐ 스핀 루키';
-      if (pts < 350) return '⚡ 드라이브 스페셜리스트';
-      if (pts < 500) return '🔥 스매시 마스터';
-      if (pts < 750) return '🛡️ 철벽 커트 에이스';
-      if (pts < 1000) return '👑 핑퐁 챔피언';
-      return '🌟 탁구의 신';
-    }
-
-    function getInitialMissionsForNewStudent() {
-      const missionMap = new Map();
-      
-      // Collect all current unique missions from existing students
-      state.students.forEach(student => {
-        if (student.missions && Array.isArray(student.missions)) {
-          student.missions.forEach(m => {
-            const key = m.id || m.title;
-            if (!missionMap.has(key)) {
-              missionMap.set(key, {
-                id: m.id || ('m_' + Date.now() + Math.random().toString(36).substr(2, 4)),
-                week: m.week || 1,
-                title: m.title,
-                category: m.category || 'personal',
-                difficulty: m.difficulty || '보통',
-                points: m.points || 20,
-                completed: false,
-                pending: false
-              });
-            }
-          });
-        }
-      });
-
-      // Fallback to DEFAULT_MISSIONS if no student data exists
-      if (missionMap.size === 0) {
-        DEFAULT_MISSIONS.forEach(m => {
-          missionMap.set(m.id, { ...m, completed: false, pending: false });
-        });
-      }
-
-      return Array.from(missionMap.values());
-    }
-
     function openModal(id) {
       const modal = document.getElementById(id);
       if (modal) modal.classList.remove('hidden');
@@ -1366,7 +1365,9 @@
 
     function toggleMobileRosterDrawer() {
       const drawer = document.getElementById('studentDirectoryPanel');
-      if (drawer) drawer.classList.toggle('-translate-x-full');
+      if (drawer) {
+        drawer.classList.toggle('-translate-x-full');
+      }
     }
 
     function getCurrentStudent() {
@@ -1464,10 +1465,16 @@
       if (student) {
         loggedInStudentId = student.id;
         state.activeStudentId = student.id;
+        state.role = 'student';
         closeModal('loginGateScreen');
         renderUI();
         showToast(`${student.name} 부원으로 로그인되었습니다!`, '🎉');
       }
+    }
+
+    function toggleRoleModalFromLogin() {
+      closeModal('loginGateScreen');
+      openModal('roleAuthModal');
     }
 
     function handleStudentLogin(e) {
@@ -1493,6 +1500,7 @@
       if (existing) {
         loggedInStudentId = existing.id;
         state.activeStudentId = existing.id;
+        state.role = 'student';
         closeModal('loginGateScreen');
         renderUI();
         showToast(`${existing.name} 부원으로 접속했습니다!`, '✨');
@@ -1520,6 +1528,7 @@
           state.students.push(newStudent);
           loggedInStudentId = newId;
           state.activeStudentId = newId;
+          state.role = 'student';
           saveStudentToRTDB(newStudent);
           closeModal('loginGateScreen');
           renderUI();
@@ -1582,31 +1591,35 @@
       const student = getCurrentStudent();
       const isAdmin = state.role === 'admin';
 
-      // Mode Banner Elements
-      const modeTitle = document.getElementById('modeTitle');
-      const modeIcon = document.getElementById('modeIcon');
-      const modeSwitchBtn = document.getElementById('modeSwitchBtn');
-      const modeSwitchBtnText = document.getElementById('modeSwitchBtnText');
-      const modeBanner = document.getElementById('modeBanner');
-
-      if (isAdmin) {
-        if (modeTitle) modeTitle.innerText = "🎓 선생님 모드 (관리자)";
-        if (modeIcon) modeIcon.innerText = "🎓";
-        if (modeSwitchBtn) modeSwitchBtn.classList.remove('hidden');
-        if (modeSwitchBtnText) modeSwitchBtnText.innerText = "부원 모드로 전환";
-        if (modeBanner) modeBanner.className = "mb-3 px-3 py-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm bg-amber-100 text-amber-900 border border-amber-300";
-      } else {
-        if (modeTitle) modeTitle.innerText = "🎒 탁구 부원 모드";
-        if (modeIcon) modeIcon.innerText = "🎒";
-        if (modeSwitchBtn) modeSwitchBtn.classList.add('hidden');
-        if (modeBanner) modeBanner.className = "mb-3 px-3 py-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm bg-emerald-100 text-emerald-900 border border-emerald-200";
+      // Mode Tags & Buttons
+      const roleBadgeTag = document.getElementById('roleBadgeTag');
+      if (roleBadgeTag) {
+        roleBadgeTag.innerText = isAdmin ? '선생님 모드' : '부원 모드';
+        roleBadgeTag.className = isAdmin ? 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-500 text-slate-950' : 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-600 text-white';
       }
 
-      // Teacher Mode Tag
-      const teacherModeTag = document.getElementById('teacherModeTag');
-      if (teacherModeTag) {
-        if (state.teacherMode) teacherModeTag.classList.remove('hidden');
-        else teacherModeTag.classList.add('hidden');
+      const modeTitle = document.getElementById('modeTitle');
+      if (modeTitle) modeTitle.innerText = isAdmin ? '선생님 관리자 모드' : '탁구 부원 모드';
+
+      const modeIcon = document.getElementById('modeIcon');
+      if (modeIcon) modeIcon.innerText = isAdmin ? '🎓' : '🎒';
+
+      // Hide role switch button in student mode
+      const modeSwitchBtn = document.getElementById('modeSwitchBtn');
+      if (modeSwitchBtn) {
+        if (isAdmin) {
+          modeSwitchBtn.classList.remove('hidden');
+          document.getElementById('modeSwitchBtnText').innerText = "부원 모드로 전환";
+        } else {
+          modeSwitchBtn.classList.add('hidden');
+        }
+      }
+
+      // Sidebar Add Student Button (Teacher Mode Only)
+      const sidebarAddStudentBtn = document.getElementById('sidebarAddStudentBtn');
+      if (sidebarAddStudentBtn) {
+        if (isAdmin) sidebarAddStudentBtn.classList.remove('hidden');
+        else sidebarAddStudentBtn.classList.add('hidden');
       }
 
       const addMissionBtn = document.getElementById('addMissionBtn');
@@ -1627,12 +1640,6 @@
         else addRewardBtn.classList.add('hidden');
       }
 
-      const sidebarAddStudentBtn = document.getElementById('sidebarAddStudentBtn');
-      if (sidebarAddStudentBtn) {
-        if (isAdmin) sidebarAddStudentBtn.classList.remove('hidden');
-        else sidebarAddStudentBtn.classList.add('hidden');
-      }
-
       const adminPointAdjustBox = document.getElementById('adminPointAdjustBox');
       if (adminPointAdjustBox) {
         if (isAdmin) adminPointAdjustBox.classList.remove('hidden');
@@ -1649,56 +1656,37 @@
         adminSelect.classList.add('hidden');
       }
 
-      // Profile Header Elements
+      // Header Info
       const headerName = document.getElementById('headerName');
       const headerClassEl = document.getElementById('headerClass');
-      const headerAvatar = document.getElementById('headerAvatar');
       const userLevelTitle = document.getElementById('userLevelTitle');
-      const totalPoints = document.getElementById('totalPoints');
-      const streakCount = document.getElementById('streakCount');
 
       if (headerName) headerName.innerText = student ? student.name : '';
       if (headerClassEl) headerClassEl.innerText = student ? formatClassBadge(student) : '';
-      if (headerAvatar) headerAvatar.innerText = student ? (student.avatar || '🏓') : '🏓';
-      if (userLevelTitle) userLevelTitle.innerText = student ? calculateLevelTitle(student.totalPoints) : '🌱 탁구 입문자';
-      if (totalPoints) totalPoints.innerText = student ? `${student.totalPoints || 0} P` : '0 P';
-      if (streakCount) streakCount.innerText = student ? `${student.streak || 1}일` : '1일';
+      if (userLevelTitle) userLevelTitle.innerText = calculateLevelTitle(student ? student.totalPoints : 0);
 
-      // Skill evaluation range values
-      if (student && student.skills) {
-        const setVal = (id, val) => {
-          const el = document.getElementById(id);
-          if (el) el.value = val;
-        };
-        const setTxt = (id, val) => {
-          const el = document.getElementById(id);
-          if (el) el.innerText = val + '점';
-        };
-        setVal('skillForehandRange', student.skills.forehand || 3);
-        setTxt('skillForehandVal', student.skills.forehand || 3);
-        setVal('skillBackhandRange', student.skills.backhand || 3);
-        setTxt('skillBackhandVal', student.skills.backhand || 3);
-        setVal('skillServeRange', student.skills.serve || 3);
-        setTxt('skillServeVal', student.skills.serve || 3);
-        setVal('skillMannerRange', student.skills.manner || 5);
-        setTxt('skillMannerVal', student.skills.manner || 5);
-      }
+      // Points & Progress
+      const totalPointsEl = document.getElementById('totalPoints');
+      if (totalPointsEl) totalPointsEl.innerText = `${student ? student.totalPoints || 0 : 0} P`;
 
-      // Progress Widget Metrics
       const missions = student ? (student.missions || []) : [];
-      const totalMissionsCount = missions.length;
-      const completedMissionsCount = missions.filter(m => m.completed).length;
-      const progressPct = totalMissionsCount > 0 ? Math.round((completedMissionsCount / totalMissionsCount) * 100) : 0;
+      const totalCount = missions.length;
+      const completedCount = missions.filter(m => m.completed).length;
+      const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-      const progressPercentEl = document.getElementById('progressPercent');
-      const completedCountTextEl = document.getElementById('completedCountText');
-      const progressBarEl = document.getElementById('progressBar');
+      const progressPercent = document.getElementById('progressPercent');
+      if (progressPercent) progressPercent.innerText = `${pct}%`;
 
-      if (progressPercentEl) progressPercentEl.innerText = `${progressPct}%`;
-      if (completedCountTextEl) completedCountTextEl.innerText = `(${completedMissionsCount}/${totalMissionsCount} 완료)`;
-      if (progressBarEl) progressBarEl.style.width = `${progressPct}%`;
+      const completedCountText = document.getElementById('completedCountText');
+      if (completedCountText) completedCountText.innerText = `(${completedCount}/${totalCount} 완료)`;
 
-      // Pending Approval Section
+      const progressBar = document.getElementById('progressBar');
+      if (progressBar) progressBar.style.width = `${pct}%`;
+
+      // Render Week Filter Bar
+      renderWeekFilterBar();
+
+      // Pending Approvals Section
       const pendingApprovalSection = document.getElementById('adminApprovalSection');
       const pendingList = document.getElementById('pendingList');
       const pendingCountBadge = document.getElementById('pendingCountBadge');
@@ -1719,17 +1707,16 @@
         if (pendingCountBadge) pendingCountBadge.innerText = `${allPending.length}건`;
         if (pendingList) {
           pendingList.innerHTML = allPending.map(item => `
-            <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-amber-200 shadow-xs">
+            <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-amber-200 shadow-xs">
               <div class="min-w-0 flex-1 pr-2">
-                <p class="text-[11px] font-bold text-amber-900 truncate">👤 [${formatClassBadge(item.student)}] ${escapeHtml(item.student.name)}</p>
-                <p class="text-xs font-extrabold text-slate-800 truncate">${escapeHtml(item.mission.title)}</p>
-                <span class="text-[10px] font-black text-amber-600">+${item.mission.points} P</span>
+                <p class="text-[10px] font-bold text-amber-900 truncate">👤 [${formatClassBadge(item.student)}] ${escapeHtml(item.student.name)}</p>
+                <p class="text-xs font-extrabold text-slate-800 truncate">[${item.mission.week || 1}주차] ${escapeHtml(item.mission.title)}</p>
               </div>
-              <div class="flex space-x-1.5 shrink-0">
-                <button onclick="approvePendingMission('${item.student.id}', '${item.mission.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-xs">
-                  승인(도장) 💮
+              <div class="flex space-x-1 shrink-0">
+                <button onclick="approvePendingMission('${item.student.id}', '${item.mission.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-xs">
+                  승인 💮
                 </button>
-                <button onclick="rejectPendingMission('${item.student.id}', '${item.mission.id}')" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-[11px] font-bold px-2 py-1 rounded-lg">
+                <button onclick="rejectPendingMission('${item.student.id}', '${item.mission.id}')" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-[10px] font-bold px-1.5 py-1 rounded-lg">
                   반려
                 </button>
               </div>
@@ -1740,8 +1727,56 @@
         if (pendingApprovalSection) pendingApprovalSection.classList.add('hidden');
       }
 
-      // Render Active Management Lists
-      const renderStudentDeleteListHTML = () => state.students.map(s => `
+      // Settings student delete list
+      renderStudentDeleteLists(isAdmin);
+
+      renderStudentDirectory();
+      renderMissionsView();
+      renderMatchesView();
+      renderRewardsList();
+      renderStatsView();
+    }
+
+    function renderWeekFilterBar() {
+      const container = document.getElementById('weekFilterBar');
+      if (!container) return;
+
+      let html = `
+        <button onclick="selectWeekFilter('all')" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold shrink-0 transition-all ${
+          selectedWeek === 'all' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
+        }">
+          전체
+        </button>
+      `;
+
+      for (let w = 1; w <= 10; w++) {
+        html += `
+          <button onclick="selectWeekFilter(${w})" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold shrink-0 transition-all ${
+            selectedWeek == w ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
+          }">
+            ${w}주차
+          </button>
+        `;
+      }
+
+      container.innerHTML = html;
+
+      const currentWeekLabel = document.getElementById('currentWeekLabel');
+      if (currentWeekLabel) {
+        currentWeekLabel.innerText = selectedWeek === 'all' ? '전체 주차' : `${selectedWeek}주차 선택됨`;
+      }
+    }
+
+    function selectWeekFilter(weekVal) {
+      selectedWeek = weekVal;
+      renderUI();
+    }
+
+    function renderStudentDeleteLists(isAdmin) {
+      const modalStudentDeleteList = document.getElementById('modalStudentDeleteList');
+      const studentManagerList = document.getElementById('studentManagerList');
+
+      const renderHTML = state.students.map(s => `
         <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-200 text-xs">
           <div class="flex items-center space-x-1.5 min-w-0 pr-1">
             <span class="text-sm">${s.avatar || '🏓'}</span>
@@ -1757,22 +1792,18 @@
         </div>
       `).join('');
 
-      const studentModalLabel = document.getElementById('addStudentModalListLabel');
-      if (studentModalLabel) {
-        studentModalLabel.innerText = isAdmin ? '등록된 부원 목록 및 삭제 관리' : '등록된 부원 목록';
+      if (modalStudentDeleteList) modalStudentDeleteList.innerHTML = renderHTML;
+      if (studentManagerList) studentManagerList.innerHTML = renderHTML;
+
+      const modalStudentDeleteListLabel = document.getElementById('modalStudentDeleteListLabel');
+      if (modalStudentDeleteListLabel) {
+        modalStudentDeleteListLabel.innerText = isAdmin ? "등록된 부원 목록 및 삭제 관리" : "등록된 부원 목록";
       }
+    }
 
-      const studentManagerList = document.getElementById('studentManagerList');
-      if (studentManagerList) studentManagerList.innerHTML = renderStudentDeleteListHTML();
-
-      const modalStudentDeleteList = document.getElementById('modalStudentDeleteList');
-      if (modalStudentDeleteList) modalStudentDeleteList.innerHTML = renderStudentDeleteListHTML();
-
+    function toggleClassAccordion(groupKey) {
+      collapsedClasses[groupKey] = !collapsedClasses[groupKey];
       renderStudentDirectory();
-      renderMissionsView();
-      renderMatchesView();
-      renderRewardsList();
-      renderStatsView();
     }
 
     function renderStudentDirectory() {
@@ -1801,45 +1832,89 @@
 
       const isAdmin = state.role === 'admin';
       let html = '';
+
       Object.keys(groups).sort().forEach(groupKey => {
         const list = groups[groupKey];
-        list.sort((a, b) => (parseInt(a.number) || 0) - (parseInt(b.number) || 0) || a.name.localeCompare(b.name, 'ko'));
+
+        // Sort by student number ascending
+        list.sort((a, b) => (parseInt(a.number) || 0) - (parseInt(b.number) || 0));
+
+        // Calculate Class Summary Stats
+        let totalPts = 0;
+        let totalCompleted = 0;
+        let totalMissionsCount = 0;
+        let topStudent = list[0];
+
+        list.forEach(s => {
+          totalPts += (s.totalPoints || 0);
+          if (s.totalPoints > (topStudent ? topStudent.totalPoints || 0 : -1)) {
+            topStudent = s;
+          }
+          const mList = s.missions || [];
+          totalMissionsCount += mList.length;
+          totalCompleted += mList.filter(m => m.completed).length;
+        });
+
+        const avgPts = list.length > 0 ? Math.round(totalPts / list.length) : 0;
+        const classCompPct = totalMissionsCount > 0 ? Math.round((totalCompleted / totalMissionsCount) * 100) : 0;
+        const isCollapsed = collapsedClasses[groupKey] === true;
 
         html += `
-          <div class="bg-white/70 rounded-2xl border border-emerald-100 overflow-hidden shadow-xs">
-            <div class="px-3 py-1.5 bg-emerald-50 text-xs font-bold text-emerald-900 flex justify-between items-center">
-              <span>${escapeHtml(groupKey)}</span>
-              <span class="text-[10px] bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full font-black">${list.length}명</span>
+          <div class="bg-white/80 rounded-2xl border border-emerald-100 overflow-hidden shadow-xs">
+            <div onclick="toggleClassAccordion('${groupKey}')" class="px-3 py-2 bg-gradient-to-r from-emerald-50 to-teal-50 cursor-pointer text-xs font-bold text-emerald-950 flex flex-col space-y-1 hover:bg-emerald-100/50 transition-all">
+              <div class="flex justify-between items-center">
+                <span class="flex items-center space-x-1 font-black">
+                  <i class="fa-solid fa-chevron-${isCollapsed ? 'right' : 'down'} text-[10px] text-emerald-600"></i>
+                  <span>🏫 ${escapeHtml(groupKey)}</span>
+                </span>
+                <span class="text-[10px] bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full font-black">${list.length}명</span>
+              </div>
+
+              <!-- Class Summary Dashboard -->
+              <div class="flex justify-between items-center text-[10px] text-slate-600 font-extrabold bg-white/70 p-1.5 rounded-xl border border-emerald-100">
+                <span>평균 ${avgPts} P</span>
+                <span>👑 1위: ${escapeHtml(topStudent ? topStudent.name : '-')}</span>
+                <span class="text-emerald-700">달성률 ${classCompPct}%</span>
+              </div>
             </div>
-            <div class="p-1.5 space-y-1">
-              ${list.map(s => {
-                const levelTitle = calculateLevelTitle(s.totalPoints);
-                const isSelected = s.id === state.activeStudentId;
-                return `
-                <div onclick="switchActiveStudent('${s.id}')" class="flex justify-between items-center p-2 rounded-xl cursor-pointer text-xs transition-all ${
-                  isSelected ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'hover:bg-slate-50 text-slate-800 bg-white border border-slate-100'
-                }">
-                  <div class="flex flex-col min-w-0 pr-1">
-                    <span class="truncate font-bold">${s.avatar || '🏓'} ${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}${s.id === loggedInStudentId ? ' (나)' : ''}</span>
-                    <span class="text-[10px] ${isSelected ? 'text-emerald-100' : 'text-slate-500'} font-semibold truncate">${levelTitle}</span>
-                  </div>
-                  <div class="flex items-center space-x-1.5 shrink-0">
-                    <span class="font-extrabold ${isSelected ? 'text-amber-300' : 'text-emerald-700'}">${s.totalPoints || 0} P</span>
-                    ${isAdmin ? `
-                      <button onclick="event.stopPropagation(); deleteStudent('${s.id}')" class="text-rose-400 hover:text-rose-600 hover:bg-rose-50 p-1 rounded-md transition-all text-xs" title="부원 삭제">
-                        <i class="fa-solid fa-trash-can"></i>
-                      </button>
-                    ` : ''}
-                  </div>
-                </div>
-              `;
-              }).join('')}
-            </div>
+
+            ${!isCollapsed ? `
+              <div class="p-1.5 space-y-1">
+                ${list.map(s => {
+                  const levelTitle = calculateLevelTitle(s.totalPoints || 0);
+                  const isSelf = s.id === loggedInStudentId;
+                  const isActive = s.id === state.activeStudentId;
+
+                  return `
+                    <div onclick="switchActiveStudent('${s.id}')" class="flex justify-between items-center p-2 rounded-xl cursor-pointer text-xs transition-all ${
+                      isActive ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'hover:bg-slate-50 text-slate-800 bg-white border border-slate-100'
+                    }">
+                      <div class="min-w-0 flex-1 pr-1">
+                        <div class="flex items-center space-x-1 truncate">
+                          <span class="text-xs">${s.avatar || '🏓'}</span>
+                          <span class="font-extrabold truncate">${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}${isSelf ? ' (나)' : ''}</span>
+                        </div>
+                        <p class="text-[10px] ${isActive ? 'text-emerald-100' : 'text-slate-400'} font-semibold truncate">${levelTitle}</p>
+                      </div>
+
+                      <div class="flex items-center space-x-1.5 shrink-0">
+                        <span class="font-extrabold text-xs ${isActive ? 'text-amber-300' : 'text-emerald-700'}">${s.totalPoints || 0} P</span>
+                        ${isAdmin ? `
+                          <button onclick="event.stopPropagation(); deleteStudent('${s.id}')" class="text-rose-400 hover:text-rose-600 hover:bg-rose-50 p-1 rounded-md transition-all text-xs" title="부원 삭제">
+                            <i class="fa-solid fa-trash-can"></i>
+                          </button>
+                        ` : ''}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : ''}
           </div>
         `;
       });
-      container.innerHTML = html;
 
+      container.innerHTML = html;
       renderClassIndividualProgress();
     }
 
@@ -1860,12 +1935,13 @@
         return activeGradeClass === '기타 / 학년 미지정';
       });
 
+      // Sort class students by number ascending
+      classStudents.sort((a, b) => (parseInt(a.number) || 0) - (parseInt(b.number) || 0));
+
       if (classStudents.length === 0) {
         container.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">소속 학급에 다른 부원이 없습니다.</p>`;
         return;
       }
-
-      classStudents.sort((a, b) => (parseInt(a.number) || 0) - (parseInt(b.number) || 0) || a.name.localeCompare(b.name, 'ko'));
 
       let html = `<div class="text-[11px] font-bold text-emerald-800 mb-1 px-1 flex items-center justify-between">
                     <span>📍 ${escapeHtml(activeGradeClass)} 소속 부원 현황</span>
@@ -1877,18 +1953,15 @@
         const completed = missions.filter(m => m.completed).length;
         const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
         const isActive = s.id === state.activeStudentId;
-        const levelTitle = calculateLevelTitle(s.totalPoints);
+        const levelTitle = calculateLevelTitle(s.totalPoints || 0);
 
         html += `
           <div onclick="switchActiveStudent('${s.id}')" class="p-2 rounded-xl border transition-all cursor-pointer ${
             isActive ? 'bg-emerald-50 border-emerald-300 shadow-xs' : 'bg-white border-slate-100 hover:border-emerald-200'
           }">
             <div class="flex justify-between items-center text-[11px] mb-1">
-              <div class="flex items-center space-x-1 min-w-0 pr-1">
-                <span class="font-bold text-slate-800 truncate">${s.avatar || '🏓'} ${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}</span>
-                <span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-md font-semibold shrink-0">${levelTitle}</span>
-              </div>
-              <span class="font-black text-emerald-700 shrink-0">${pct}% <span class="text-[9px] text-slate-400">(${completed}/${total})</span></span>
+              <span class="font-bold text-slate-800 truncate">${s.avatar || '🏓'} ${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)} <span class="text-[9px] text-emerald-700 font-semibold">[${levelTitle}]</span></span>
+              <span class="font-black text-emerald-700">${pct}% <span class="text-[9px] text-slate-400">(${completed}/${total})</span></span>
             </div>
             <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
               <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
@@ -1900,72 +1973,32 @@
       container.innerHTML = html;
     }
 
-    function renderWeekFilterChips() {
-      const container = document.getElementById('weekFilterChips');
-      if (!container) return;
-
-      let html = `<button onclick="switchWeekFilter('all')" class="px-3 py-1.5 rounded-xl border transition-all ${
-        selectedWeek === 'all'
-          ? 'bg-emerald-600 text-white border-emerald-600 font-black shadow-xs'
-          : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300 font-bold'
-      }">전체 주차</button>`;
-
-      for (let w = 1; w <= 10; w++) {
-        const wStr = String(w);
-        html += `<button onclick="switchWeekFilter('${wStr}')" class="px-3 py-1.5 rounded-xl border transition-all ${
-          selectedWeek === wStr
-            ? 'bg-emerald-600 text-white border-emerald-600 font-black shadow-xs'
-            : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300 font-bold'
-        }">${w}주차</button>`;
-      }
-      container.innerHTML = html;
-    }
-
     function renderMissionsView() {
-      renderWeekFilterChips();
-
       const student = getCurrentStudent();
       const missions = student ? (student.missions || []) : [];
       const isAdmin = state.role === 'admin';
 
-      const searchVal = (document.getElementById('missionSearchInput')?.value || '').toLowerCase().trim();
+      const query = (document.getElementById('missionSearchInput')?.value || '').toLowerCase().trim();
       const statusFilter = document.getElementById('missionFilterStatus')?.value || 'all';
 
-      const personalCount = missions.filter(m => (m.category || 'personal') === 'personal').length;
-      const teamCount = missions.filter(m => m.category === 'team').length;
+      const filtered = missions.filter(m => {
+        if ((m.category || 'personal') !== activeTab) return false;
+        if (selectedWeek !== 'all' && m.week != selectedWeek) return false;
+        if (query && !m.title.toLowerCase().includes(query)) return false;
+        if (statusFilter === 'active' && m.completed) return false;
+        if (statusFilter === 'completed' && !m.completed) return false;
+        return true;
+      });
+
+      // Update Tab Badges
+      const personalMissions = missions.filter(m => (m.category || 'personal') === 'personal' && (selectedWeek === 'all' || m.week == selectedWeek));
+      const teamMissions = missions.filter(m => m.category === 'team' && (selectedWeek === 'all' || m.week == selectedWeek));
 
       const personalBadge = document.getElementById('personalBadge');
+      if (personalBadge) personalBadge.innerText = personalMissions.length;
+
       const teamBadge = document.getElementById('teamBadge');
-      if (personalBadge) personalBadge.innerText = personalCount;
-      if (teamBadge) teamBadge.innerText = teamCount;
-
-      const tabPersonalBtn = document.getElementById('tabPersonalBtn');
-      const tabTeamBtn = document.getElementById('tabTeamBtn');
-
-      if (activeTab === 'personal') {
-        if (tabPersonalBtn) tabPersonalBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-1 shadow-sm bg-white text-emerald-800";
-        if (tabTeamBtn) tabTeamBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-1 text-slate-500 hover:text-slate-700";
-      } else {
-        if (tabTeamBtn) tabTeamBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-1 shadow-sm bg-white text-emerald-800";
-        if (tabPersonalBtn) tabPersonalBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-1 text-slate-500 hover:text-slate-700";
-      }
-
-      let filtered = missions.filter(m => (m.category || 'personal') === activeTab);
-
-      if (selectedWeek !== 'all') {
-        const targetW = parseInt(selectedWeek);
-        filtered = filtered.filter(m => (parseInt(m.week) || 1) === targetW);
-      }
-
-      if (searchVal) {
-        filtered = filtered.filter(m => m.title.toLowerCase().includes(searchVal));
-      }
-
-      if (statusFilter === 'active') {
-        filtered = filtered.filter(m => !m.completed);
-      } else if (statusFilter === 'completed') {
-        filtered = filtered.filter(m => m.completed);
-      }
+      if (teamBadge) teamBadge.innerText = teamMissions.length;
 
       const listContainer = document.getElementById('missionList');
       const emptyState = document.getElementById('emptyState');
@@ -1980,49 +2013,50 @@
 
         listContainer.innerHTML = filtered.map(mission => {
           const isPending = mission.pending && !mission.completed;
-          const weekNum = mission.week || 1;
           return `
-          <div class="p-3.5 rounded-2xl bg-white border flex items-center justify-between shadow-xs ${
-            mission.completed 
-              ? 'border-emerald-200 bg-emerald-50/40' 
-              : isPending 
-                ? 'border-amber-300 bg-amber-50/30' 
-                : 'border-slate-100'
-          }">
-            <div class="flex items-center space-x-3 flex-1 min-w-0 pr-2">
-              <button onclick="handleMissionCheck('${mission.id}')" ${isReadOnly ? 'disabled' : ''} class="w-7 h-7 rounded-xl border-2 flex items-center justify-center shrink-0 ${
-                mission.completed 
-                  ? 'bg-emerald-600 border-emerald-600 text-white' 
-                  : isPending 
-                    ? 'bg-amber-400 border-amber-400 text-white animate-pulse' 
-                    : 'border-slate-300'
-              }">
-                <i class="fa-solid ${mission.completed ? 'fa-check' : isPending ? 'fa-clock' : 'fa-check'} text-xs"></i>
-              </button>
-              <div class="min-w-0 flex-1">
-                <p class="font-bold text-xs text-slate-800 truncate ${mission.completed ? 'line-through text-slate-400' : ''}">${escapeHtml(mission.title)}</p>
-                <div class="flex items-center space-x-1.5 mt-0.5 flex-wrap gap-y-1">
-                  <span class="text-[9px] font-black text-teal-800 bg-teal-100/80 px-2 py-0.5 rounded-md border border-teal-200/60">${weekNum}주차</span>
-                  <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">+${mission.points} P</span>
-                  <span class="text-[9px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.2 rounded-md">${mission.difficulty || '보통'}</span>
-                  ${isPending ? `<span class="text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded-md">승인 대기 중</span>` : ''}
+            <div class="p-3 rounded-2xl bg-white border flex items-center justify-between shadow-xs ${
+              mission.completed 
+                ? 'border-emerald-200 bg-emerald-50/40' 
+                : isPending 
+                  ? 'border-amber-300 bg-amber-50/30' 
+                  : 'border-slate-100'
+            }">
+              <div class="flex items-center space-x-3 flex-1 min-w-0 pr-2">
+                <button onclick="handleMissionCheck('${mission.id}')" ${isReadOnly ? 'disabled' : ''} class="w-7 h-7 rounded-xl border-2 flex items-center justify-center shrink-0 ${
+                  mission.completed 
+                    ? 'bg-emerald-600 border-emerald-600 text-white' 
+                    : isPending 
+                      ? 'bg-amber-400 border-amber-400 text-white animate-pulse' 
+                      : 'border-slate-300 hover:border-emerald-400'
+                }">
+                  <i class="fa-solid ${mission.completed ? 'fa-check' : isPending ? 'fa-clock' : 'fa-check'} text-xs"></i>
+                </button>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center space-x-1 mb-0.5">
+                    <span class="text-[9px] font-extrabold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded-md">${mission.week || 1}주차</span>
+                    <span class="text-[9px] font-extrabold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded-md">${mission.difficulty || '보통'}</span>
+                  </div>
+                  <p class="font-bold text-xs text-slate-800 truncate ${mission.completed ? 'line-through text-slate-400' : ''}">${escapeHtml(mission.title)}</p>
+                  <div class="flex items-center space-x-1.5 mt-0.5">
+                    <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">+${mission.points} P</span>
+                    ${isPending ? `<span class="text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded-md">승인 대기 중</span>` : ''}
+                  </div>
                 </div>
               </div>
+              <div class="flex items-center space-x-1 shrink-0">
+                ${isAdmin && isPending ? `
+                  <button onclick="approvePendingMission('${student.id}', '${mission.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-xs">
+                    승인 💮
+                  </button>
+                ` : ''}
+                ${isAdmin ? `
+                  <button onclick="deleteMission('${mission.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                ` : ''}
+              </div>
             </div>
-            <div class="flex items-center space-x-1 shrink-0">
-              ${isAdmin && isPending ? `
-                <button onclick="approvePendingMission('${student.id}', '${mission.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-xs">
-                  승인 💮
-                </button>
-              ` : ''}
-              ${isAdmin ? `
-                <button onclick="deleteMission('${mission.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
-              ` : ''}
-            </div>
-          </div>
-        `;
+          `;
         }).join('');
       }
     }
@@ -2063,8 +2097,8 @@
         });
 
         html += `
-          <div class="bg-white/80 rounded-2xl border border-emerald-200 p-3.5 shadow-xs">
-            <h4 class="font-black text-xs text-emerald-950 mb-2.5 pb-1 border-b border-emerald-100 flex justify-between">
+          <div class="bg-white/80 rounded-2xl border border-emerald-200 p-3 shadow-xs">
+            <h4 class="font-black text-xs text-emerald-950 mb-2 pb-1 border-b border-emerald-100 flex justify-between">
               <span>🏫 ${escapeHtml(groupKey)}</span>
               <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">${list.length}명</span>
             </h4>
@@ -2110,23 +2144,19 @@
       container.innerHTML = html;
 
       if (historyList) {
-        if (state.matchHistory.length === 0) {
-          historyList.innerHTML = `<p class="text-slate-400 text-center py-3 text-xs">기록된 경기가 없습니다.</p>`;
-        } else {
-          historyList.innerHTML = state.matchHistory.map(m => `
-            <div class="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
-              <span class="font-bold text-slate-800">${escapeHtml(m.p1Name)} (${m.score1}) vs (${m.score2}) ${escapeHtml(m.p2Name)}</span>
-              <div class="flex items-center space-x-1">
-                <span class="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">🏆 ${escapeHtml(m.winnerName)}</span>
-                ${state.role === 'admin' ? `
-                  <button onclick="deleteMatchRecord('${m.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
-                    <i class="fa-solid fa-trash-can"></i>
-                  </button>
-                ` : ''}
-              </div>
+        historyList.innerHTML = state.matchHistory.map(m => `
+          <div class="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
+            <span class="font-bold text-slate-800">${escapeHtml(m.p1Name)} (${m.score1}) vs (${m.score2}) ${escapeHtml(m.p2Name)}</span>
+            <div class="flex items-center space-x-1">
+              <span class="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">🏆 ${escapeHtml(m.winnerName)}</span>
+              ${state.role === 'admin' ? `
+                <button onclick="deleteMatchRecord('${m.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              ` : ''}
             </div>
-          `).join('');
-        }
+          </div>
+        `).join('');
       }
     }
 
@@ -2188,7 +2218,6 @@
       const student = getCurrentStudent();
       if (!student) return;
 
-      const isAdmin = state.role === 'admin';
       const missions = student.missions || [];
       const completedCount = missions.filter(m => m.completed).length;
       const statCompletedCountEl = document.getElementById('statCompletedCount');
@@ -2204,13 +2233,15 @@
       if (statTotalEarnedPointsEl) statTotalEarnedPointsEl.innerText = `${earned} P`;
 
       const historyList = document.getElementById('historyLogList');
+      const isAdmin = state.role === 'admin';
+
       if (historyList) {
         if (!student.history || student.history.length === 0) {
           historyList.innerHTML = `<p class="text-slate-400 text-center py-4 text-xs">아직 달성한 활동 기록이 없습니다.</p>`;
         } else {
-          historyList.innerHTML = student.history.slice(0, 20).map((h, idx) => `
+          historyList.innerHTML = student.history.slice(0, 15).map((h, idx) => `
             <div class="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
-              <div class="min-w-0 pr-2">
+              <div class="min-w-0 pr-2 flex-1">
                 <p class="font-bold text-slate-800 truncate">${escapeHtml(h.title)}</p>
                 <p class="text-[10px] text-slate-400">${h.date}</p>
               </div>
@@ -2219,7 +2250,7 @@
                   ${h.points >= 0 ? '+' : ''}${h.points} P
                 </span>
                 ${isAdmin ? `
-                  <button onclick="deleteHistoryLog(${idx})" class="text-slate-300 hover:text-rose-500 p-1 text-xs transition-colors" title="활동 기록 삭제">
+                  <button onclick="deleteTimelineLog(${idx})" class="text-slate-300 hover:text-rose-500 p-1 text-xs" title="타임라인 기록 삭제">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
                 ` : ''}
@@ -2230,18 +2261,18 @@
       }
     }
 
-    function deleteHistoryLog(index) {
+    function deleteTimelineLog(logIndex) {
       if (state.role !== 'admin') {
-        showToast('선생님 모드에서만 활동 기록을 삭제할 수 있습니다.', '🔒');
+        showToast('선생님 모드에서만 삭제할 수 있습니다.', '🔒');
         return;
       }
 
       const student = getCurrentStudent();
-      if (!student || !student.history || !student.history[index]) return;
+      if (!student || !student.history || !student.history[logIndex]) return;
 
-      const item = student.history[index];
-      showCustomConfirm('활동 기록 삭제', `'${item.title}' 기록을 삭제하시겠습니까?`, () => {
-        student.history.splice(index, 1);
+      const logItem = student.history[logIndex];
+      showCustomConfirm('활동 기록 삭제', `'${logItem.title}' 타임라인 기록을 삭제하시겠습니까?`, () => {
+        student.history.splice(logIndex, 1);
         saveStudentToRTDB(student);
         renderUI();
         showToast('활동 기록이 삭제되었습니다.', '🗑️');
@@ -2292,20 +2323,12 @@
 
       document.getElementById('sbP1ServeBadge').style.opacity = server === 1 ? '1' : '0';
       document.getElementById('sbP2ServeBadge').style.opacity = server === 2 ? '1' : '0';
-
-      const statusText = document.getElementById('sbStatusText');
-      if (statusText) {
-        if (isDeuce) statusText.innerText = `🔥 듀스 경기 진행 중! (1점 차 시 계속)`;
-        else statusText.innerText = `경기 진행 중 (${sbState.score1} : ${sbState.score2})`;
-      }
     }
 
     function resetScoreboard() {
       sbState.score1 = 0;
       sbState.score2 = 0;
       updateScore(1, 0);
-      const statusText = document.getElementById('sbStatusText');
-      if (statusText) statusText.innerText = "경기 준비 완료 (0:0)";
     }
 
     function endScoreboardMatch() {
@@ -2607,7 +2630,7 @@
       if (mission.completed) {
         student.totalPoints = (student.totalPoints || 0) + mission.points;
         student.history.unshift({
-          title: `[미션 달성] ${mission.title}`,
+          title: `[미션 달성] [${mission.week || 1}주차] ${mission.title}`,
           points: mission.points,
           date: dateStr
         });
@@ -2688,7 +2711,7 @@
               student.totalPoints = (student.totalPoints || 0) + m.points;
               if (!student.history) student.history = [];
               student.history.unshift({
-                title: `[미션 달성] ${m.title}`,
+                title: `[미션 달성] [${m.week || 1}주차] ${m.title}`,
                 points: m.points,
                 date: new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
               });
@@ -2733,28 +2756,25 @@
       document.getElementById('editingMissionId').value = '';
       document.getElementById('addMissionModalTitle').innerText = '✨ 새 탁구 미션 추가';
       document.getElementById('missionTitleInput').value = '';
-      const weekSelect = document.getElementById('missionWeekInput');
-      if (weekSelect) weekSelect.value = selectedWeek !== 'all' ? selectedWeek : '1';
       openModal('addMissionModal');
     }
 
-    function applyMissionPreset(title, category, difficulty, points, week = 1) {
+    function applyMissionPreset(title, category, difficulty, points, week) {
       document.getElementById('missionTitleInput').value = title;
+      document.getElementById('missionWeekInput').value = week || 1;
       const catRadio = document.querySelector(`input[name="category"][value="${category}"]`);
       if (catRadio) catRadio.checked = true;
       const diffRadio = document.querySelector(`input[name="difficulty"][value="${difficulty}"]`);
       if (diffRadio) diffRadio.checked = true;
-      const weekSelect = document.getElementById('missionWeekInput');
-      if (weekSelect) weekSelect.value = String(week);
     }
 
     function handleAddMission(event) {
       if (event) event.preventDefault();
       const editingId = document.getElementById('editingMissionId').value;
       const title = document.getElementById('missionTitleInput').value.trim();
+      const week = parseInt(document.getElementById('missionWeekInput').value) || 1;
       if (!title) return;
 
-      const week = parseInt(document.getElementById('missionWeekInput')?.value) || 1;
       const targetRadio = document.querySelector('input[name="missionTarget"]:checked');
       const targetScope = targetRadio ? targetRadio.value : 'all';
 
@@ -2771,8 +2791,8 @@
           if (student.missions && Array.isArray(student.missions)) {
             student.missions.forEach(m => {
               if (m.id === editingId) {
-                m.title = title;
                 m.week = week;
+                m.title = title;
                 m.category = category;
                 m.difficulty = difficulty;
                 m.points = points;
@@ -2802,7 +2822,7 @@
             student.missions.push({ ...newMissionTemplate });
             saveStudentToRTDB(student);
           });
-          showToast(`${week}주차 미션이 모든 부원에게 추가되었습니다!`, '✨');
+          showToast(`모든 부원에게 ${week}주차 미션이 추가되었습니다!`, '✨');
         } else {
           const currentStudent = getCurrentStudent();
           if (currentStudent) {
@@ -2810,7 +2830,7 @@
             currentStudent.missions.push({ ...newMissionTemplate });
             saveStudentToRTDB(currentStudent);
           }
-          showToast(`${week}주차 새 미션이 추가되었습니다!`, '✨');
+          showToast(`새 ${week}주차 미션이 추가되었습니다!`, '✨');
         }
       }
 
@@ -2867,6 +2887,7 @@
         history: [],
         redeemedRewards: []
       };
+
       state.students.push(newStudent);
       state.activeStudentId = newId;
       saveStudentToRTDB(newStudent);
@@ -2902,6 +2923,7 @@
       handleStudentLogin,
       handleLogout,
       quickLoginStudent,
+      toggleRoleModalFromLogin,
       switchToSelfAccount,
       switchActiveStudent,
       toggleMobileRosterDrawer,
@@ -2910,8 +2932,9 @@
       openModal,
       switchMainTab,
       switchTab: (c) => { activeTab = c; renderUI(); },
-      switchWeekFilter: (w) => { selectedWeek = w; renderMissionsView(); },
+      selectWeekFilter,
       switchRankingView: (m) => { rankingViewMode = m; renderMatchesView(); },
+      toggleClassAccordion,
       openScoreboardModal,
       updateScoreboardPlayer2,
       updateScore,
@@ -2919,12 +2942,13 @@
       endScoreboardMatch,
       deleteMatchRecord,
       saveSkillEvaluation,
+      deleteTimelineLog,
       handleMissionCheck,
       approvePendingMission,
       rejectPendingMission,
       approveAllPendingMissions,
       confirmTeacherPasscode,
-      openAddStudentModal: () => { openModal('addStudentModal'); },
+      openAddStudentModal: () => openModal('addStudentModal'),
       saveNewStudent,
       deleteStudent,
       toggleRoleModal: () => {
@@ -2934,20 +2958,13 @@
           showToast('부원 모드로 전환되었습니다.');
         } else openModal('roleAuthModal');
       },
-      loginAsTeacher: () => {
-        const input = document.getElementById('adminRolePasscodeInput');
-        if (input) input.value = '';
-        const err = document.getElementById('roleAuthErrorMsg');
-        if (err) err.classList.add('hidden');
-        openModal('roleAuthModal');
-      },
       verifyAndSwitchToAdmin: () => {
         if (document.getElementById('adminRolePasscodeInput').value === state.passcode) {
           state.role = 'admin';
           closeModal('roleAuthModal');
           closeModal('loginGateScreen');
           renderUI();
-          showToast('선생님 모드로 로그인되었습니다.', '🎓');
+          showToast('선생님 관리자 모드로 접속되었습니다.', '🎓');
         } else {
           document.getElementById('roleAuthErrorMsg').classList.remove('hidden');
         }
@@ -2997,13 +3014,10 @@
       deleteReward,
       redeemReward,
       useCoupon,
-      deleteHistoryLog,
       openAddMissionModal,
       applyMissionPreset,
       handleAddMission,
       deleteMission,
-      renderMissionsView,
-      renderStudentDirectory,
       selectRewardIcon: (icon) => {
         selectedRewardIcon = icon;
         document.querySelectorAll('.reward-icon-opt').forEach(btn => {

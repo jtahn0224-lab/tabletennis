@@ -52,7 +52,7 @@
       animation: pop-in 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
-    /* PROFILE FRAME STYLES */
+    /* 1. PROFILE FRAME STYLES */
     .frame-none {
       border: 2px solid #a7f3d0;
     }
@@ -84,6 +84,116 @@
       box-shadow: 0 0 15px rgba(168, 85, 247, 0.8);
     }
 
+    /* 2. PROFILE AURA & PARTICLE EFFECTS */
+    .aura-none {}
+    @keyframes aura-fire-anim {
+      0%, 100% { box-shadow: 0 0 12px #f97316, 0 0 22px #ef4444; }
+      50% { box-shadow: 0 0 24px #ef4444, 0 0 38px #f59e0b; }
+    }
+    .aura-flame {
+      animation: aura-fire-anim 1.5s infinite ease-in-out !important;
+      border-radius: 1rem !important;
+    }
+
+    @keyframes aura-cyber-anim {
+      0%, 100% { box-shadow: 0 0 10px #06b6d4, 0 0 20px #3b82f6; }
+      50% { box-shadow: 0 0 22px #38bdf8, 0 0 32px #6366f1; }
+    }
+    .aura-lightning {
+      animation: aura-cyber-anim 1.2s infinite ease-in-out !important;
+      border-radius: 1rem !important;
+    }
+
+    @keyframes aura-star-anim {
+      0%, 100% { box-shadow: 0 0 10px #f59e0b, 0 0 20px #fef08a; }
+      50% { box-shadow: 0 0 25px #fbbf24, 0 0 40px #ffffff; }
+    }
+    .aura-starlight {
+      animation: aura-star-anim 1.8s infinite ease-in-out !important;
+      border-radius: 1rem !important;
+    }
+
+    @keyframes aura-sakura-anim {
+      0%, 100% { box-shadow: 0 0 8px #ec4899, 0 0 18px #f472b6; }
+      50% { box-shadow: 0 0 22px #f43f5e, 0 0 34px #fbcfe8; }
+    }
+    .aura-sakura {
+      animation: aura-sakura-anim 2s infinite ease-in-out !important;
+      border-radius: 1rem !important;
+    }
+
+    /* 3. NAME ANIMATION TEXT SKINS */
+    .name-skin-none {}
+    @keyframes rainbow-text-anim {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .name-skin-rainbow {
+      background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981, #06b6d4, #8b5cf6, #ec4899) !important;
+      background-size: 200% auto !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      animation: rainbow-text-anim 3s linear infinite !important;
+      font-weight: 900 !important;
+    }
+
+    @keyframes shine-text-anim {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .name-skin-shine {
+      background: linear-gradient(110deg, #d97706 0%, #fef08a 45%, #ffffff 50%, #fef08a 55%, #d97706 100%) !important;
+      background-size: 200% 100% !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      animation: shine-text-anim 2.5s infinite !important;
+      font-weight: 900 !important;
+    }
+
+    .name-skin-neon {
+      color: #38bdf8 !important;
+      text-shadow: 0 0 6px rgba(56, 189, 248, 0.9), 0 0 12px rgba(14, 165, 233, 0.7) !important;
+      font-weight: 900 !important;
+    }
+
+    .name-skin-fire {
+      color: #f97316 !important;
+      text-shadow: 0 0 5px #ef4444, 0 0 12px #f59e0b !important;
+      font-weight: 900 !important;
+    }
+
+    /* 4. CARD BACKGROUND SKINS */
+    .card-skin-none {
+      background: #ffffff;
+      border: 1px solid #f1f5f9;
+    }
+    .card-skin-galaxy {
+      background: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #4c1d95 100%) !important;
+      color: #ffffff !important;
+      border: 1.5px solid #818cf8 !important;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.3) !important;
+    }
+    .card-skin-cyber {
+      background: linear-gradient(135deg, #090d16 0%, #0f172a 100%) !important;
+      background-image: radial-gradient(#06b6d4 0.75px, transparent 0.75px) !important;
+      background-size: 12px 12px !important;
+      color: #e0f2fe !important;
+      border: 1.5px solid #06b6d4 !important;
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.3) !important;
+    }
+    .card-skin-gold {
+      background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #b45309 100%) !important;
+      color: #fef3c7 !important;
+      border: 1.5px solid #fbbf24 !important;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.3) !important;
+    }
+    .card-skin-sunset {
+      background: linear-gradient(135deg, #881337 0%, #9f1239 50%, #c2410c 100%) !important;
+      color: #ffe4e6 !important;
+      border: 1.5px solid #fb7185 !important;
+    }
+
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -103,7 +213,6 @@
 </head>
 <body class="p-2 sm:p-4 md:p-6 flex justify-center items-center">
 
-  <!-- LOGIN GATE SCREEN -->
   <div id="loginGateScreen" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl animate-pop text-center max-h-[90vh] overflow-y-auto">
       
@@ -164,7 +273,6 @@
     </div>
   </div>
 
-  <!-- MAIN LAYOUT CONTAINER -->
   <div class="w-full max-w-6xl flex flex-col lg:flex-row gap-5 items-start justify-center my-auto">
 
     <!-- MOBILE TOP BAR -->
@@ -240,7 +348,6 @@
       </button>
     </aside>
 
-    <!-- RIGHT MAIN APP CONTAINER -->
     <div id="appContainer" class="w-full lg:flex-1 max-w-2xl min-h-[88vh] glass-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between relative overflow-hidden order-1 lg:order-2">
       
       <!-- Top Branding Bar -->
@@ -272,16 +379,16 @@
         </button>
       </div>
 
-      <!-- Header with Profile Info, Frame & Custom Title Badge -->
+      <!-- Header with Profile Info, Frame, Aura, Title Badge & Custom Styling -->
       <header class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-        <div onclick="openAvatarModal()" title="프로필 캐릭터 / 테두리 / 칭호 변경" class="flex items-center space-x-3 cursor-pointer min-w-0 pr-2 group">
-          <div id="headerAvatar" class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-2xl shadow-inner shrink-0 relative transition-all frame-emerald">
+        <div onclick="openAvatarModal()" title="프로필 캐릭터 / 테두리 / 오라 / 스킨 꾸미기" class="flex items-center space-x-3 cursor-pointer min-w-0 pr-2 group">
+          <div id="headerAvatar" class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-2xl shadow-inner shrink-0 relative transition-all frame-emerald aura-none">
             <span id="headerAvatarIcon">🏓</span>
             <span class="absolute -bottom-1 -right-1 bg-emerald-600 text-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center border border-white shadow-xs group-hover:scale-110 transition-transform">✏️</span>
           </div>
           <div class="flex flex-col justify-center min-w-0 space-y-0.5">
             <div class="flex items-center space-x-1.5 min-w-0">
-              <h1 id="headerName" class="font-extrabold text-slate-800 text-base leading-tight truncate">김탁구</h1>
+              <h1 id="headerName" class="font-extrabold text-slate-800 text-base leading-tight truncate name-skin-none">김탁구</h1>
               <span id="headerTitleBadge" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white font-black text-[9px] px-2 py-0.5 rounded-full shadow-xs truncate">🌱 탁구 입문자</span>
             </div>
             <div>
@@ -597,29 +704,27 @@
     </div>
   </div>
 
-  <!-- MODAL: Avatar, Frame & Title Customization Modal -->
+  <!-- MODAL: Comprehensive Profile Customization Modal (7 Categories) -->
   <div id="avatarSelectModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-white w-full max-w-md rounded-3xl p-5 sm:p-6 shadow-2xl animate-pop text-center max-h-[90vh] flex flex-col">
+    <div class="bg-white w-full max-w-lg rounded-3xl p-5 sm:p-6 shadow-2xl animate-pop text-center max-h-[92vh] flex flex-col">
       <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100 shrink-0">
         <h3 class="text-base font-extrabold text-slate-800 flex items-center space-x-2">
-          <span>🎨 프로필 꾸미기 (캐릭터 / 테두리 / 칭호)</span>
+          <span>✨ 프로필 오라, 스킨 & 꾸미기 상점</span>
         </h3>
         <button onclick="closeModal('avatarSelectModal')" class="text-slate-400 hover:text-slate-600 p-1">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <!-- Customization Tabs -->
-      <div class="flex bg-slate-100 p-1 rounded-2xl mb-3 shrink-0">
-        <button id="profileTabAvatarBtn" onclick="switchProfileCustomTab('avatar')" class="flex-1 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-emerald-800 shadow-xs">
-          🎨 캐릭터 (100종)
-        </button>
-        <button id="profileTabFrameBtn" onclick="switchProfileCustomTab('frame')" class="flex-1 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-800">
-          🖼️ 테두리 (프레임)
-        </button>
-        <button id="profileTabTitleBtn" onclick="switchProfileCustomTab('title')" class="flex-1 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-800">
-          🏷️ 한정판 칭호
-        </button>
+      <!-- Scrollable Customization Tabs -->
+      <div class="flex space-x-1.5 bg-slate-100 p-1.5 rounded-2xl mb-3 overflow-x-auto text-xs font-bold shrink-0 no-scrollbar">
+        <button id="profileTabAvatarBtn" onclick="switchProfileCustomTab('avatar')" class="px-3 py-1.5 rounded-xl whitespace-nowrap transition-all bg-white text-emerald-800 shadow-xs">🎨 캐릭터 (100종)</button>
+        <button id="profileTabFrameBtn" onclick="switchProfileCustomTab('frame')" class="px-3 py-1.5 rounded-xl whitespace-nowrap transition-all text-slate-600 hover:text-slate-800">🖼️ 테두리</button>
+        <button id="profileTabTitleBtn" onclick="switchProfileCustomTab('title')" class="px-3 py-1.5 rounded-xl whitespace-nowrap transition-all text-slate-600 hover:text-slate-800">🏷️ 한정판 칭호</button>
+        <button id="profileTabAuraBtn" onclick="switchProfileCustomTab('aura')" class="px-3 py-1.5 rounded-xl whitespace-nowrap transition-all text-slate-600 hover:text-slate-800">🔮 오라 이펙트</button>
+        <button id="profileTabNameSkinBtn" onclick="switchProfileCustomTab('nameSkin')" class="px-3 py-1.5 rounded-xl whitespace-nowrap transition-all text-slate-600 hover:text-slate-800">🌈 네임 스킨</button>
+        <button id="profileTabCardSkinBtn" onclick="switchProfileCustomTab('cardSkin')" class="px-3 py-1.5 rounded-xl whitespace-nowrap transition-all text-slate-600 hover:text-slate-800">🎴 카드 배경</button>
+        <button id="profileTabCeremonyBtn" onclick="switchProfileCustomTab('ceremony')" class="px-3 py-1.5 rounded-xl whitespace-nowrap transition-all text-slate-600 hover:text-slate-800">🎉 세레머니</button>
       </div>
 
       <!-- Section 1: Avatars Grid -->
@@ -637,18 +742,36 @@
 
       <!-- Section 2: Frames List -->
       <div id="profileSectionFrame" class="hidden flex-1 flex-col min-h-0 overflow-y-auto space-y-2 pr-1 text-left">
-        <p class="text-xs text-slate-500 font-bold mb-1">포인트로 화려한 프로필 테두리를 해금하고 프로필을 꾸며보세요!</p>
-        <div id="framesListContainer" class="space-y-2">
-          <!-- Dynamic Frames List -->
-        </div>
+        <div id="framesListContainer" class="space-y-2"></div>
       </div>
 
       <!-- Section 3: Titles List -->
       <div id="profileSectionTitle" class="hidden flex-1 flex-col min-h-0 overflow-y-auto space-y-2 pr-1 text-left">
-        <p class="text-xs text-slate-500 font-bold mb-1">멋진 칭호를 장착하여 다른 부원들에게 실력과 매너를 뽐내보세요!</p>
-        <div id="titlesListContainer" class="space-y-2">
-          <!-- Dynamic Titles List -->
-        </div>
+        <div id="titlesListContainer" class="space-y-2"></div>
+      </div>
+
+      <!-- Section 4: Auras List (🔮 1. 프로필 오라 & 파티클) -->
+      <div id="profileSectionAura" class="hidden flex-1 flex-col min-h-0 overflow-y-auto space-y-2 pr-1 text-left">
+        <p class="text-xs text-slate-500 font-bold mb-1">프로필 뒤에서 화려하게 타오르고 반짝이는 오라 이펙트를 장착하세요!</p>
+        <div id="aurasListContainer" class="space-y-2"></div>
+      </div>
+
+      <!-- Section 5: Name Skins List (🌈 2. 네임 텍스트 스킨) -->
+      <div id="profileSectionNameSkin" class="hidden flex-1 flex-col min-h-0 overflow-y-auto space-y-2 pr-1 text-left">
+        <p class="text-xs text-slate-500 font-bold mb-1">내 이름을 영롱한 무지개빛, 금빛, 네온 광채로 다채롭게 뽐내보세요!</p>
+        <div id="nameSkinsListContainer" class="space-y-2"></div>
+      </div>
+
+      <!-- Section 6: Card Background Skins List (🎴 4. 프로필 카드 배경) -->
+      <div id="profileSectionCardSkin" class="hidden flex-1 flex-col min-h-0 overflow-y-auto space-y-2 pr-1 text-left">
+        <p class="text-xs text-slate-500 font-bold mb-1">부원 명단에서 내 정보 카드를 은하수, 사이버, 황금 카드로 꾸며보세요!</p>
+        <div id="cardSkinsListContainer" class="space-y-2"></div>
+      </div>
+
+      <!-- Section 7: Ceremonies List (🎉 3. 나만의 승리/미션 세레머니) -->
+      <div id="profileSectionCeremony" class="hidden flex-1 flex-col min-h-0 overflow-y-auto space-y-2 pr-1 text-left">
+        <p class="text-xs text-slate-500 font-bold mb-1">미션을 완수하거나 경기에서 승리할 때 화면 가득 터지는 세레머니 이펙트!</p>
+        <div id="ceremoniesListContainer" class="space-y-2"></div>
       </div>
 
       <button onclick="closeModal('avatarSelectModal')" class="w-full mt-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-2xl text-xs transition-all shrink-0">
@@ -1163,7 +1286,7 @@
       '🕹️', '🧩', '🎲', '♟️', '🏎️', '🏍️', '🛸', '🛰️', '⚓', '🤺'
     ];
 
-    /* UNLOCKABLE PROFILE FRAMES (테두리 목록) */
+    /* UNLOCKABLE PROFILE FRAMES */
     const ALL_FRAMES = [
       { id: 'frame-none', name: '기본 테두리', points: 0, class: 'frame-none', desc: '심플한 기본 테두리' },
       { id: 'frame-emerald', name: '에메랄드 글로우', points: 150, class: 'frame-emerald', desc: '은은하게 빛나는 에메랄드 빛 프레임' },
@@ -1173,7 +1296,7 @@
       { id: 'frame-purple', name: '마법의 보라', points: 350, class: 'frame-purple', desc: '신비로운 보랏빛 오라 프레임' }
     ];
 
-    /* UNLOCKABLE LIMITED TITLES (한정판 칭호 목록) */
+    /* UNLOCKABLE LIMITED TITLES */
     const ALL_TITLES = [
       { id: 't_default', title: '🌱 탁구 입문자', points: 0, desc: '기본 등급 칭호' },
       { id: 't_smash', title: '🏓 1반 스매시 폭격기', points: 200, desc: '강력한 스매싱을 날리는 에이스' },
@@ -1184,6 +1307,41 @@
       { id: 't_speed', title: '⚡ 빛의 드라이브', points: 400, desc: '눈에 보이지 않는 속도의 공격수' },
       { id: 't_mvp', title: '👑 이주의 MVP', points: 600, desc: '학급 탁구 수업 최고의 스타' },
       { id: 't_god', title: '🌟 전설의 핑퐁마스터', points: 1000, desc: '탁구 기술과 매너를 모두 정복한 전설' }
+    ];
+
+    /* 🔮 1. UNLOCKABLE AURAS & PARTICLES */
+    const ALL_AURAS = [
+      { id: 'aura-none', name: '기본 (없음)', points: 0, class: 'aura-none', desc: '효과 없음' },
+      { id: 'aura-flame', name: '🔥 불꽃 화염 오라', points: 300, class: 'aura-flame', desc: '타오르는 붉은 화염 오라 파티클' },
+      { id: 'aura-lightning', name: '⚡ 사이버 번개 오라', points: 400, class: 'aura-lightning', desc: '깜빡이는 청빛 네온 번개 스파크' },
+      { id: 'aura-starlight', name: '✨ 은하수 별빛 오라', points: 500, class: 'aura-starlight', desc: '황금빛 별가루와 은하수가 순환하는 효과' },
+      { id: 'aura-sakura', name: '🌸 벚꽃 핑크 오라', points: 350, class: 'aura-sakura', desc: '부드럽게 피어나는 분홍빛 벚꽃 오라' }
+    ];
+
+    /* 🌈 2. UNLOCKABLE NAME ANIMATION TEXT SKINS */
+    const ALL_NAME_SKINS = [
+      { id: 'name-skin-none', name: '기본 이름', points: 0, class: 'name-skin-none', desc: '기본 텍스트 스타일' },
+      { id: 'name-skin-rainbow', name: '🌈 무지개 파도 스킨', points: 300, class: 'name-skin-rainbow', desc: '영롱한 무지갯빛이 흘러가는 글자 애니메이션' },
+      { id: 'name-skin-shine', name: '💎 골드 샤인 스킨', points: 400, class: 'name-skin-shine', desc: '찬란한 금빛 반사광 빔이 스쳐 지나가는 글자' },
+      { id: 'name-skin-neon', name: '🎆 네온 사이버 스킨', points: 350, class: 'name-skin-neon', desc: '사이버 펑크풍 네온사인이 밝게 빛나는 이름' },
+      { id: 'name-skin-fire', name: '🔥 불타는 문자 스킨', points: 450, class: 'name-skin-fire', desc: '정열의 불꽃 광채가 일렁이는 화염 문자' }
+    ];
+
+    /* 🎴 4. UNLOCKABLE CARD BACKGROUND SKINS */
+    const ALL_CARD_SKINS = [
+      { id: 'card-skin-none', name: '기본 화이트 카드', points: 0, class: 'card-skin-none', desc: '깔끔한 흰색 기본 카드' },
+      { id: 'card-skin-galaxy', name: '🌌 우주 갤럭시 카드', points: 500, class: 'card-skin-galaxy', desc: '은하수와 별빛이 쏟아지는 우주 아크릴 카드' },
+      { id: 'card-skin-cyber', name: '👾 사이버펑크 그리드', points: 400, class: 'card-skin-cyber', desc: '미래형 홀로그램 도트 그리드 스킨' },
+      { id: 'card-skin-gold', name: '🏆 황금 전설 카드', points: 700, class: 'card-skin-gold', desc: '금빛 가루와 골드 폰트의 전설적인 챔피언 카드' },
+      { id: 'card-skin-sunset', name: '🌅 석양 선셋 카드', points: 300, class: 'card-skin-sunset', desc: '따뜻한 로즈-오렌지 그라데이션 석양 카드' }
+    ];
+
+    /* 🎉 3. UNLOCKABLE VICTORY / MISSION CEREMONIES */
+    const ALL_CEREMONIES = [
+      { id: 'ceremony-default', name: '🎉 기본 폭죽 세레머니', points: 0, desc: '다채로운 컬러 폭죽 팡파르' },
+      { id: 'ceremony-crowns', name: '👑 황금 왕관 샤워', points: 300, desc: '황금 왕관과 트로피 빛깔 폭죽이 가득 터지는 이펙트' },
+      { id: 'ceremony-rockets', name: '🚀 연쇄 로켓 폭발', points: 450, desc: '화면 양쪽에서 연속으로 발사되는 로켓 세레머니' },
+      { id: 'ceremony-pingpong', name: '🏓 핑퐁 스매시 파열', points: 500, desc: '강력한 스매시와 함께 탁구공 파티클이 퍼지는 축하' }
     ];
 
     /* 10-WEEK TABLE TENNIS CURRICULUM DEFAULT MISSIONS */
@@ -1223,9 +1381,17 @@
           unlockedFrames: ['frame-none', 'frame-emerald'],
           equippedTitle: '🌱 탁구 입문자',
           unlockedTitles: ['🌱 탁구 입문자'],
+          equippedAura: 'aura-none',
+          unlockedAuras: ['aura-none'],
+          equippedNameSkin: 'name-skin-none',
+          unlockedNameSkins: ['name-skin-none'],
+          equippedCardSkin: 'card-skin-none',
+          unlockedCardSkins: ['card-skin-none'],
+          equippedCeremony: 'ceremony-default',
+          unlockedCeremonies: ['ceremony-default'],
           missions: JSON.parse(JSON.stringify(DEFAULT_MISSIONS)),
           skills: { forehand: 3, backhand: 3, serve: 3, manner: 5 },
-          totalPoints: 20,
+          totalPoints: 200,
           wins: 1,
           losses: 0,
           history: [],
@@ -1244,7 +1410,7 @@
     let currentMainTab = 'missions';
     let activeTab = 'personal';
     let selectedWeek = 'all'; // 'all' or 1~10
-    let profileCustomTab = 'avatar'; // 'avatar' | 'frame' | 'title'
+    let profileCustomTab = 'avatar'; // 'avatar' | 'frame' | 'title' | 'aura' | 'nameSkin' | 'cardSkin' | 'ceremony'
     let rankingViewMode = 'list';
     let collapsedClasses = {};
     let selectedRewardIcon = '🏓';
@@ -1378,6 +1544,14 @@
               unlockedFrames: s.unlockedFrames || ['frame-none'],
               equippedTitle: s.equippedTitle || calculateLevelTitle(s.totalPoints || 0),
               unlockedTitles: s.unlockedTitles || [calculateLevelTitle(s.totalPoints || 0)],
+              equippedAura: s.equippedAura || 'aura-none',
+              unlockedAuras: s.unlockedAuras || ['aura-none'],
+              equippedNameSkin: s.equippedNameSkin || 'name-skin-none',
+              unlockedNameSkins: s.unlockedNameSkins || ['name-skin-none'],
+              equippedCardSkin: s.equippedCardSkin || 'card-skin-none',
+              unlockedCardSkins: s.unlockedCardSkins || ['card-skin-none'],
+              equippedCeremony: s.equippedCeremony || 'ceremony-default',
+              unlockedCeremonies: s.unlockedCeremonies || ['ceremony-default'],
               history: s.history || [],
               redeemedRewards: s.redeemedRewards || []
             }));
@@ -1522,8 +1696,33 @@
       } catch (e) {}
     }
 
-    function triggerConfetti() {
-      if (typeof confetti === 'function') {
+    /* 🎉 3. CUSTOM CELEBRATION / VICTORY FX CONFETTI TRIGGER */
+    function triggerConfetti(ceremonyType = 'ceremony-default') {
+      if (typeof confetti !== 'function') return;
+
+      if (ceremonyType === 'ceremony-crowns') {
+        confetti({
+          particleCount: 100,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#f59e0b', '#fbbf24', '#fef08a', '#ffffff'],
+          scalar: 1.3
+        });
+      } else if (ceremonyType === 'ceremony-rockets') {
+        confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0.1, y: 0.8 } });
+        confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 0.9, y: 0.8 } });
+        setTimeout(() => {
+          confetti({ particleCount: 80, spread: 100, origin: { x: 0.5, y: 0.5 } });
+        }, 300);
+      } else if (ceremonyType === 'ceremony-pingpong') {
+        confetti({
+          particleCount: 90,
+          spread: 90,
+          origin: { y: 0.65 },
+          colors: ['#ffffff', '#f97316', '#38bdf8', '#10b981'],
+          scalar: 1.4
+        });
+      } else {
         confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
       }
     }
@@ -1613,6 +1812,14 @@
             unlockedFrames: ['frame-none'],
             equippedTitle: '🌱 탁구 입문자',
             unlockedTitles: ['🌱 탁구 입문자'],
+            equippedAura: 'aura-none',
+            unlockedAuras: ['aura-none'],
+            equippedNameSkin: 'name-skin-none',
+            unlockedNameSkins: ['name-skin-none'],
+            equippedCardSkin: 'card-skin-none',
+            unlockedCardSkins: ['card-skin-none'],
+            equippedCeremony: 'ceremony-default',
+            unlockedCeremonies: ['ceremony-default'],
             missions: getInitialMissionsForNewStudent(),
             skills: { forehand: 3, backhand: 3, serve: 3, manner: 5 },
             totalPoints: 0,
@@ -1771,7 +1978,7 @@
         adminSelect.classList.add('hidden');
       }
 
-      // HEADER RENDERING WITH CUSTOM FRAME AND TITLE
+      // HEADER RENDERING WITH CUSTOM FRAME, AURA, NAME SKIN & TITLE
       const headerName = document.getElementById('headerName');
       const headerClassEl = document.getElementById('headerClass');
       const headerAvatarIcon = document.getElementById('headerAvatarIcon');
@@ -1779,12 +1986,15 @@
       const headerTitleBadge = document.getElementById('headerTitleBadge');
       const userLevelTitle = document.getElementById('userLevelTitle');
 
-      if (headerName) headerName.innerText = student ? student.name : '';
+      if (headerName && student) {
+        headerName.innerText = student.name;
+        headerName.className = `font-extrabold text-slate-800 text-base leading-tight truncate ${student.equippedNameSkin || 'name-skin-none'}`;
+      }
       if (headerClassEl) headerClassEl.innerText = student ? formatClassBadge(student) : '';
       if (headerAvatarIcon && student) headerAvatarIcon.innerText = student.avatar || '🏓';
 
       if (headerAvatar && student) {
-        headerAvatar.className = `w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-2xl shadow-inner shrink-0 relative transition-all ${student.equippedFrame || 'frame-none'}`;
+        headerAvatar.className = `w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-2xl shadow-inner shrink-0 relative transition-all ${student.equippedFrame || 'frame-none'} ${student.equippedAura || 'aura-none'}`;
       }
 
       if (headerTitleBadge && student) {
@@ -1865,7 +2075,7 @@
           <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-200 text-xs">
             <div class="flex items-center space-x-1.5 min-w-0 pr-1">
               <span class="text-sm">${s.avatar || '🏓'}</span>
-              <span class="font-bold text-slate-800 truncate">${escapeHtml(s.name)}</span>
+              <span class="font-bold text-slate-800 truncate ${s.equippedNameSkin || 'name-skin-none'}">${escapeHtml(s.name)}</span>
               <span class="text-[10px] text-slate-400 shrink-0">(${formatClassBadge(s) || '학급미지정'})</span>
             </div>
             <button onclick="deleteStudent('${s.id}')" class="bg-rose-500 hover:bg-rose-600 text-white font-extrabold px-2.5 py-1 rounded-lg text-[10px] flex items-center space-x-1 transition-all shrink-0 shadow-xs">
@@ -1958,22 +2168,36 @@
               <div>달성: <span class="font-extrabold text-teal-700">${classAvgCompletion}%</span></div>
             </div>
 
-            <div class="${isCollapsed ? 'hidden' : 'p-1.5 space-y-1'}">
-              ${list.map(s => `
-                <div onclick="switchActiveStudent('${s.id}')" class="flex justify-between items-center p-2 rounded-xl cursor-pointer text-xs transition-all ${
-                  s.id === state.activeStudentId ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'hover:bg-slate-50 text-slate-800 bg-white border border-slate-100'
+            <div class="${isCollapsed ? 'hidden' : 'p-1.5 space-y-1.5'}">
+              ${list.map(s => {
+                const cardSkinClass = s.equippedCardSkin || 'card-skin-none';
+                const nameSkinClass = s.equippedNameSkin || 'name-skin-none';
+                const auraClass = s.equippedAura || 'aura-none';
+                const frameClass = s.equippedFrame || 'frame-none';
+
+                return `
+                <div onclick="switchActiveStudent('${s.id}')" class="flex justify-between items-center p-2 rounded-xl cursor-pointer text-xs transition-all ${cardSkinClass} ${
+                  s.id === state.activeStudentId ? 'ring-2 ring-emerald-500 shadow-md' : 'hover:opacity-95'
                 }">
-                  <div class="flex items-center space-x-2 min-w-0 pr-1">
-                    <span class="text-base shrink-0">${s.avatar || '🏓'}</span>
+                  <div class="flex items-center space-x-2.5 min-w-0 pr-1">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm shrink-0 bg-emerald-50/80 ${frameClass} ${auraClass} shadow-2xs">
+                      ${s.avatar || '🏓'}
+                    </div>
                     <div class="min-w-0 flex flex-col justify-center">
                       <div class="flex items-center space-x-1 truncate">
-                        <p class="truncate font-extrabold text-xs leading-tight">
+                        <p class="truncate font-extrabold text-xs leading-tight ${nameSkinClass}">
                           ${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}${s.id === loggedInStudentId ? ' (나)' : ''}
                         </p>
                       </div>
-                      <p class="text-[9px] ${s.id === state.activeStudentId ? 'text-emerald-100' : 'text-emerald-700'} font-bold leading-tight truncate">
-                        ${s.equippedTitle || calculateLevelTitle(s.totalPoints || 0)}
-                      </p>
+                      <div>
+                        <span class="inline-block mt-0.5 px-1.5 py-0.2 rounded-md text-[9px] font-black truncate border ${
+                          s.id === state.activeStudentId 
+                            ? 'bg-emerald-800/90 text-amber-300 border-emerald-500/40' 
+                            : 'bg-amber-100/90 text-amber-900 border-amber-200'
+                        }">
+                          ${s.equippedTitle || calculateLevelTitle(s.totalPoints || 0)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div class="flex items-center space-x-1.5 shrink-0">
@@ -1985,7 +2209,8 @@
                     ` : ''}
                   </div>
                 </div>
-              `).join('')}
+              `;
+              }).join('')}
             </div>
           </div>
         `;
@@ -2035,8 +2260,16 @@
             isActive ? 'bg-emerald-50 border-emerald-300 shadow-xs' : 'bg-white border-slate-100 hover:border-emerald-200'
           }">
             <div class="flex justify-between items-center text-[11px] mb-1">
-              <span class="font-bold text-slate-800 truncate">${s.number ? `${s.number}번 ` : ''}${s.avatar || '🏓'} ${escapeHtml(s.name)} <span class="text-[9px] text-emerald-700 font-extrabold ml-1">${s.equippedTitle || calculateLevelTitle(s.totalPoints || 0)}</span></span>
-              <span class="font-black text-emerald-700">${pct}% <span class="text-[9px] text-slate-400">(${completed}/${total})</span></span>
+              <div class="flex items-center space-x-1.5 min-w-0 pr-1">
+                <div class="w-5 h-5 rounded-md flex items-center justify-center text-[11px] shrink-0 ${s.equippedFrame || 'frame-none'} ${s.equippedAura || 'aura-none'}">
+                  ${s.avatar || '🏓'}
+                </div>
+                <span class="font-bold text-slate-800 truncate ${s.equippedNameSkin || 'name-skin-none'}">${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}</span>
+                <span class="text-[9px] bg-amber-100 text-amber-900 font-black px-1.5 py-0.2 rounded-md shrink-0 border border-amber-200">
+                  ${s.equippedTitle || calculateLevelTitle(s.totalPoints || 0)}
+                </span>
+              </div>
+              <span class="font-black text-emerald-700 shrink-0">${pct}% <span class="text-[9px] text-slate-400">(${completed}/${total})</span></span>
             </div>
             <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
               <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
@@ -2193,7 +2426,7 @@
             const winRate = tot > 0 ? Math.round((s.wins / tot) * 100) : 0;
             html += `
               <div class="flex justify-between items-center bg-white p-2 rounded-xl border border-slate-100 text-xs">
-                <span class="font-bold text-slate-800">#${idx + 1} ${s.avatar || '🏓'} ${escapeHtml(s.name)}</span>
+                <span class="font-bold text-slate-800 ${s.equippedNameSkin || 'name-skin-none'}">#${idx + 1} ${s.avatar || '🏓'} ${escapeHtml(s.name)}</span>
                 <span class="font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200/60">
                   ${s.wins || 0}승 ${s.losses || 0}패 (${winRate}%)
                 </span>
@@ -2209,7 +2442,7 @@
             html += `
               <div>
                 <div class="flex justify-between text-[11px] font-bold mb-0.5">
-                  <span class="text-slate-800">#${idx + 1} ${s.avatar || '🏓'} ${escapeHtml(s.name)}</span>
+                  <span class="text-slate-800 ${s.equippedNameSkin || 'name-skin-none'}">#${idx + 1} ${s.avatar || '🏓'} ${escapeHtml(s.name)}</span>
                   <span class="text-emerald-700 font-black">${winRate}% (${s.wins || 0}승 ${s.losses || 0}패)</span>
                 </div>
                 <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
@@ -2371,31 +2604,45 @@
       const secAvatar = document.getElementById('profileSectionAvatar');
       const secFrame = document.getElementById('profileSectionFrame');
       const secTitle = document.getElementById('profileSectionTitle');
+      const secAura = document.getElementById('profileSectionAura');
+      const secNameSkin = document.getElementById('profileSectionNameSkin');
+      const secCardSkin = document.getElementById('profileSectionCardSkin');
+      const secCeremony = document.getElementById('profileSectionCeremony');
 
-      const btnAvatar = document.getElementById('profileTabAvatarBtn');
-      const btnFrame = document.getElementById('profileTabFrameBtn');
-      const btnTitle = document.getElementById('profileTabTitleBtn');
+      const tabs = ['Avatar', 'Frame', 'Title', 'Aura', 'NameSkin', 'CardSkin', 'Ceremony'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`profileTab${t}Btn`);
+        if (btn) btn.className = "px-3 py-1.5 rounded-xl whitespace-nowrap transition-all text-slate-600 hover:text-slate-800 font-bold";
+      });
 
-      secAvatar.classList.add('hidden');
-      secFrame.classList.add('hidden');
-      secTitle.classList.add('hidden');
+      [secAvatar, secFrame, secTitle, secAura, secNameSkin, secCardSkin, secCeremony].forEach(sec => {
+        if (sec) sec.classList.add('hidden');
+      });
 
-      btnAvatar.className = "flex-1 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-800";
-      btnFrame.className = "flex-1 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-800";
-      btnTitle.className = "flex-1 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-800";
+      const activeBtn = document.getElementById(`profileTab${tab.charAt(0).toUpperCase() + tab.slice(1)}Btn`);
+      if (activeBtn) activeBtn.className = "px-3 py-1.5 rounded-xl whitespace-nowrap transition-all bg-white text-emerald-800 shadow-xs font-bold";
 
       if (tab === 'avatar') {
         secAvatar.classList.remove('hidden');
-        btnAvatar.className = "flex-1 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-emerald-800 shadow-xs";
         renderAvatarGrid();
       } else if (tab === 'frame') {
         secFrame.classList.remove('hidden');
-        btnFrame.className = "flex-1 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-emerald-800 shadow-xs";
         renderFramesList();
       } else if (tab === 'title') {
         secTitle.classList.remove('hidden');
-        btnTitle.className = "flex-1 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-emerald-800 shadow-xs";
         renderTitlesList();
+      } else if (tab === 'aura') {
+        secAura.classList.remove('hidden');
+        renderAurasList();
+      } else if (tab === 'nameSkin') {
+        secNameSkin.classList.remove('hidden');
+        renderNameSkinsList();
+      } else if (tab === 'cardSkin') {
+        secCardSkin.classList.remove('hidden');
+        renderCardSkinsList();
+      } else if (tab === 'ceremony') {
+        secCeremony.classList.remove('hidden');
+        renderCeremoniesList();
       }
     }
 
@@ -2483,7 +2730,7 @@
           renderUI();
           renderAvatarGrid();
           playSuccessSound();
-          triggerConfetti();
+          triggerConfetti(student.equippedCeremony);
           showToast(`'${newAvatar}' 캐릭터를 해금하고 변경했습니다! (-10 P)`, '🎉');
         });
       }
@@ -2574,7 +2821,7 @@
         renderUI();
         renderFramesList();
         playSuccessSound();
-        triggerConfetti();
+        triggerConfetti(student.equippedCeremony);
         showToast(`'${frameObj?.name}' 테두리를 해금하고 장착했습니다! (-${cost} P)`, '🎉');
       });
     }
@@ -2660,8 +2907,361 @@
         renderUI();
         renderTitlesList();
         playSuccessSound();
-        triggerConfetti();
+        triggerConfetti(student.equippedCeremony);
         showToast(`'${titleText}' 칭호를 해금하고 장착했습니다! (-${cost} P)`, '🎉');
+      });
+    }
+
+    /* 🔮 1. AURAS & PARTICLES CUSTOMIZATION HANDLERS */
+    function renderAurasList() {
+      const container = document.getElementById('aurasListContainer');
+      if (!container) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      const unlocked = student.unlockedAuras || ['aura-none'];
+      const equipped = student.equippedAura || 'aura-none';
+
+      container.innerHTML = ALL_AURAS.map(a => {
+        const isEquipped = equipped === a.id;
+        const isUnlocked = a.points === 0 || unlocked.includes(a.id);
+
+        return `
+          <div class="p-3 bg-white rounded-2xl border border-slate-100 flex items-center justify-between shadow-xs">
+            <div class="flex items-center space-x-3 min-w-0 pr-2">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-slate-50 border border-slate-200 ${a.class}">
+                ${student.avatar || '🏓'}
+              </div>
+              <div class="min-w-0">
+                <p class="font-extrabold text-xs text-slate-800 truncate">${a.name}</p>
+                <p class="text-[10px] text-slate-400 truncate">${a.desc}</p>
+              </div>
+            </div>
+            <div class="shrink-0">
+              ${isEquipped ? `
+                <span class="text-xs font-black text-emerald-700 bg-emerald-100 px-3 py-1 rounded-xl">장착 중</span>
+              ` : isUnlocked ? `
+                <button onclick="equipAura('${a.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1 rounded-xl shadow-xs">
+                  장착하기
+                </button>
+              ` : `
+                <button onclick="unlockAura('${a.id}', ${a.points})" class="bg-amber-400 hover:bg-amber-500 text-white font-extrabold text-xs px-3 py-1 rounded-xl shadow-xs">
+                  해금 (${a.points} P)
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function equipAura(auraId) {
+      if (checkReadOnlyGuard()) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      student.equippedAura = auraId;
+      saveStudentToRTDB(student);
+      renderUI();
+      renderAurasList();
+      playSuccessSound();
+      showToast('오라 이펙트가 장착되었습니다!', '🔮');
+    }
+
+    function unlockAura(auraId, cost) {
+      if (checkReadOnlyGuard()) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      const currentPoints = student.totalPoints || 0;
+      if (currentPoints < cost) {
+        showToast(`포인트가 부족합니다! (현재 ${currentPoints} P / ${cost} P 필요)`, '⚠️');
+        return;
+      }
+
+      const auraObj = ALL_AURAS.find(a => a.id === auraId);
+      showCustomConfirm('오라 해금', `'${auraObj?.name}' 오라를 ${cost} P로 해금하시겠습니까?`, () => {
+        student.totalPoints -= cost;
+        if (!student.unlockedAuras) student.unlockedAuras = ['aura-none'];
+        if (!student.unlockedAuras.includes(auraId)) student.unlockedAuras.push(auraId);
+        student.equippedAura = auraId;
+
+        const dateStr = new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        if (!student.history) student.history = [];
+        student.history.unshift({
+          title: `[오라 해금] ${auraObj?.name} 해금`,
+          points: -cost,
+          date: dateStr
+        });
+
+        saveStudentToRTDB(student);
+        renderUI();
+        renderAurasList();
+        playSuccessSound();
+        triggerConfetti(student.equippedCeremony);
+        showToast(`'${auraObj?.name}' 오라를 해금하고 장착했습니다! (-${cost} P)`, '🎉');
+      });
+    }
+
+    /* 🌈 2. NAME TEXT SKINS CUSTOMIZATION HANDLERS */
+    function renderNameSkinsList() {
+      const container = document.getElementById('nameSkinsListContainer');
+      if (!container) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      const unlocked = student.unlockedNameSkins || ['name-skin-none'];
+      const equipped = student.equippedNameSkin || 'name-skin-none';
+
+      container.innerHTML = ALL_NAME_SKINS.map(s => {
+        const isEquipped = equipped === s.id;
+        const isUnlocked = s.points === 0 || unlocked.includes(s.id);
+
+        return `
+          <div class="p-3 bg-white rounded-2xl border border-slate-100 flex items-center justify-between shadow-xs">
+            <div class="min-w-0 pr-2">
+              <p class="font-extrabold text-sm mb-0.5 ${s.class}">${student.name} (${s.name})</p>
+              <p class="text-[10px] text-slate-400 truncate">${s.desc}</p>
+            </div>
+            <div class="shrink-0">
+              ${isEquipped ? `
+                <span class="text-xs font-black text-emerald-700 bg-emerald-100 px-3 py-1 rounded-xl">장착 중</span>
+              ` : isUnlocked ? `
+                <button onclick="equipNameSkin('${s.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1 rounded-xl shadow-xs">
+                  장착하기
+                </button>
+              ` : `
+                <button onclick="unlockNameSkin('${s.id}', ${s.points})" class="bg-amber-400 hover:bg-amber-500 text-white font-extrabold text-xs px-3 py-1 rounded-xl shadow-xs">
+                  해금 (${s.points} P)
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function equipNameSkin(skinId) {
+      if (checkReadOnlyGuard()) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      student.equippedNameSkin = skinId;
+      saveStudentToRTDB(student);
+      renderUI();
+      renderNameSkinsList();
+      playSuccessSound();
+      showToast('네임 스킨이 장착되었습니다!', '🌈');
+    }
+
+    function unlockNameSkin(skinId, cost) {
+      if (checkReadOnlyGuard()) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      const currentPoints = student.totalPoints || 0;
+      if (currentPoints < cost) {
+        showToast(`포인트가 부족합니다! (현재 ${currentPoints} P / ${cost} P 필요)`, '⚠️');
+        return;
+      }
+
+      const skinObj = ALL_NAME_SKINS.find(s => s.id === skinId);
+      showCustomConfirm('네임 스킨 해금', `'${skinObj?.name}' 스킨을 ${cost} P로 해금하시겠습니까?`, () => {
+        student.totalPoints -= cost;
+        if (!student.unlockedNameSkins) student.unlockedNameSkins = ['name-skin-none'];
+        if (!student.unlockedNameSkins.includes(skinId)) student.unlockedNameSkins.push(skinId);
+        student.equippedNameSkin = skinId;
+
+        const dateStr = new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        if (!student.history) student.history = [];
+        student.history.unshift({
+          title: `[네임스킨 해금] ${skinObj?.name} 해금`,
+          points: -cost,
+          date: dateStr
+        });
+
+        saveStudentToRTDB(student);
+        renderUI();
+        renderNameSkinsList();
+        playSuccessSound();
+        triggerConfetti(student.equippedCeremony);
+        showToast(`'${skinObj?.name}' 스킨을 해금하고 장착했습니다! (-${cost} P)`, '🎉');
+      });
+    }
+
+    /* 🎴 4. CARD BACKGROUND SKINS HANDLERS */
+    function renderCardSkinsList() {
+      const container = document.getElementById('cardSkinsListContainer');
+      if (!container) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      const unlocked = student.unlockedCardSkins || ['card-skin-none'];
+      const equipped = student.equippedCardSkin || 'card-skin-none';
+
+      container.innerHTML = ALL_CARD_SKINS.map(c => {
+        const isEquipped = equipped === c.id;
+        const isUnlocked = c.points === 0 || unlocked.includes(c.id);
+
+        return `
+          <div class="p-3 rounded-2xl border flex items-center justify-between shadow-xs ${c.class}">
+            <div class="min-w-0 pr-2">
+              <p class="font-extrabold text-xs truncate mb-0.5">${c.name}</p>
+              <p class="text-[10px] opacity-80 truncate">${c.desc}</p>
+            </div>
+            <div class="shrink-0">
+              ${isEquipped ? `
+                <span class="text-xs font-black text-emerald-950 bg-emerald-200 px-3 py-1 rounded-xl">장착 중</span>
+              ` : isUnlocked ? `
+                <button onclick="equipCardSkin('${c.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1 rounded-xl shadow-xs">
+                  장착하기
+                </button>
+              ` : `
+                <button onclick="unlockCardSkin('${c.id}', ${c.points})" class="bg-amber-400 hover:bg-amber-500 text-white font-extrabold text-xs px-3 py-1 rounded-xl shadow-xs">
+                  해금 (${c.points} P)
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function equipCardSkin(cardSkinId) {
+      if (checkReadOnlyGuard()) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      student.equippedCardSkin = cardSkinId;
+      saveStudentToRTDB(student);
+      renderUI();
+      renderCardSkinsList();
+      playSuccessSound();
+      showToast('카드 배경 스킨이 장착되었습니다!', '🎴');
+    }
+
+    function unlockCardSkin(cardSkinId, cost) {
+      if (checkReadOnlyGuard()) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      const currentPoints = student.totalPoints || 0;
+      if (currentPoints < cost) {
+        showToast(`포인트가 부족합니다! (현재 ${currentPoints} P / ${cost} P 필요)`, '⚠️');
+        return;
+      }
+
+      const cardObj = ALL_CARD_SKINS.find(c => c.id === cardSkinId);
+      showCustomConfirm('카드 스킨 해금', `'${cardObj?.name}' 카드 스킨을 ${cost} P로 해금하시겠습니까?`, () => {
+        student.totalPoints -= cost;
+        if (!student.unlockedCardSkins) student.unlockedCardSkins = ['card-skin-none'];
+        if (!student.unlockedCardSkins.includes(cardSkinId)) student.unlockedCardSkins.push(cardSkinId);
+        student.equippedCardSkin = cardSkinId;
+
+        const dateStr = new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        if (!student.history) student.history = [];
+        student.history.unshift({
+          title: `[카드스킨 해금] ${cardObj?.name} 해금`,
+          points: -cost,
+          date: dateStr
+        });
+
+        saveStudentToRTDB(student);
+        renderUI();
+        renderCardSkinsList();
+        playSuccessSound();
+        triggerConfetti(student.equippedCeremony);
+        showToast(`'${cardObj?.name}' 스킨을 해금하고 장착했습니다! (-${cost} P)`, '🎉');
+      });
+    }
+
+    /* 🎉 3. CEREMONIES CUSTOMIZATION HANDLERS */
+    function renderCeremoniesList() {
+      const container = document.getElementById('ceremoniesListContainer');
+      if (!container) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      const unlocked = student.unlockedCeremonies || ['ceremony-default'];
+      const equipped = student.equippedCeremony || 'ceremony-default';
+
+      container.innerHTML = ALL_CEREMONIES.map(cer => {
+        const isEquipped = equipped === cer.id;
+        const isUnlocked = cer.points === 0 || unlocked.includes(cer.id);
+
+        return `
+          <div class="p-3 bg-white rounded-2xl border border-slate-100 flex items-center justify-between shadow-xs">
+            <div class="min-w-0 pr-2">
+              <p class="font-extrabold text-xs text-slate-800 truncate">${cer.name}</p>
+              <p class="text-[10px] text-slate-400 truncate">${cer.desc}</p>
+            </div>
+            <div class="shrink-0 flex items-center space-x-1.5">
+              <button onclick="triggerConfetti('${cer.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-2.5 py-1 rounded-xl">
+                테스트 🎆
+              </button>
+              ${isEquipped ? `
+                <span class="text-xs font-black text-emerald-700 bg-emerald-100 px-3 py-1 rounded-xl">장착 중</span>
+              ` : isUnlocked ? `
+                <button onclick="equipCeremony('${cer.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1 rounded-xl shadow-xs">
+                  장착하기
+                </button>
+              ` : `
+                <button onclick="unlockCeremony('${cer.id}', ${cer.points})" class="bg-amber-400 hover:bg-amber-500 text-white font-extrabold text-xs px-3 py-1 rounded-xl shadow-xs">
+                  해금 (${cer.points} P)
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function equipCeremony(ceremonyId) {
+      if (checkReadOnlyGuard()) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      student.equippedCeremony = ceremonyId;
+      saveStudentToRTDB(student);
+      renderUI();
+      renderCeremoniesList();
+      playSuccessSound();
+      triggerConfetti(ceremonyId);
+      showToast('세레머니 이펙트가 장착되었습니다!', '🎉');
+    }
+
+    function unlockCeremony(ceremonyId, cost) {
+      if (checkReadOnlyGuard()) return;
+      const student = getCurrentStudent();
+      if (!student) return;
+
+      const currentPoints = student.totalPoints || 0;
+      if (currentPoints < cost) {
+        showToast(`포인트가 부족합니다! (현재 ${currentPoints} P / ${cost} P 필요)`, '⚠️');
+        return;
+      }
+
+      const cerObj = ALL_CEREMONIES.find(c => c.id === ceremonyId);
+      showCustomConfirm('세레머니 해금', `'${cerObj?.name}' 세레머니를 ${cost} P로 해금하시겠습니까?`, () => {
+        student.totalPoints -= cost;
+        if (!student.unlockedCeremonies) student.unlockedCeremonies = ['ceremony-default'];
+        if (!student.unlockedCeremonies.includes(ceremonyId)) student.unlockedCeremonies.push(ceremonyId);
+        student.equippedCeremony = ceremonyId;
+
+        const dateStr = new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        if (!student.history) student.history = [];
+        student.history.unshift({
+          title: `[세레머니 해금] ${cerObj?.name} 해금`,
+          points: -cost,
+          date: dateStr
+        });
+
+        saveStudentToRTDB(student);
+        renderUI();
+        renderCeremoniesList();
+        playSuccessSound();
+        triggerConfetti(ceremonyId);
+        showToast(`'${cerObj?.name}' 세레머니를 해금하고 장착했습니다! (-${cost} P)`, '🎉');
       });
     }
 
@@ -2788,7 +3388,7 @@
 
       closeModal('scoreboardModal');
       playSuccessSound();
-      triggerConfetti();
+      triggerConfetti(winner.equippedCeremony);
       showToast(`경기 결과 저장 완료! (${winner.name} 승리 +10P)`, '🏆');
     }
 
@@ -2923,7 +3523,7 @@
 
       closeModal('matchRecordModal');
       playSuccessSound();
-      triggerConfetti();
+      triggerConfetti(winner.equippedCeremony);
       showToast(`경기 결과 저장 완료! (${winner.name} 승리 +10P)`, '🏆');
     }
 
@@ -2983,7 +3583,7 @@
         saveStudentToRTDB(student);
         renderUI();
         playSuccessSound();
-        triggerConfetti();
+        triggerConfetti(student.equippedCeremony);
         showToast(`'${reward.title}' 쿠폰 교환 완료!`, '🎉');
       });
     }
@@ -3068,7 +3668,7 @@
           date: dateStr
         });
         playSuccessSound();
-        triggerConfetti();
+        triggerConfetti(student.equippedCeremony);
         showToast(`'${mission.title}' 승인 완료! (+${mission.points}P)`, '💮');
       } else {
         student.totalPoints = Math.max(0, (student.totalPoints || 0) - mission.points);
@@ -3159,7 +3759,8 @@
       if (approvedCount > 0) {
         renderUI();
         playSuccessSound();
-        triggerConfetti();
+        const activeStudent = getCurrentStudent();
+        triggerConfetti(activeStudent?.equippedCeremony);
         showToast(`모든 대기 미션(${approvedCount}건)이 승인되었습니다!`, '🎉');
       } else {
         showToast('승인 대기 중인 미션이 없습니다.', 'ℹ️');
@@ -3310,6 +3911,14 @@
         unlockedFrames: ['frame-none'],
         equippedTitle: '🌱 탁구 입문자',
         unlockedTitles: ['🌱 탁구 입문자'],
+        equippedAura: 'aura-none',
+        unlockedAuras: ['aura-none'],
+        equippedNameSkin: 'name-skin-none',
+        unlockedNameSkins: ['name-skin-none'],
+        equippedCardSkin: 'card-skin-none',
+        unlockedCardSkins: ['card-skin-none'],
+        equippedCeremony: 'ceremony-default',
+        unlockedCeremonies: ['ceremony-default'],
         missions: getInitialMissionsForNewStudent(),
         skills: { forehand: 3, backhand: 3, serve: 3, manner: 5 },
         totalPoints: 0,
@@ -3350,6 +3959,7 @@
       });
     }
 
+    /* EXPORT ALL HANDLERS TO GLOBAL SCOPE */
     Object.assign(window, {
       handleStudentLogin,
       handleLogout,
@@ -3389,6 +3999,15 @@
       unlockFrame,
       equipTitle,
       unlockTitle,
+      equipAura,
+      unlockAura,
+      equipNameSkin,
+      unlockNameSkin,
+      equipCardSkin,
+      unlockCardSkin,
+      equipCeremony,
+      unlockCeremony,
+      triggerConfetti,
       toggleRoleModal: () => {
         if (state.role === 'admin') {
           state.role = 'student';

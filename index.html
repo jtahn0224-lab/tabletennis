@@ -1469,22 +1469,33 @@
 
     function handleStudentLogin(e) {
       if (e) e.preventDefault();
-      const grade = document.getElementById('loginGradeInput').value;
-      const classNum = document.getElementById('loginClassInput').value;
-      const number = document.getElementById('loginNumberInput').value;
-      const name = document.getElementById('loginNameInput').value.trim();
+      const grade = document.getElementById('loginGradeInput').value.trim();
+      const classNum = document.getElementById('loginClassInput').value.trim();
+      const number = document.getElementById('loginNumberInput').value.trim();
+      const rawName = document.getElementById('loginNameInput').value.trim();
+      const name = rawName.replaceAll(' ', ''); // 공백 제거
 
-      if (!name) {
+      if (!rawName) {
         showToast('학생 이름을 입력해 주세요!', '⚠️');
         return;
       }
 
-      let existing = state.students.find(s => 
-        s.name === name && s.grade === grade && s.classNum === classNum && s.number === number
-      );
+      // 1) 학번(학년, 반, 번호)과 이름(공백제거) 타입 안전 정밀 비교
+      let existing = state.students.find(s => {
+        const sName = (s.name || '').replaceAll(' ', '');
+        const sameGrade = String(s.grade) === String(grade);
+        const sameClass = String(s.classNum) === String(classNum);
+        const sameNumber = String(s.number) === String(number);
+        return sameGrade && sameClass && sameNumber && sName === name;
+      });
 
+      // 2) 정밀 비교 실패 시, 이름만 같은 학생이 있는지 체크 (학번 오타 방지)
       if (!existing) {
-        existing = state.students.find(s => s.name === name);
+        const sameNameStudent = state.students.find(s => (s.name || '').replaceAll(' ', '') === name);
+        if (sameNameStudent) {
+          showToast(`학번을 확인하세요! 등록된 학번: [${formatClassBadge(sameNameStudent)}]`, '⚠️');
+          return; // 학번 오타 시 신규 생성을 막고 정정 안내
+        }
       }
 
       if (existing) {
@@ -1495,11 +1506,11 @@
         renderUI();
         showToast(`${existing.name} 부원으로 접속했습니다!`, '✨');
       } else {
-        showCustomConfirm('신규 부원 등록', `'${name}' 부원이 없습니다. 새 부원으로 자동 등록할까요?`, () => {
+        showCustomConfirm('신규 부원 등록 안내', `'${rawName}' 학생 정보가 목록에 없습니다. 정식으로 새 부원에 추가 등록할까요?`, () => {
           const newId = 'std_' + Date.now();
           const newStudent = {
             id: newId,
-            name: name,
+            name: rawName,
             grade: grade,
             classNum: classNum,
             number: number,

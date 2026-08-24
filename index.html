@@ -217,9 +217,9 @@
           <span id="modeTitle" class="truncate">탁구 부원 모드</span>
         </div>
         <div class="flex items-center space-x-2 shrink-0">
-          <button onclick="toggleRoleModal()" class="hover:underline text-[11px] font-bold flex items-center space-x-1">
+          <button id="modeSwitchBtn" onclick="toggleRoleModal()" class="hidden hover:underline text-[11px] font-bold flex items-center space-x-1">
             <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
-            <span id="modeSwitchBtnText">선생님 모드</span>
+            <span id="modeSwitchBtnText">부원 모드로 전환</span>
           </button>
         </div>
       </div>
@@ -918,11 +918,8 @@
         </div>
         <div>
           <h4 class="font-extrabold text-slate-800 text-sm">선생님 전용 설정입니다</h4>
-          <p class="text-xs text-slate-500 mt-1">비밀번호 변경 및 부원 관리는<br>선생님 모드에서 가능합니다.</p>
+          <p class="text-xs text-slate-500 mt-1">비밀번호 변경 및 부원 관리는<br>선생님 모드에서만 가능합니다.</p>
         </div>
-        <button onclick="closeModal('settingsModal'); toggleRoleModal();" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs shadow-md">
-          선생님 모드로 전환
-        </button>
       </div>
 
       <div id="adminSettingsSection" class="space-y-4">
@@ -1588,18 +1585,20 @@
       // Mode Banner Elements
       const modeTitle = document.getElementById('modeTitle');
       const modeIcon = document.getElementById('modeIcon');
+      const modeSwitchBtn = document.getElementById('modeSwitchBtn');
       const modeSwitchBtnText = document.getElementById('modeSwitchBtnText');
       const modeBanner = document.getElementById('modeBanner');
 
       if (isAdmin) {
         if (modeTitle) modeTitle.innerText = "🎓 선생님 모드 (관리자)";
         if (modeIcon) modeIcon.innerText = "🎓";
+        if (modeSwitchBtn) modeSwitchBtn.classList.remove('hidden');
         if (modeSwitchBtnText) modeSwitchBtnText.innerText = "부원 모드로 전환";
         if (modeBanner) modeBanner.className = "mb-3 px-3 py-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm bg-amber-100 text-amber-900 border border-amber-300";
       } else {
         if (modeTitle) modeTitle.innerText = "🎒 탁구 부원 모드";
         if (modeIcon) modeIcon.innerText = "🎒";
-        if (modeSwitchBtnText) modeSwitchBtnText.innerText = "선생님 모드";
+        if (modeSwitchBtn) modeSwitchBtn.classList.add('hidden');
         if (modeBanner) modeBanner.className = "mb-3 px-3 py-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm bg-emerald-100 text-emerald-900 border border-emerald-200";
       }
 

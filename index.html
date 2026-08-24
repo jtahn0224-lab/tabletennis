@@ -542,6 +542,10 @@
             <span>🏓 학급별 경기 & 랭킹</span>
           </h3>
           <div class="flex items-center space-x-1.5">
+            <button onclick="openGroupGeneratorModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-2.5 py-1.5 rounded-xl transition-all shadow-sm flex items-center space-x-1">
+              <i class="fa-solid fa-shuffle"></i>
+              <span>🎲 조 편성</span>
+            </button>
             <button onclick="openScoreboardModal()" class="bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs px-2.5 py-1.5 rounded-xl transition-all shadow-sm flex items-center space-x-1">
               <i class="fa-solid fa-play"></i>
               <span>경기 전광판</span>
@@ -1231,6 +1235,60 @@
     <span id="toastMessage">메시지</span>
   </div>
 
+  <!-- MODAL: Random Group Generator Modal (4~8 Persons) -->
+  <div id="groupGeneratorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white w-full max-w-md rounded-3xl p-5 sm:p-6 shadow-2xl animate-pop text-center max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100 shrink-0">
+        <h3 class="text-base font-extrabold text-slate-800 flex items-center space-x-2">
+          <span>🎲 랜덤 조 편성기</span>
+        </h3>
+        <button onclick="closeModal('groupGeneratorModal')" class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-left shrink-0 mb-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">대상 학급 선택</label>
+          <select id="groupScopeSelect" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-bold text-xs rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <!-- Dynamic Class Options -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">조당 목표 인원 수 (4명 ~ 8명)</label>
+          <select id="groupSizeSelect" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-bold text-xs rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <option value="4" selected>조 당 4명씩 편성</option>
+            <option value="5">조 당 5명씩 편성</option>
+            <option value="6">조 당 6명씩 편성</option>
+            <option value="7">조 당 7명씩 편성</option>
+            <option value="8">조 당 8명씩 편성</option>
+          </select>
+        </div>
+
+        <button onclick="generateRandomGroups()" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold py-3 rounded-2xl shadow-md text-xs transition-all flex items-center justify-center space-x-1.5 active:scale-95">
+          <i class="fa-solid fa-dice text-sm"></i>
+          <span>랜덤 조 편성 실행!</span>
+        </button>
+      </div>
+
+      <!-- Generated Groups List -->
+      <div id="groupResultsContainer" class="flex-1 overflow-y-auto space-y-2.5 pr-1 min-h-[150px] text-left">
+        <p class="text-xs text-slate-400 text-center py-8">인원 수 및 학급을 선택 후 조 편성을 실행해 주세요.</p>
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 flex space-x-2 shrink-0">
+        <button id="copyGroupsBtn" onclick="copyGroupResults()" class="hidden flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-2xl text-xs transition-all shadow-xs flex items-center justify-center space-x-1">
+          <i class="fa-solid fa-copy"></i>
+          <span>결과 복사하기</span>
+        </button>
+        <button onclick="closeModal('groupGeneratorModal')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-2xl text-xs transition-all">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -1425,6 +1483,115 @@
       p2Id: null,
       server: 1
     };
+
+    let lastGeneratedGroupsText = '';
+
+    function openGroupGeneratorModal() {
+      const scopeSelect = document.getElementById('groupScopeSelect');
+      if (scopeSelect) {
+        const classes = new Set();
+        state.students.forEach(s => {
+          if (s.grade && s.classNum) {
+            classes.add(`${s.grade}학년 ${s.classNum}반`);
+          }
+        });
+        let opts = `<option value="all">전체 부원 (${state.students.length}명)</option>`;
+        Array.from(classes).sort().forEach(c => {
+          opts += `<option value="${c}">🏫 ${c}</option>`;
+        });
+        scopeSelect.innerHTML = opts;
+      }
+      openModal('groupGeneratorModal');
+    }
+
+    function generateRandomGroups() {
+      const scope = document.getElementById('groupScopeSelect')?.value;
+      const groupSize = parseInt(document.getElementById('groupSizeSelect')?.value) || 4;
+
+      let targetStudents = [];
+      if (scope === 'all') {
+        targetStudents = [...state.students];
+      } else {
+        targetStudents = state.students.filter(s => {
+          if (s.grade && s.classNum) {
+            return `${s.grade}학년 ${s.classNum}반` === scope;
+          }
+          return false;
+        });
+      }
+
+      if (targetStudents.length === 0) {
+        showToast('해당 조건의 부원이 없습니다.', '⚠️');
+        return;
+      }
+
+      // Fisher-Yates Random Shuffle
+      const shuffled = [...targetStudents];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      const numGroups = Math.ceil(shuffled.length / groupSize);
+      const groups = Array.from({ length: numGroups }, () => []);
+
+      // Round-robin distribution for balanced group size
+      shuffled.forEach((student, idx) => {
+        groups[idx % numGroups].push(student);
+      });
+
+      const container = document.getElementById('groupResultsContainer');
+      const copyBtn = document.getElementById('copyGroupsBtn');
+      if (!container) return;
+
+      let html = '';
+      let textCopy = `[🏓 탁구 조 편성 결과 - ${scope === 'all' ? '전체' : scope}]\n`;
+
+      groups.forEach((group, gIdx) => {
+        textCopy += `\n📌 ${gIdx + 1}조 (${group.length}명):\n`;
+        html += `
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 shadow-2xs">
+            <h5 class="text-xs font-black text-indigo-900 mb-2 flex justify-between items-center pb-1 border-b border-slate-200">
+              <span>📌 ${gIdx + 1}조</span>
+              <span class="bg-indigo-100 text-indigo-800 text-[10px] px-2 py-0.5 rounded-full font-bold">${group.length}명</span>
+            </h5>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              ${group.map(s => {
+                textCopy += ` - ${s.number ? `${s.number}번 ` : ''}${s.name}\n`;
+                return `
+                  <div class="bg-white p-2 rounded-xl border border-slate-100 flex items-center space-x-1.5 truncate">
+                    <span class="text-sm shrink-0">${s.avatar || '🏓'}</span>
+                    <span class="font-bold text-slate-800 truncate ${s.equippedNameSkin || 'name-skin-none'}">${s.number ? `${s.number}번 ` : ''}${escapeHtml(s.name)}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      lastGeneratedGroupsText = textCopy;
+
+      if (copyBtn) copyBtn.classList.remove('hidden');
+      playSuccessSound();
+      showToast(`${groups.length}개 조가 생성되었습니다!`, '🎲');
+    }
+
+    function copyGroupResults() {
+      if (!lastGeneratedGroupsText) return;
+      const textArea = document.createElement('textarea');
+      textArea.value = lastGeneratedGroupsText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast('조 편성 결과가 클립보드에 복사되었습니다!', '📋');
+      } catch (err) {
+        showToast('복사에 실패했습니다.', '⚠️');
+      }
+      document.body.removeChild(textArea);
+    }
 
     function calculateLevelTitle(points) {
       const p = points || 0;
@@ -4008,6 +4175,9 @@
       equipCeremony,
       unlockCeremony,
       triggerConfetti,
+      openGroupGeneratorModal,
+      generateRandomGroups,
+      copyGroupResults,
       toggleRoleModal: () => {
         if (state.role === 'admin') {
           state.role = 'student';

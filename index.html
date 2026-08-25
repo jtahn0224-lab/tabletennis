@@ -52,6 +52,15 @@
       animation: pop-in 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
+    @keyframes stamp-animation {
+      0% { transform: scale(2.5) rotate(-18deg); opacity: 0; }
+      50% { transform: scale(1) rotate(-18deg); opacity: 1; }
+      100% { transform: scale(1) rotate(-12deg); opacity: 0.95; }
+    }
+    .stamp-effect {
+      animation: stamp-animation 0.3s ease-out forwards;
+    }
+
     /* 1. PROFILE FRAME STYLES */
     .frame-none {
       border: 2px solid #a7f3d0;
@@ -527,7 +536,7 @@
         </div>
 
         <div id="missionList" class="flex-1 overflow-y-auto space-y-2.5 pr-1 min-h-[200px]">
-          <!-- Dynamic Mission Cards -->
+          <!-- Dynamic Mission Cards with Improved Visibility Stamp & Badges -->
         </div>
       </main>
 
@@ -750,25 +759,25 @@
         <div id="titlesListContainer" class="space-y-2"></div>
       </div>
 
-      <!-- Section 4: Auras List (🔮 1. 프로필 오라 & 파티클) -->
+      <!-- Section 4: Auras List -->
       <div id="profileSectionAura" class="hidden flex-1 flex-col min-h-0 overflow-y-auto space-y-2 pr-1 text-left">
         <p class="text-xs text-slate-500 font-bold mb-1">프로필 뒤에서 화려하게 타오르고 반짝이는 오라 이펙트를 장착하세요!</p>
         <div id="aurasListContainer" class="space-y-2"></div>
       </div>
 
-      <!-- Section 5: Name Skins List (🌈 2. 네임 텍스트 스킨) -->
+      <!-- Section 5: Name Skins List -->
       <div id="profileSectionNameSkin" class="hidden flex-1 flex-col min-h-0 overflow-y-auto space-y-2 pr-1 text-left">
         <p class="text-xs text-slate-500 font-bold mb-1">내 이름을 영롱한 무지개빛, 금빛, 네온 광채로 다채롭게 뽐내보세요!</p>
         <div id="nameSkinsListContainer" class="space-y-2"></div>
       </div>
 
-      <!-- Section 6: Card Background Skins List (🎴 4. 프로필 카드 배경) -->
+      <!-- Section 6: Card Background Skins List -->
       <div id="profileSectionCardSkin" class="hidden flex-1 flex-col min-h-0 overflow-y-auto space-y-2 pr-1 text-left">
         <p class="text-xs text-slate-500 font-bold mb-1">부원 명단에서 내 정보 카드를 은하수, 사이버, 황금 카드로 꾸며보세요!</p>
         <div id="cardSkinsListContainer" class="space-y-2"></div>
       </div>
 
-      <!-- Section 7: Ceremonies List (🎉 3. 나만의 승리/미션 세레머니) -->
+      <!-- Section 7: Ceremonies List -->
       <div id="profileSectionCeremony" class="hidden flex-1 flex-col min-h-0 overflow-y-auto space-y-2 pr-1 text-left">
         <p class="text-xs text-slate-500 font-bold mb-1">미션을 완수하거나 경기에서 승리할 때 화면 가득 터지는 세레머니 이펙트!</p>
         <div id="ceremoniesListContainer" class="space-y-2"></div>
@@ -1464,7 +1473,7 @@
     let currentMainTab = 'missions';
     let activeTab = 'personal';
     let selectedWeek = 'all'; // 'all' or 1~10
-    let profileCustomTab = 'avatar'; // 'avatar' | 'frame' | 'title' | 'aura' | 'nameSkin' | 'cardSkin' | 'ceremony'
+    let profileCustomTab = 'avatar'; 
     let rankingViewMode = 'list';
     let collapsedClasses = {};
     let selectedRewardIcon = '🏓';
@@ -1521,7 +1530,6 @@
         return;
       }
 
-      // Fisher-Yates Random Shuffle
       const shuffled = [...targetStudents];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -1531,7 +1539,6 @@
       const numGroups = Math.ceil(shuffled.length / groupSize);
       const groups = Array.from({ length: numGroups }, () => []);
 
-      // Round-robin distribution for balanced group size
       shuffled.forEach((student, idx) => {
         groups[idx % numGroups].push(student);
       });
@@ -1859,7 +1866,6 @@
       } catch (e) {}
     }
 
-    /* 🎉 3. CUSTOM CELEBRATION / VICTORY FX CONFETTI TRIGGER */
     function triggerConfetti(ceremonyType = 'ceremony-default') {
       if (typeof confetti !== 'function') return;
 
@@ -2129,16 +2135,6 @@
       if (adminPointAdjustBox) {
         if (isAdmin) adminPointAdjustBox.classList.remove('hidden');
         else adminPointAdjustBox.classList.add('hidden');
-      }
-
-      const adminSelect = document.getElementById('adminStudentSelect');
-      if (isAdmin && adminSelect) {
-        adminSelect.classList.remove('hidden');
-        adminSelect.innerHTML = state.students.map(s => 
-          `<option value="${s.id}" ${s.id === state.activeStudentId ? 'selected' : ''}>👤 [${formatClassBadge(s)}] ${escapeHtml(s.name)}</option>`
-        ).join('');
-      } else if (adminSelect) {
-        adminSelect.classList.add('hidden');
       }
 
       // HEADER RENDERING WITH CUSTOM FRAME, AURA, NAME SKIN, TITLE & CARD SKIN
@@ -2502,44 +2498,70 @@
 
       listContainer.innerHTML = filtered.map(mission => {
         const isPending = mission.pending && !mission.completed;
+        const isDone = mission.completed;
+
         return `
-        <div class="p-3.5 rounded-2xl bg-white border flex items-center justify-between shadow-xs transition-all ${
-          mission.completed 
-            ? 'border-emerald-200 bg-emerald-50/40' 
+        <div class="relative p-3.5 rounded-2xl transition-all shadow-xs overflow-hidden flex items-center justify-between ${
+          isDone 
+            ? 'border-2 border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50/90' 
             : isPending 
-              ? 'border-amber-300 bg-amber-50/30' 
-              : 'border-slate-100 hover:border-emerald-200'
+              ? 'border-2 border-amber-400 bg-amber-50/90 shadow-md ring-1 ring-amber-300' 
+              : 'border border-slate-200 bg-white hover:border-emerald-300'
         }">
-          <div class="flex items-center space-x-3 flex-1 min-w-0 pr-2">
-            <button onclick="handleMissionCheck('${mission.id}')" ${isReadOnly ? 'disabled' : ''} class="w-7 h-7 rounded-xl border-2 flex items-center justify-center shrink-0 transition-transform active:scale-95 ${
-              mission.completed 
+          
+          <!-- High-Visibility Stamp Effect for Completed Missions -->
+          ${isDone ? `
+            <div class="absolute right-12 bottom-1 z-0 opacity-90 pointer-events-none stamp-effect border-2 border-rose-600 text-rose-600 rounded-xl px-2.5 py-0.5 text-[11px] font-black tracking-widest bg-white/90 shadow-sm flex items-center space-x-1">
+              <span>💮</span>
+              <span>선생님 승인 완료</span>
+            </div>
+          ` : ''}
+
+          <div class="flex items-center space-x-3 flex-1 min-w-0 pr-2 relative z-10">
+            <button onclick="handleMissionCheck('${mission.id}')" ${isReadOnly ? 'disabled' : ''} class="w-8 h-8 rounded-xl border-2 flex items-center justify-center shrink-0 transition-transform active:scale-95 shadow-xs ${
+              isDone 
                 ? 'bg-emerald-600 border-emerald-600 text-white' 
                 : isPending 
-                  ? 'bg-amber-400 border-amber-400 text-white animate-pulse' 
-                  : 'border-slate-300 hover:border-emerald-400'
+                  ? 'bg-amber-500 border-amber-500 text-white animate-pulse' 
+                  : 'border-slate-300 bg-slate-50 hover:border-emerald-500'
             }">
-              <i class="fa-solid ${mission.completed ? 'fa-check' : isPending ? 'fa-clock' : 'fa-check'} text-xs"></i>
+              <i class="fa-solid ${isDone ? 'fa-check text-sm' : isPending ? 'fa-hourglass-half text-xs animate-spin' : 'fa-check text-xs text-slate-300'}"></i>
             </button>
+
             <div class="min-w-0 flex-1">
-              <div class="flex items-center space-x-1.5 mb-0.5">
-                <span class="bg-emerald-100 text-emerald-800 text-[9px] font-black px-1.5 py-0.2 rounded-md shrink-0">[${mission.week || 1}주차]</span>
-                <p class="font-bold text-xs text-slate-800 truncate ${mission.completed ? 'line-through text-slate-400' : ''}">${escapeHtml(mission.title)}</p>
+              <div class="flex items-center space-x-1.5 mb-1 flex-wrap gap-y-1">
+                <span class="bg-emerald-800 text-white text-[9px] font-black px-1.5 py-0.2 rounded-md shrink-0 shadow-2xs">[${mission.week || 1}주차]</span>
+                <p class="font-black text-xs text-slate-800 truncate ${isDone ? 'line-through text-slate-500 opacity-90' : ''}">${escapeHtml(mission.title)}</p>
               </div>
-              <div class="flex items-center space-x-1.5">
-                <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">+${mission.points} P</span>
-                <span class="text-[9px] font-bold text-slate-400">${mission.difficulty || '보통'}</span>
-                ${isPending ? `<span class="text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded-md">승인 대기 중</span>` : ''}
+
+              <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                <span class="text-[10px] font-black text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">+${mission.points} P</span>
+                <span class="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded-md">${mission.difficulty || '보통'}</span>
+
+                ${isPending ? `
+                  <span class="inline-flex items-center space-x-1 text-[10px] font-black text-amber-900 bg-amber-200 border border-amber-400 px-2 py-0.5 rounded-full animate-pulse shadow-2xs">
+                    <i class="fa-solid fa-clock text-[9px]"></i>
+                    <span>⏳ 선생님 승인 대기중</span>
+                  </span>
+                ` : ''}
+
+                ${isDone ? `
+                  <span class="inline-flex items-center space-x-1 text-[10px] font-black text-rose-700 bg-rose-100 border border-rose-200 px-2 py-0.5 rounded-full shadow-2xs">
+                    <span>💮 도장 완료</span>
+                  </span>
+                ` : ''}
               </div>
             </div>
           </div>
-          <div class="flex items-center space-x-1 shrink-0">
+
+          <div class="flex items-center space-x-1 shrink-0 relative z-10">
             ${isAdmin && isPending ? `
-              <button onclick="approvePendingMission('${student.id}', '${mission.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-xs">
-                승인 💮
+              <button onclick="approvePendingMission('${student.id}', '${mission.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black px-3 py-1.5 rounded-xl shadow-md active:scale-95 transition-all">
+                도장 찍기 💮
               </button>
             ` : ''}
             ${isAdmin ? `
-              <button onclick="deleteMission('${mission.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs transition-colors">
+              <button onclick="deleteMission('${mission.id}')" class="text-slate-300 hover:text-rose-500 p-1.5 text-xs transition-colors" title="미션 삭제">
                 <i class="fa-solid fa-trash-can"></i>
               </button>
             ` : ''}
@@ -3085,7 +3107,7 @@
       });
     }
 
-    /* 🔮 1. AURAS & PARTICLES CUSTOMIZATION HANDLERS */
+    /* 🔮 AURAS CUSTOMIZATION HANDLERS */
     function renderAurasList() {
       const container = document.getElementById('aurasListContainer');
       if (!container) return;
@@ -3176,7 +3198,7 @@
       });
     }
 
-    /* 🌈 2. NAME TEXT SKINS CUSTOMIZATION HANDLERS */
+    /* 🌈 NAME TEXT SKINS HANDLERS */
     function renderNameSkinsList() {
       const container = document.getElementById('nameSkinsListContainer');
       if (!container) return;
@@ -3262,7 +3284,7 @@
       });
     }
 
-    /* 🎴 4. CARD BACKGROUND SKINS HANDLERS */
+    /* 🎴 CARD BACKGROUND SKINS HANDLERS */
     function renderCardSkinsList() {
       const container = document.getElementById('cardSkinsListContainer');
       if (!container) return;
@@ -3348,7 +3370,7 @@
       });
     }
 
-    /* 🎉 3. CEREMONIES CUSTOMIZATION HANDLERS */
+    /* 🎉 CEREMONIES CUSTOMIZATION HANDLERS */
     function renderCeremoniesList() {
       const container = document.getElementById('ceremoniesListContainer');
       if (!container) return;

@@ -2562,6 +2562,16 @@
           </div>
 
           <div class="flex items-center space-x-1 shrink-0 relative z-10">
+            ${isAdmin ? `
+              <div class="flex flex-col space-y-0.5 mr-1">
+                <button onclick="moveMission('${mission.id}', 'up')" class="w-6 h-5 bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-800 rounded flex items-center justify-center text-[10px] font-bold border border-slate-200 transition-colors" title="위로 이동">
+                  <i class="fa-solid fa-chevron-up"></i>
+                </button>
+                <button onclick="moveMission('${mission.id}', 'down')" class="w-6 h-5 bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-800 rounded flex items-center justify-center text-[10px] font-bold border border-slate-200 transition-colors" title="아래로 이동">
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button>
+              </div>
+            ` : ''}
             ${isAdmin && isPending ? `
               <button onclick="approvePendingMission('${student.id}', '${mission.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black px-3 py-1.5 rounded-xl shadow-md active:scale-95 transition-all">
                 도장 찍기 💮
@@ -4062,6 +4072,58 @@
       document.getElementById('missionTitleInput').value = '';
     }
 
+    function moveMission(missionId, direction) {
+      if (state.role !== 'admin') {
+        showToast('선생님 모드에서만 순서를 변경할 수 있습니다.', '🔒');
+        return;
+      }
+
+      const student = getCurrentStudent();
+      if (!student || !student.missions) return;
+
+      const searchVal = (document.getElementById('missionSearchInput')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('missionFilterStatus')?.value || 'all';
+
+      let filtered = student.missions.filter(m => (m.category || 'personal') === activeTab);
+      if (selectedWeek !== 'all') {
+        filtered = filtered.filter(m => (m.week || 1) === selectedWeek);
+      }
+      if (searchVal) {
+        filtered = filtered.filter(m => m.title.toLowerCase().includes(searchVal));
+      }
+      if (statusFilter === 'active') {
+        filtered = filtered.filter(m => !m.completed);
+      } else if (statusFilter === 'completed') {
+        filtered = filtered.filter(m => m.completed);
+      }
+
+      const currIdx = filtered.findIndex(m => m.id === missionId);
+      if (currIdx === -1) return;
+
+      const targetIdx = direction === 'up' ? currIdx - 1 : currIdx + 1;
+      if (targetIdx < 0 || targetIdx >= filtered.length) return;
+
+      const currMission = filtered[currIdx];
+      const targetMission = filtered[targetIdx];
+
+      state.students.forEach(s => {
+        if (s.missions && Array.isArray(s.missions)) {
+          const idxA = s.missions.findIndex(m => m.id === currMission.id || m.title === currMission.title);
+          const idxB = s.missions.findIndex(m => m.id === targetMission.id || m.title === targetMission.title);
+
+          if (idxA !== -1 && idxB !== -1) {
+            const temp = s.missions[idxA];
+            s.missions[idxA] = s.missions[idxB];
+            s.missions[idxB] = temp;
+            saveStudentToRTDB(s);
+          }
+        }
+      });
+
+      renderUI();
+      showToast('미션 순서가 변경되었습니다.', '↕️');
+    }
+
     function deleteMission(missionId) {
       const currentStudent = getCurrentStudent();
       const targetMission = currentStudent ? currentStudent.missions.find(m => m.id === missionId) : null;
@@ -4274,6 +4336,7 @@
       useCoupon,
       openAddMissionModal,
       handleAddMission,
+      moveMission,
       deleteMission,
       selectRewardIcon: (icon) => {
         selectedRewardIcon = icon;

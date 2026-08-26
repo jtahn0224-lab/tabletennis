@@ -220,8 +220,9 @@
     }
   </style>
 </head>
-<body class="p-2 sm:p-4 md:p-6 flex justify-center items-center">
+<body class="p-2 sm:p-4 md:p-6 flex justify-center items-center min-h-screen">
 
+  <!-- LOGIN GATE SCREEN -->
   <div id="loginGateScreen" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl animate-pop text-center max-h-[90vh] overflow-y-auto">
       
@@ -301,7 +302,7 @@
       </div>
     </div>
 
-    <!-- LEFT PANEL: Student Directory (Extended Height) -->
+    <!-- LEFT PANEL: Student Directory -->
     <aside id="studentDirectoryPanel" class="fixed inset-y-0 left-0 z-40 w-80 bg-white/95 lg:bg-white/90 backdrop-blur-xl p-5 flex flex-col shrink-0 transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out lg:rounded-3xl glass-card order-2 lg:order-1 shadow-2xl lg:shadow-none min-h-[88vh] max-h-[92vh]">
       
       <!-- School Tag Header -->
@@ -388,7 +389,7 @@
         </button>
       </div>
 
-      <!-- Header with Expanded Profile Info, Frame, Aura, Title Badge & Custom Card Skin -->
+      <!-- Header with Profile Info -->
       <header id="mainProfileHeader" class="mb-4 p-3.5 rounded-2xl shadow-xs flex items-center justify-between gap-3 transition-all card-skin-none">
         <div onclick="openAvatarModal()" title="프로필 캐릭터 / 테두리 / 오라 / 스킨 꾸미기" class="flex items-center space-x-3 sm:space-x-4 cursor-pointer flex-1 min-w-0 group">
           <div id="headerAvatar" class="w-14 h-14 sm:w-16 sm:h-16 bg-emerald-100 rounded-2xl flex items-center justify-center text-3xl sm:text-4xl shadow-inner shrink-0 relative transition-all frame-emerald aura-none">
@@ -415,7 +416,7 @@
             로그아웃
           </button>
 
-          <button onclick="openSettingsModal()" class="w-9 h-9 sm:w-10 sm:h-10 bg-white/90 rounded-2xl flex items-center justify-center text-slate-600 hover:text-emerald-600 hover:bg-slate-50 shadow-xs border border-slate-200 transition-all">
+          <button id="settingsBtn" onclick="openSettingsModal()" class="w-9 h-9 sm:w-10 sm:h-10 bg-white/90 rounded-2xl flex items-center justify-center text-slate-600 hover:text-emerald-600 hover:bg-slate-50 shadow-xs border border-slate-200 transition-all">
             <i class="fa-solid fa-gear text-base"></i>
           </button>
         </div>
@@ -482,7 +483,7 @@
         </button>
       </div>
 
-      <!-- VIEW 1: Missions View with 1~10 Week Filter -->
+      <!-- VIEW 1: Missions View -->
       <main id="viewMissions" class="flex-1 flex flex-col min-h-0 mb-4">
         <div class="flex justify-between items-center mb-2">
           <h3 class="font-extrabold text-slate-800 text-sm sm:text-base flex items-center space-x-2">
@@ -536,7 +537,7 @@
         </div>
 
         <div id="missionList" class="flex-1 overflow-y-auto space-y-2.5 pr-1 min-h-[200px]">
-          <!-- Dynamic Mission Cards with Improved Visibility Stamp & Badges -->
+          <!-- Dynamic Mission Cards -->
         </div>
       </main>
 
@@ -713,7 +714,7 @@
     </div>
   </div>
 
-  <!-- MODAL: Comprehensive Profile Customization Modal (7 Categories) -->
+  <!-- MODAL: Comprehensive Profile Customization Modal -->
   <div id="avatarSelectModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
     <div class="bg-white w-full max-w-lg rounded-3xl p-5 sm:p-6 shadow-2xl animate-pop text-center max-h-[92vh] flex flex-col">
       <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100 shrink-0">
@@ -745,7 +746,7 @@
           </p>
         </div>
         <div id="avatarGridContainer" class="grid grid-cols-5 sm:grid-cols-6 gap-2 overflow-y-auto p-1 flex-1 min-h-0 pr-1">
-          <!-- Dynamic 100 Avatars Grid -->
+          <!-- Dynamic Avatars Grid -->
         </div>
       </div>
 
@@ -1240,7 +1241,7 @@
     <span id="toastMessage">메시지</span>
   </div>
 
-  <!-- MODAL: Random Group Generator Modal (4~8 Persons) -->
+  <!-- MODAL: Random Group Generator Modal -->
   <div id="groupGeneratorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
     <div class="bg-white w-full max-w-md rounded-3xl p-5 sm:p-6 shadow-2xl animate-pop text-center max-h-[90vh] flex flex-col">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100 shrink-0">
@@ -1372,7 +1373,7 @@
       { id: 't_god', title: '🌟 전설의 핑퐁마스터', points: 1000, desc: '탁구 기술과 매너를 모두 정복한 전설' }
     ];
 
-    /* 🔮 1. UNLOCKABLE AURAS & PARTICLES */
+    /* UNLOCKABLE AURAS & PARTICLES */
     const ALL_AURAS = [
       { id: 'aura-none', name: '기본 (없음)', points: 0, class: 'aura-none', desc: '효과 없음' },
       { id: 'aura-flame', name: '🔥 불꽃 화염 오라', points: 300, class: 'aura-flame', desc: '타오르는 붉은 화염 오라 파티클' },
@@ -1381,7 +1382,7 @@
       { id: 'aura-sakura', name: '🌸 벚꽃 핑크 오라', points: 350, class: 'aura-sakura', desc: '부드럽게 피어나는 분홍빛 벚꽃 오라' }
     ];
 
-    /* 🌈 2. UNLOCKABLE NAME ANIMATION TEXT SKINS */
+    /* UNLOCKABLE NAME ANIMATION TEXT SKINS */
     const ALL_NAME_SKINS = [
       { id: 'name-skin-none', name: '기본 이름', points: 0, class: 'name-skin-none', desc: '기본 텍스트 스타일' },
       { id: 'name-skin-rainbow', name: '🌈 무지개 파도 스킨', points: 300, class: 'name-skin-rainbow', desc: '영롱한 무지갯빛이 흘러가는 글자 애니메이션' },
@@ -1390,7 +1391,7 @@
       { id: 'name-skin-fire', name: '🔥 불타는 문자 스킨', points: 450, class: 'name-skin-fire', desc: '정열의 불꽃 광채가 일렁이는 화염 문자' }
     ];
 
-    /* 🎴 4. UNLOCKABLE CARD BACKGROUND SKINS */
+    /* UNLOCKABLE CARD BACKGROUND SKINS */
     const ALL_CARD_SKINS = [
       { id: 'card-skin-none', name: '기본 화이트 카드', points: 0, class: 'card-skin-none', desc: '깔끔한 흰색 기본 카드' },
       { id: 'card-skin-galaxy', name: '🌌 우주 갤럭시 카드', points: 500, class: 'card-skin-galaxy', desc: '은하수와 별빛이 쏟아지는 우주 아크릴 카드' },
@@ -1399,7 +1400,7 @@
       { id: 'card-skin-sunset', name: '🌅 석양 선셋 카드', points: 300, class: 'card-skin-sunset', desc: '따뜻한 로즈-오렌지 그라데이션 석양 카드' }
     ];
 
-    /* 🎉 3. UNLOCKABLE VICTORY / MISSION CEREMONIES */
+    /* UNLOCKABLE VICTORY / MISSION CEREMONIES */
     const ALL_CEREMONIES = [
       { id: 'ceremony-default', name: '🎉 기본 폭죽 세레머니', points: 0, desc: '다채로운 컬러 폭죽 팡파르' },
       { id: 'ceremony-crowns', name: '👑 황금 왕관 샤워', points: 300, desc: '황금 왕관과 트로피 빛깔 폭죽이 가득 터지는 이펙트' },
@@ -1472,7 +1473,7 @@
 
     let currentMainTab = 'missions';
     let activeTab = 'personal';
-    let selectedWeek = 'all'; // 'all' or 1~10
+    let selectedWeek = 'all'; 
     let profileCustomTab = 'avatar'; 
     let rankingViewMode = 'list';
     let collapsedClasses = {};
@@ -2097,6 +2098,12 @@
         roleBadgeTag.className = isAdmin ? 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-500 text-slate-950' : 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-600 text-white';
       }
 
+      const settingsBtn = document.getElementById('settingsBtn');
+      if (settingsBtn) {
+        if (isAdmin) settingsBtn.classList.remove('hidden');
+        else settingsBtn.classList.add('hidden');
+      }
+
       const modeSwitchBtn = document.getElementById('modeSwitchBtn');
       if (modeSwitchBtn) {
         if (isAdmin) {
@@ -2137,7 +2144,7 @@
         else adminPointAdjustBox.classList.add('hidden');
       }
 
-      // HEADER RENDERING WITH CUSTOM FRAME, AURA, NAME SKIN, TITLE & CARD SKIN
+      // HEADER RENDERING
       const mainProfileHeader = document.getElementById('mainProfileHeader');
       const headerName = document.getElementById('headerName');
       const headerClassEl = document.getElementById('headerClass');
@@ -3107,7 +3114,6 @@
       });
     }
 
-    /* 🔮 AURAS CUSTOMIZATION HANDLERS */
     function renderAurasList() {
       const container = document.getElementById('aurasListContainer');
       if (!container) return;
@@ -3198,7 +3204,6 @@
       });
     }
 
-    /* 🌈 NAME TEXT SKINS HANDLERS */
     function renderNameSkinsList() {
       const container = document.getElementById('nameSkinsListContainer');
       if (!container) return;
@@ -3284,7 +3289,6 @@
       });
     }
 
-    /* 🎴 CARD BACKGROUND SKINS HANDLERS */
     function renderCardSkinsList() {
       const container = document.getElementById('cardSkinsListContainer');
       if (!container) return;
@@ -3370,7 +3374,6 @@
       });
     }
 
-    /* 🎉 CEREMONIES CUSTOMIZATION HANDLERS */
     function renderCeremoniesList() {
       const container = document.getElementById('ceremoniesListContainer');
       if (!container) return;
